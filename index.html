@@ -340,7 +340,7 @@ body.is-dragging, body.is-dragging *{ cursor:grabbing !important; user-select:no
 .mkt-buy{ text-align:right; min-width:120px; } .mkt-buy .cost img{ height:16px; vertical-align:middle; }
 @media (max-width:760px),(max-height:640px){ #townview{ height:220px; } }
 /* ===================== v6.5 MOBILE / TOUCH ===================== */
-:root{ --sat:env(safe-area-inset-top,0px); --sar:env(safe-area-inset-right,0px); --sab:env(safe-area-inset-bottom,0px); --sal:env(safe-area-inset-left,0px); --bar:62px; }
+:root{ --sat:env(safe-area-inset-top,0px); --sar:env(safe-area-inset-right,0px); --sab:env(safe-area-inset-bottom,0px); --sal:env(safe-area-inset-left,0px); --bar:62px; --tbh:44px; }
 #mobbar,#btn-more,#side-grab{ display:none; }
 html.touch, html.touch body{ overscroll-behavior:none; -webkit-tap-highlight-color:transparent; -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; touch-action:manipulation; -webkit-text-size-adjust:100%; }
 html.touch input, html.touch textarea{ -webkit-user-select:text; user-select:text; }
@@ -355,7 +355,7 @@ html.touch .slot.swap-src{ border-color:#7fd0ff !important; box-shadow:0 0 0 3px
 
 /* ---------- phone layout ---------- */
 html.mob body{ position:fixed; inset:0; }
-html.mob #topbar{ height:calc(44px + var(--sat)); padding:var(--sat) max(6px,var(--sar)) 0 max(6px,var(--sal)); gap:6px; }
+html.mob #topbar{ height:calc(var(--tbh) + var(--sat)); padding:var(--sat) max(6px,var(--sar)) 0 max(6px,var(--sal)); gap:6px; }
 html.mob #topbar .logo{ display:none; }
 html.mob #topbar .btn{ display:none; }
 html.mob #topbar #btn-more{ display:inline-block; margin-left:auto; min-width:44px; min-height:38px; font-size:20px; padding:2px 10px; flex:none; }
@@ -363,7 +363,7 @@ html.mob #res{ flex:1; min-width:0; overflow-x:auto; overflow-y:hidden; white-sp
 html.mob #res::-webkit-scrollbar{ display:none; }
 html.mob #res img{ height:16px; }
 html.mob #daylbl{ font-size:11px; white-space:nowrap; flex:none; }
-html.mob #mapwrap{ top:calc(44px + var(--sat)); right:0; left:0; bottom:calc(var(--bar) + var(--sab)); }
+html.mob #mapwrap{ top:calc(var(--tbh) + var(--sat)); right:0; left:0; bottom:calc(var(--bar) + var(--sab)); }
 html.mob #navhint{ white-space:normal; max-width:92%; text-align:center; font-size:11px; }
 html.mob #mobbar{ display:flex; position:fixed; z-index:36; left:0; right:0; bottom:0; height:calc(var(--bar) + var(--sab)); padding:4px max(4px,var(--sar)) var(--sab) max(4px,var(--sal)); gap:4px; background:linear-gradient(180deg,#2e2036,#140c1c); border-top:2px solid var(--gold2); }
 .mbtn{ flex:1; min-width:44px; min-height:50px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; background:linear-gradient(180deg,#4a3420,#2a1c10); color:#ffe7a8; border:1.5px solid #8a6a3a; border-radius:8px; font:12px Georgia,serif; padding:2px; }
@@ -377,24 +377,24 @@ html.mob #side .army{ grid-template-columns:repeat(7,1fr); }
 html.mob #minimap{ align-self:center; max-width:100%; }
 html.mob .sidebtns .btn{ min-height:44px; }
 html.mob #btn-end{ min-height:48px; }
-html.mob #daytrans{ right:0; top:calc(44px + var(--sat)); }
-html.mob #camp-hud{ top:calc(50px + var(--sat)); left:calc(8px + var(--sal)); zoom:1; font-size:12px; }
+html.mob #daytrans{ right:0; top:calc(var(--tbh) + var(--sat)); }
+html.mob #camp-hud{ top:calc(var(--tbh) + 6px + var(--sat)); left:calc(8px + var(--sal)); zoom:1; font-size:12px; }
 html.mob #seat-chip{ bottom:calc(var(--bar) + var(--sab) + 6px); }
 html.mob #toast{ bottom:calc(var(--bar) + var(--sab) + 14px); max-width:92vw; white-space:normal; text-align:center; font-size:13px; }
-html.mob #banner{ top:calc(56px + var(--sat)); max-width:92vw; padding:8px 16px; font-size:15px; text-align:center; }
+html.mob #banner{ top:calc(var(--tbh) + 12px + var(--sat)); max-width:92vw; padding:8px 16px; font-size:15px; text-align:center; }
 html.mob #tip{ max-width:calc(100vw - 16px); font-size:13px; }
-html.mob #sndpop{ top:calc(50px + var(--sat)); right:calc(8px + var(--sar)); left:auto; width:min(300px, calc(100vw - 16px)); max-height:calc(100vh - 120px); overflow:auto; }
+html.mob #sndpop{ top:calc(var(--tbh) + 6px + var(--sat)); right:calc(8px + var(--sar)); left:auto; width:min(300px, calc(100vw - 16px)); max-height:calc(100vh - 120px); overflow:auto; }
 html.mob #sndpop label{ min-height:36px; }
 /* landscape phone: action bar becomes a column on the right, panel slides in from the right */
 html.mob.landscape #mapwrap{ bottom:0; right:calc(var(--bar) + var(--sar)); left:var(--sal); }
-html.mob.landscape #mobbar{ top:calc(44px + var(--sat)); left:auto; right:0; bottom:0; width:calc(var(--bar) + var(--sar)); height:auto; flex-direction:column; padding:4px var(--sar) max(4px,var(--sab)) 4px; border-top:0; border-left:2px solid var(--gold2); }
-html.mob.landscape .mbtn{ min-height:40px; } html.mob.landscape .mbtn .mbi{ font-size:17px; } html.mob.landscape .mbtn .mbl{ font-size:10px; }
-html.mob.landscape #side{ left:auto; top:calc(44px + var(--sat)); bottom:0; right:calc(var(--bar) + var(--sar)); width:min(330px,60vw); height:auto; border-width:0 0 0 2px; border-radius:12px 0 0 12px; transform:translateX(calc(100% + var(--bar) + var(--sar) + 10px)); }
+html.mob.landscape #mobbar{ top:calc(var(--tbh) + var(--sat)); left:auto; right:0; bottom:0; width:calc(var(--bar) + var(--sar)); height:auto; flex-direction:column; padding:4px var(--sar) max(4px,var(--sab)) 4px; border-top:0; border-left:2px solid var(--gold2); }
+html.mob.landscape .mbtn{ min-height:44px; } html.mob.landscape .mbtn .mbi{ font-size:17px; } html.mob.landscape .mbtn .mbl{ font-size:10px; }
+html.mob.landscape #side{ left:auto; top:calc(var(--tbh) + var(--sat)); bottom:0; right:calc(var(--bar) + var(--sar)); width:min(330px,60vw); height:auto; border-width:0 0 0 2px; border-radius:12px 0 0 12px; transform:translateX(calc(100% + var(--bar) + var(--sar) + 10px)); }
 html.mob.landscape #side.open{ transform:none; }
 html.mob.landscape #daytrans{ right:calc(var(--bar) + var(--sar)); }
 html.mob.landscape #toast{ bottom:calc(14px + var(--sab)); }
 /* screens */
-html.mob #town, html.mob #herosc{ top:calc(44px + var(--sat)); padding:4px max(4px,var(--sar)) 0 max(4px,var(--sal)); zoom:1; }
+html.mob #town, html.mob #herosc{ top:calc(var(--tbh) + var(--sat)); padding:4px max(4px,var(--sar)) 0 max(4px,var(--sal)); zoom:1; }
 html.mob .screen{ display:block; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:8px 8px calc(24px + var(--sab)); }
 html.mob .scr-head{ flex-wrap:wrap; gap:6px; } html.mob .scr-head h1{ font-size:20px; margin:0; } html.mob .scr-head .btn{ margin:2px 0; }
 html.mob .tw-cols, html.mob .hs-cols{ display:flex; flex-direction:column; gap:10px; min-height:0; }
@@ -438,6 +438,72 @@ html.mob #c-actions .btn{ min-height:42px; padding:4px 9px; font-size:12px; }
 html.mob.landscape #c-actions{ left:auto; top:calc(84px + var(--sat)); bottom:calc(78px + var(--sab)); width:176px; display:grid; grid-template-columns:1fr 1fr; align-content:start; overflow-y:auto; }
 html.mob.landscape #c-actions .btn{ font-size:11px; padding:3px 4px; white-space:normal; line-height:1.1; }
 html.mob.landscape .c-hero{ max-width:28vw; }
+/* v6.5.1: always-visible Back button + sticky ✕ on popups (phones only) */
+#mobback{ display:none; }
+html.mob #mobback{ display:flex; align-items:center; justify-content:center; position:fixed; z-index:110; bottom:calc(12px + var(--sab)); left:50%; transform:translateX(-50%); min-height:54px; min-width:200px; padding:0 22px; font:bold 18px Georgia,serif; color:#2a1606; background:linear-gradient(180deg,#ffe08a,#d9a640); border:2px solid #fff2c0; border-radius:28px; box-shadow:0 4px 18px rgba(0,0,0,0.75),0 0 0 3px rgba(40,20,6,0.6); white-space:nowrap; touch-action:manipulation; }
+html.mob #mobback.hidden{ display:none; }
+html.mob #mobback:active{ filter:brightness(1.15); transform:translateX(-50%) translateY(1px); }
+html.mob.landscape #mobback{ left:auto; right:calc(12px + var(--sar)); transform:none; min-width:170px; min-height:50px; font-size:16px; }
+html.mob.landscape #mobback:active{ transform:translateY(1px); }
+html.mob.mobback-on .screen{ padding-bottom:calc(84px + var(--sab)); }
+html.mob.mobback-on #menu{ padding-bottom:calc(84px + var(--sab)); }
+.mclose{ display:none; }
+html.mob .mclose{ display:flex; align-items:center; justify-content:center; position:sticky; top:-6px; float:right; z-index:5; width:46px; height:46px; margin:-6px -6px 4px 8px; font:bold 22px/1 Georgia,serif; color:#ffe7a8; background:linear-gradient(180deg,#5a3e24,#2a1c10); border:2px solid #c9a24a; border-radius:50%; box-shadow:0 2px 8px rgba(0,0,0,0.7); touch-action:manipulation; }
+html.mob #sndpop .mclose{ position:relative; top:0; }
+/* v6.5.1: town switcher (all screens) + town picker */
+.tw-nav{ display:flex; align-items:center; gap:8px; min-width:0; }
+.tw-nav h1{ margin:0; }
+.tw-arrow{ min-width:40px; min-height:36px; font-size:18px; padding:2px 10px; }
+.tw-count{ font-size:13px; white-space:nowrap; }
+html.mob .tw-nav{ width:100%; justify-content:space-between; gap:6px; }
+html.mob .tw-nav h1{ flex:1; text-align:center; font-size:19px; line-height:1.15; }
+html.mob .tw-arrow{ min-width:52px; min-height:48px; font-size:22px; }
+.mtpick{ display:flex; flex-direction:column; gap:8px; margin:8px 0; }
+.mtpick .mtp{ display:flex; flex-direction:column; align-items:flex-start; gap:2px; min-height:52px; text-align:left; border-left:5px solid var(--fc); padding:6px 12px; }
+.mtpick .mtp b{ font-size:16px; }
+html.mob.landscape .tw-nav{ width:auto; flex:1 1 360px; }
+
+/* v6.5.1: phone resource strip — every resource + the date always visible (2 rows in portrait) */
+html.mob.portrait{ --tbh:54px; }
+html.mob #res{ overflow:visible; touch-action:auto; display:grid; grid-auto-flow:row; grid-template-columns:repeat(6,minmax(0,auto)); gap:2px 10px; align-items:center; white-space:nowrap; }
+html.mob.portrait #res{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:1px 6px; }
+html.mob .resv{ font-size:14px; gap:3px; min-width:0; } html.mob .resv img{ height:17px; width:auto; flex:none; }
+html.mob .resv span{ overflow:hidden; text-overflow:clip; }
+html.mob .resv small{ font-size:9.5px; }
+html.mob #daylbl{ flex:none; font-size:11px; line-height:1.2; text-align:right; white-space:nowrap; }
+html.mob #daylbl b{ font-size:13px; color:#ffe7a8; display:block; }
+html.mob #daylbl .wevchip{ display:inline-block; font-size:11px; padding:0 3px; max-width:24px; overflow:hidden; white-space:nowrap; vertical-align:middle; }
+html.mob.landscape #daylbl b{ display:inline; }
+html.mob.landscape #daylbl b{ margin-right:6px; }
+/* v6.5.1 wild-creature encounter dialog */
+.encbox p{ margin:6px 0; }
+.enc-stacks{ display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 6px; }
+.enc-st{ display:flex; gap:8px; align-items:center; background:rgba(0,0,0,0.28); border:1px solid rgba(200,160,90,0.35); border-radius:8px; padding:5px 9px 5px 5px; flex:1 1 200px; }
+.enc-st img{ width:64px; height:64px; object-fit:contain; border-radius:6px; background:rgba(0,0,0,0.3); }
+.enc-fc{ background:rgba(40,30,60,0.55); border:1px solid rgba(140,120,200,0.4); border-radius:8px; padding:7px 10px; margin:6px 0; line-height:1.45; }
+.enc-btns{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px; margin-top:10px; }
+.enc-btns .btn{ min-height:48px; font-size:15px; display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1.15; }
+.enc-btns .btn small{ font-size:10.5px; opacity:0.75; font-family:inherit; text-transform:none; letter-spacing:0; margin-top:2px; }
+html.mob .enc-btns{ grid-template-columns:1fr 1fr; }
+html.mob .enc-btns .btn{ min-height:54px; font-size:16px; }
+html.mob .enc-st img{ width:52px; height:52px; }
+html.mob.landscape .enc-btns{ grid-template-columns:repeat(4,1fr); }
+
+/* v6.5.1 perk downsides always visible; locked artifact slots say why */
+.offer-down{ margin:6px 0 2px; padding:5px 8px; border:1px solid rgba(230,90,80,0.65); border-left:4px solid #e05a4a; border-radius:5px; background:rgba(120,20,20,0.35); color:#ff9a8a; font-size:13px; line-height:1.35; }
+.offer-down b{ color:#ffb4a8; }
+.offer.hl{ border-color:#ffe08a; box-shadow:0 0 16px rgba(255,214,110,0.7); }
+.art.locked{ flex-direction:column; gap:1px; color:#e07a6a; font-size:10.5px; text-align:center; line-height:1.15; border-style:dashed; border-color:#7a3a3a; background:rgba(60,10,10,0.35); }
+.art.locked .lk{ font-size:15px; }
+.art-lim{ font-size:12px; margin:2px 0 6px; padding:4px 7px; border-radius:5px; background:rgba(120,20,20,0.3); border:1px solid rgba(200,80,70,0.5); }
+.arts > .art{ min-width:0; overflow:hidden; } .arts > .art > span{ min-width:0; overflow-wrap:anywhere; }
+html.mob .offer-down{ font-size:13.5px; }
+/* v6.5.1 hero trade screen: artifacts by tap or drag */
+.trcol{ min-width:0; } .tr-lab{ margin:6px 0 3px; font-size:12px; color:var(--gold); } .tr-hint{ margin:4px 0 8px; font-size:13px; }
+.tr-art.tr-sel{ outline:2px solid #ffe08a; box-shadow:0 0 10px #ffd04a; background:rgba(255,208,74,0.18); }
+.tr-slot{ justify-content:center; color:#9a8a70; border-style:dashed; } .tr-over, .tr-slot.tr-over{ outline:2px dashed #8fd18f; }
+.tr-pack{ min-height:40px; } .trade .arts{ grid-template-columns:1fr 1fr; }
+html.mob .tr-art, html.mob .tr-slot{ min-height:44px; } html.mob .trademodal .trcol .army{ grid-template-columns:repeat(7,minmax(0,1fr)); }
 </style><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"><script>window.BOA_SW='sw.js';</script></head>
 <body>
 <div id="topbar"><div class="logo">⚜ Aldmere</div><div id="res"></div><div id="daylbl"></div>
@@ -907,7 +973,7 @@ const SKILLDATA={
       }
      },
      "desc": "+3 Spellpower.",
-     "down": "Only 2 artifacts can be equipped."
+     "down": "Only 3 artifacts can be equipped."
     }
    ]
   },
@@ -2136,7 +2202,7 @@ const ART_SETS = {
   barrow:{name:'Barrow Regalia', n:4, style:'Undead & necromancy', hue:160, bonus2:{sp:1,raise:0.08}, bonusFull:{sp:2,raise:0.20,dread:1}, b2:'+1 Spellpower; raise 8% of slain living foes as undead', bf:'+2 Spellpower; raise 20% of slain foes as undead; enemies -1 morale'},
 };
 for(const S of Object.values(ART_SETS)) S.desc=`2 pieces: ${S.b2}. All ${S.n}: ${S.bf}.`;
-const ART_SLOTS = 6;
+const ART_SLOTS = 8;
 
 // ---- hero classes (2 per faction) and traits ----
 const CLASSES = {
@@ -4450,8 +4516,8 @@ function ownerName(o){ if(o===ME) return 'You'; if(o==='neutral'||!o) return 'Ne
 // Difficulty: AI economy, when the AI starts hunting rival towns, how much stronger it wants to be, and neutral monster size
 const DIFFS={
   easy:  {name:'Easy',  aiStart:0.8, aiIncome:0.85, aiGrowth:0,    attackDay:36, earlyStr:1e9,   ratio:1.6,  neutral:0.75, desc:'AI starts poorer, grows slower and leaves your towns alone until about week 6. Smaller neutral packs.'},
-  normal:{name:'Normal',aiStart:1.0, aiIncome:1.0,  aiGrowth:0.05, attackDay:23, earlyStr:22000, ratio:1.35, neutral:1.0,  desc:'The AI builds up and usually makes its first serious attack in weeks 4-5.'},
-  hard:  {name:'Hard',  aiStart:1.3, aiIncome:1.2,  aiGrowth:0.15, attackDay:13, earlyStr:9000,  ratio:1.1,  neutral:1.25, desc:'AI starts richer, grows faster and attacks from week 2. Bigger neutral packs.'},
+  normal:{name:'Normal',aiStart:1.0, aiIncome:1.0,  aiGrowth:0.05, attackDay:10, earlyStr:12000, ratio:1.25, neutral:1.0, heroes:3, hunt:1.3, desc:'The AI builds every day it can, runs 3 heroes, flags mines and starts hunting your weaker heroes and empty towns from week 2.'},
+  hard:  {name:'Hard',  aiStart:1.5, aiIncome:1.3,  aiGrowth:0.2, attackDay:6, earlyStr:6000,  ratio:1.08, neutral:1.25, heroes:4, hunt:1.15, desc:'AI starts much richer, earns 30% more, grows faster, runs 4 heroes and goes on the attack from the first week. Bigger neutral packs.'},
   brutal:{name:'Brutal',aiStart:1.7, aiIncome:1.4, aiGrowth:0.3, attackDay:8, earlyStr:5000, ratio:0.95, neutral:1.45, desc:'For veterans: the AI starts with a fat purse, earns 40% more, grows 30% faster, strikes from day 8 and will take fights that are close to even. Very large neutral packs.'},
   finale:{name:'Finale',hidden:true,aiStart:1.5, aiIncome:1.3, aiGrowth:0.22, attackDay:10, earlyStr:6500, ratio:1.0, neutral:1.35, desc:'Campaign finale.'} };
 function diff(){ return DIFFS[(G&&G.difficulty)||'normal']||DIFFS.normal; }
@@ -4483,7 +4549,7 @@ function artMods(h){ const m={}; const add=mods=>{ for(const [k,v] of Object.ent
   for(const a of h.arts.slice(0,artLimit(h))) add(ARTIFACTS[a].mods);
   for(const [s,n] of Object.entries(artSetsOf(h))){ const S=ART_SETS[s]; if(!S) continue; if(n>=S.n) add(S.bonusFull); else if(n>=2) add(S.bonus2); }
   return m; }
-function artLimit(h){ return hasPerk(h,'lor_ascetic')?2:ART_SLOTS; }
+function artLimit(h){ return hasPerk(h,'lor_ascetic')?3:ART_SLOTS; }
 function heroStats(h){
   const tr=TRAITS[h.trait]||{}; const am=artMods(h);
   const s={ atk:h.atk+(am.atk||0), def:h.def+(am.def||0), sp:h.sp+(am.sp||0)+skillRank(h,'arcana'), kn:h.kn+(am.kn||0) };
@@ -4709,7 +4775,7 @@ function autoDesc(m){ const w=Math.floor((m.day-1)/7)+1, d=(m.day-1)%7+1, mo=Mat
 
 // ---- 04b_ai.js ----
 // ===================== STRATEGIC AI (any number of AI players, multiple heroes each) =====================
-const AI_BUILD_ORDER=['d2','d3','hall2','u1','fort','u2','d4','forge','market','u3','mage1','d5','special','hall3','u4','silo','fort2','d6','u5','mage2','d7','u6','WONDER','u7','mage3','mage4'];
+const AI_BUILD_ORDER=['d2','d3','hall2','u1','fort','d4','mage1','u2','market','forge','d5','u3','hall3','special','u4','silo','mage2','d6','fort2','u5','d7','u6','mage3','WONDER','u7','mage4'];
 // Faction personalities: which districts to found (in priority), which wonder, and which Proving Yard branch per tier (1=A, 2=B).
 const AI_PLANS={ sunward:{d:['bulwark','arcane','commerce','armory'],w:['wonder_lore','hall4','wonder_war'],br:[1,1,1,2,1,1,1]},
   thornwild:{d:['arcane','commerce','armory','bulwark'],w:['wonder_war','hall4','wonder_lore'],br:[2,1,1,2,2,1,2]},
@@ -4732,8 +4798,7 @@ function aiBuildAndRecruit(owner){
   if(noHero) aiHire(owner,true);
   const saving = noHero && heroesOf(owner).length===0 && (G.tavern[owner]||[]).length>0;
   for(const t of townsOf(owner)){ if(saving) break;
-    if(!t.builtToday){ const plan=aiPlan(t); for(let id of AI_BUILD_ORDER){ if(id==='WONDER'){ id=townWonder(t)?null:plan.w[0]; if(!id) continue; if(plan.w.length>1&&!canBuild(t,buildingDef(id)).ok&&G.day>40){} }
-      const b=buildingDef(id); if(t.built.includes(id)) continue; const opt=b.upg?{branch:aiYardBranch(t,b.upg)}:undefined; if(b.district&&!aiDistrictWanted(t,plan,b.district)) continue; const c=canBuild(t,b,opt); if(c.excluded) continue; if(c.ok){ doBuild(t,b,opt); break; } if((b.req||[]).every(r=>t.built.includes(r))) break; } }
+    if(!t.builtToday){ try{ aiBuildOne(t,owner); }catch(e){ console.error(e); } }
     const hh=G.heroes.find(h=>h.alive&&h.owner===owner&&h.x===t.x&&h.y===t.y);
     for(let k=7;k>=1;k--){ if(t.avail[k]<=0) continue; const br=t.built.includes('u'+k)?aiYardBranch(t,k):0; const kit=(t.built.includes('forge')&&R.gold>9000&&UNITS[recType(t,k,br)].flags.ranged&&kitAllowed({type:recType(t,k,br)},'quiver'))?'quiver':''; const sel={br,kit};
       let r=recruitEx(t,k,t.avail[k],sel,hh||null); if(r===-1) r=recruitEx(t,k,t.avail[k],sel,null); if(r<=0&&(br||kit)){ r=recruitEx(t,k,t.avail[k],{br:0,kit:''},hh||null); if(r===-1) recruitEx(t,k,t.avail[k],{br:0,kit:''},null); } }
@@ -4743,11 +4808,29 @@ function aiBuildAndRecruit(owner){
   }
   aiHire(owner,false);
 }
+// v6.5.1: pick the first affordable building in priority order. A building that only lacks a little gold is saved for (one day);
+// one that lacks wood/ore/rare resources is bought at the market if possible, otherwise skipped so the town keeps growing.
+function aiBuildOne(t,owner){ const R=G.players[owner].res; const plan=aiPlan(t); const inc=dailyIncome(owner);
+  for(let id of AI_BUILD_ORDER){ if(id==='WONDER'){ id=townWonder(t)?null:plan.w[0]; if(!id) continue; }
+    const b=buildingDef(id); if(!b||t.built.includes(id)) continue; const opt=b.upg?{branch:aiYardBranch(t,b.upg)}:undefined; if(b.district&&!aiDistrictWanted(t,plan,b.district)) continue;
+    let c=canBuild(t,b,opt); if(c.excluded) continue; if(c.ok){ doBuild(t,b,opt); return id; }
+    if(!(b.req||[]).every(r=>t.built.includes(r))) continue;
+    const cost=bCost(b,t.faction); const short=RES.filter(k=>(cost[k]||0)>(R[k]||0));
+    if(short.some(k=>k!=='gold') && aiBuyFor(owner,cost)){ c=canBuild(t,b,opt); if(c.ok){ doBuild(t,b,opt); return id; } }
+    const shortNow=RES.filter(k=>(cost[k]||0)>(R[k]||0));
+    if(shortNow.length===1 && shortNow[0]==='gold' && cost.gold-R.gold<=Math.max(1500,inc.gold*1.5)) return null;   // nearly there: save for it
+  }
+  return null; }
+function aiBuyFor(owner,cost){ if(typeof marketsOwned!=='function'||!marketsOwned(owner)) return false; const R=G.players[owner].res;
+  for(const k of RES){ if(k==='gold') continue; const need=(cost[k]||0)-(R[k]||0); if(need<=0) continue; if(need>12) return false;
+    const gc=tradeCost(owner,'gold',k,need); if(!(gc>0) || R.gold-gc < (cost.gold||0)) return false; if(!doTrade(owner,'gold',k,need)) return false; }
+  return canAfford(R,cost); }
 function aiHire(owner, urgent){ const R=G.players[owner].res;
-  const nh=heroesOf(owner).length; const want = Math.min(MAX_HEROES, 1 + (G.day>=2?1:0) + (G.day>=12?1:0));
-  if(nh<want && R.gold>=hireCost(owner)+(urgent?0:(nh<2?300:2500))){ const t=townsOf(owner).find(t=>t.built.includes('tavern') && !heroAt(t.x,t.y)); const tv=G.tavern[owner]||[]; if(t && tv.length){ const pickC=tv.slice().sort((a,b)=>aiCandScore(owner,b)-aiCandScore(owner,a))[0]; const res=hireHero(owner,t,pickC); if(res.ok){ const g=t.garrison.filter(s=>urgent || UNITS[s.type].tier<=2); for(const s of g.slice()){ if(armyAdd(res.hero.army,heroStats(res.hero).slots,s)) t.garrison.splice(t.garrison.indexOf(s),1); } } } } }
+  const nh=heroesOf(owner).length; const D=diff(); const cap=Math.min(MAX_HEROES, D.heroes||2); const want = Math.min(cap, 1 + (G.day>=2?1:0) + (G.day>=(D.heroes>=4?6:8)?1:0) + (G.day>=12?1:0));
+  if(nh<want && R.gold>=hireCost(owner)+(urgent?0:(nh<2?300:1200))){ const t=townsOf(owner).find(t=>t.built.includes('tavern') && !heroAt(t.x,t.y)); const tv=G.tavern[owner]||[]; if(t && tv.length){ const pickC=tv.slice().sort((a,b)=>aiCandScore(owner,b)-aiCandScore(owner,a))[0]; const res=hireHero(owner,t,pickC); if(res.ok){ const g=t.garrison.filter(s=>urgent || UNITS[s.type].tier<=2); for(const s of g.slice()){ if(armyAdd(res.hero.army,heroStats(res.hero).slots,s)) t.garrison.splice(t.garrison.indexOf(s),1); } } } } }
 function aiTransferGarrison(h,t){ const st=heroStats(h); let keep=null; if(t.garrison.length>1 || h.army.length){ const t1=t.garrison.filter(s=>UNITS[s.type].tier===1); if(t1.length && G.day>5) keep=t1[0]; }
   for(let i=t.garrison.length-1;i>=0;i--){ if(t.garrison[i]===keep) continue; if(armyAdd(h.army,st.slots,t.garrison[i])) t.garrison.splice(i,1); } }
+function aiTownThreatened(t){ return G.heroes.some(e=>e.alive&&e.owner!==t.owner&&Math.hypot(e.x-t.x,e.y-t.y)<7&&armyStrength(e.army,e)>armyStrength(t.garrison)*0.7); }
 function townDefense(t){ let v=armyStrength(t.garrison)*(t.built.includes('fort')?1.3:1)*(t.built.includes('fort2')?1.15:1); for(const h of G.heroes) if(h.alive&&h.owner===t.owner&&Math.hypot(h.x-t.x,h.y-t.y)<5) v+=armyStrength(h.army,h); return v+200; }
 function aiMainHero(owner){ const hs=heroesOf(owner); return hs.length? hs.reduce((a,b)=>armyStrength(a.army,a)>=armyStrength(b.army,b)?a:b) : null; }
 const AI_TREASURE=['res','chest','artifact'];
@@ -4760,13 +4843,15 @@ function aiChooseTarget(h, isMain){
   if(home && isMain){ const threat=G.heroes.find(e=>e.alive&&e.owner!==h.owner&&Math.hypot(e.x-home.x,e.y-home.y)<6&&armyStrength(e.army,e)>townDefense(home)*0.8); if(threat && Math.hypot(h.x-home.x,h.y-home.y)<12){ if(str>armyStrength(threat.army,threat)*1.1) return {x:threat.x,y:threat.y,why:'intercept'}; if(!(h.x===home.x&&h.y===home.y)) return {x:home.x,y:home.y,why:'defend'}; } }
   let best=null, bs=0;
   const consider=(x,y,v,why)=>{ const d=Math.hypot(x-h.x,y-h.y); const sc=v/(d+2.5); if(sc>bs){ bs=sc; best={x,y,why}; } };
-  const aggressive = isMain && (G.day>=D.attackDay || str>D.earlyStr);
-  for(const t of G.towns){ if(t.owner===h.owner) continue; const def=townDefense(t); if(str>def*ratio && (aggressive || t.owner==='neutral' && str>def*1.6)) consider(t.x,t.y, (t.owner==='neutral'?4000:6000)+def*0.3, 'siege'); }
-  for(const e of G.heroes){ if(!e.alive||e.owner===h.owner) continue; if(G.towns.some(t=>t.x===e.x&&t.y===e.y)) continue; const es=armyStrength(e.army,e); if(str>es*(G.day>=D.attackDay?1.35:1.8) && Math.hypot(e.x-h.x,e.y-h.y)<(G.day>=D.attackDay?12:6)) consider(e.x,e.y,2500+es*0.4,'hunt'); }
+  const late=G.day>=D.attackDay; const aggressive = isMain && (late || str>D.earlyStr);
+  for(const t of G.towns){ if(t.owner===h.owner) continue; const def=townDefense(t); const ours=t._lostBy===h.owner; const empty=t.owner!=='neutral' && late && def<900 && Math.hypot(t.x-h.x,t.y-h.y)<16;
+    if(str>def*ratio*(ours?0.9:1) && (aggressive || ours || empty || t.owner==='neutral' && str>def*1.6)) consider(t.x,t.y, (ours?9000:t.owner==='neutral'?4000:empty?7500:6000)+def*0.3, ours?'retake':'siege'); }
+  for(const e of G.heroes){ if(!e.alive||e.owner===h.owner) continue; if(G.towns.some(t=>t.x===e.x&&t.y===e.y)) continue; const es=armyStrength(e.army,e); const need=late?(isMain?(D.hunt||1.35):1.6):1.8; const rng=late?(isMain?16:9):6; if(str>es*need && Math.hypot(e.x-h.x,e.y-h.y)<rng) consider(e.x,e.y,(late&&isHumanP(e.owner)?4000:2500)+es*0.4,'hunt'); }
   if(home && isMain){ const atHome=h.x===home.x&&h.y===home.y; if(atHome) h._goHome=false; else if((armyStrength(home.garrison)>str*0.6 || str<900) && !G.objects.some(o=>AI_TREASURE.includes(o.kind)&&Math.hypot(o.x-h.x,o.y-h.y)<4&&!guardingMonster(o.x,o.y))) h._goHome=true;
     if(h._goHome && !atHome && !(best && best.why==='siege')) return {x:home.x,y:home.y,why:'home'}; }
   // v4: treasure is scored on its real worth and on travel distance; secondary heroes act as collectors around home
   if(!isMain && home && !(h.x===home.x&&h.y===home.y) && str<1500 && home.avail && Object.values(home.avail).some(v=>v>0)) return {x:home.x,y:home.y,why:'regroup'};
+  { const m=aiFerryTarget(h); if(m) return m; }
   const R=G.players[h.owner].res; const poor=R.gold<2500; const range=isMain?18:(home?16:20);
   for(const o of G.objects){ const d=Math.hypot(o.x-h.x,o.y-h.y); if(d>range || (h._avoid||[]).includes(o.id)) continue; let v=0;
     if(!isMain && home && Math.hypot(o.x-home.x,o.y-home.y)>18) continue;
@@ -4781,11 +4866,14 @@ function aiChooseTarget(h, isMain){
     if(v) consider(o.x,o.y,v,'loot'); }
   return best;
 }
+// v6.5.1: a helper carrying a real army walks it to the main hero (troops are handed over when they stand side by side)
+function aiFerryTarget(h){ if(G.day<5) return null; const main=aiMainHero(h.owner); if(!main||main===h) return null; const d=Math.max(Math.abs(main.x-h.x),Math.abs(main.y-h.y)); if(d<=1||d>24) return null;
+  const st=armyStrength(h.army,h), ms=armyStrength(main.army,main); const big=h.army.filter(s=>UNITS[s.type].tier>=3).length; if(h.army.length<2 || (st<ms*0.25 && big<2) || st<800) return null; return {x:main.x,y:main.y,why:'ferry'}; }
 function heroVisible(h){ return visibleTile(h.x,h.y); }
 async function animStep(h, nx, ny){ const fx=h.x, fy=h.y; if(visibleTile(fx,fy)||visibleTile(nx,ny)){ await tween(fastAI()?35:70,p=>{ MAPV.anim={hero:h,x:fx+(nx-fx)*p,y:fy+(ny-fy)*p}; }); MAPV.anim=null; } }
 function fastAI(){ return !!(window.FAST_AI); }
 async function aiMoveHero(h, isMain){
-  const home=G.towns.find(t=>t.owner===h.owner&&t.x===h.x&&t.y===h.y); if(home){ mageVisit(h,home); if(isMain) aiTransferGarrison(h,home); }
+  const home=G.towns.find(t=>t.owner===h.owner&&t.x===h.x&&t.y===h.y); if(home){ mageVisit(h,home); if(isMain) aiTransferGarrison(h,home); else if(G.day>=5){ const m=aiMainHero(h.owner); if(m&&m!==h&&Math.hypot(m.x-h.x,m.y-h.y)>6&&!aiTownThreatened(home)) aiTransferGarrison(h,home); } }
   h._avoid=[];
   for(let attempt=0; attempt<12 && h.alive && h.mp>0 && !G.over; attempt++){
     const tg=aiChooseTarget(h,isMain); if(!tg) return; let pr=findPath(h,tg.x,tg.y)||findPath(h,tg.x,tg.y,{ignoreGuards:true}); if(!pr||!pr.path.length){ const o=objAt(tg.x,tg.y); if(o) h._avoid.push(o.id); else return; continue; }
@@ -4793,7 +4881,8 @@ async function aiMoveHero(h, isMain){
     for(let i=0;i<pr.path.length;i++){ const step=pr.path[i]; const c=step.cost-(i?pr.path[i-1].cost:0); if(c>h.mp) return;
       const gm=guardingMonster(step.x,step.y);
       if(gm && armyStrength(h.army,h) < monsterValue(gm)*1.5){ h._avoid.push(gm.id); const o=objAt(tg.x,tg.y); if(o) h._avoid.push(o.id); blocked=true; break; }
-      const oh=heroAt(step.x,step.y); if(oh && oh!==h){ const twn=G.towns.find(t=>t.x===step.x&&t.y===step.y&&t.owner!==h.owner); if(twn && i===pr.path.length-1){ await siegeTown(h,twn); return; } blocked=true; break; }
+      const oh=heroAt(step.x,step.y); if(oh && oh!==h && oh.owner===h.owner && tg.why==='ferry'){ aiPassTroops(h.owner); return; }
+      if(oh && oh!==h){ const twn=G.towns.find(t=>t.x===step.x&&t.y===step.y&&t.owner!==h.owner); if(twn && i===pr.path.length-1){ await siegeTown(h,twn); return; } blocked=true; break; }
       await animStep(h,step.x,step.y); h.mp-=c; h.x=step.x; h.y=step.y; moved=true;
       if(gm){ await fightMonster(h,gm); if(!h.alive) return; if(i<pr.path.length-1){ blocked=true; break; } } }
     if(blocked) continue; if(!moved) return;
@@ -4810,8 +4899,9 @@ async function aiMoveHero(h, isMain){
 async function aiTurn(owner){ if(G.over||!G.players[owner].alive) return; aiBuildAndRecruit(owner); aiPassTroops(owner); const main=aiMainHero(owner);
   const hs=heroesOf(owner).sort((a,b)=>(b===main)-(a===main));
   for(const h of hs){ if(G.over) return; if(!h.alive) continue; try{ await aiMoveHero(h, h===main); }catch(e){ console.error(e); } }
-  // secondary heroes standing in a town hand armies to garrison so the main hero can collect them
-  for(const h of heroesOf(owner)) if(h!==main){ const t=G.towns.find(t=>t.owner===owner&&t.x===h.x&&t.y===h.y); if(t && h.army.length>1){ const s=h.army.reduce((a,b)=>unitValue(a.type)*a.n>unitValue(b.type)*b.n?a:b); if(UNITS[s.type].tier>=3 && armyAdd(t.garrison,7,s)) h.army.splice(h.army.indexOf(s),1); } }
+  try{ if(!G.over) aiHire(owner,false); }catch(e){ console.error(e); }
+  // secondary heroes standing in a town hand armies to garrison so the main hero can collect them (when it is close)
+  for(const h of heroesOf(owner)) if(h!==main){ const t=G.towns.find(t=>t.owner===owner&&t.x===h.x&&t.y===h.y); if(t && h.army.length>1 && (!main||!main.alive||Math.hypot(main.x-t.x,main.y-t.y)<8)){ const s=h.army.reduce((a,b)=>unitValue(a.type)*a.n>unitValue(b.type)*b.n?a:b); if(UNITS[s.type].tier>=3 && armyAdd(t.garrison,7,s)) h.army.splice(h.army.indexOf(s),1); } }
 }
 
 // ---- 05_combat.js ----
@@ -5696,7 +5786,7 @@ function renderSide(){ if(!G) return; const h=selHero(); const el=$('#side-hero'
       <div class="stats4"><span data-tip="<b>Attack</b>: +5% damage per point above the target's Defense.">⚔ ${st.atk}</span><span data-tip="<b>Defense</b>: reduces damage taken by your stacks.">🛡 ${st.def}</span><span data-tip="<b>Spellpower</b>: strength of spells.">✨ ${st.sp}</span><span data-tip="<b>Knowledge</b>: 10 max mana per point.">📘 ${st.kn}</span></div>
       <div class="army">${Array.from({length:7},(_,i)=>{ const s=h.army[i]; if(i>=st.slots) return `<div class="slot locked" data-tip="Slot locked (trait, perk or artifact trade-off)">✖</div>`; if(!s) return `<div class="slot empty"></div>`; return slotHTML(s,'ally',`data-sa="${i}"`,upgradeState(s,G.towns.find(t=>t.x===h.x&&t.y===h.y&&t.owner===ME))); }).join('')}</div>
       <div class="navbtns"><button class="btn move ${h.route?'has':''}" id="btn-move" data-tip="${h.route?`Move along the saved route to <b>${q(routeName(h.route))}</b>${MAPV.path?` (${routeDays(h,MAPV.path)?routeDays(h,MAPV.path)+' more day(s) after today':'arrives today'})`:''}. Shortcut: M or Space. The route is kept across days until you arrive or pick a new destination.`:'Move Hero (M / Space): click a destination on the map first. Far routes are saved and continue on later days.'}">🐎 Move${h.route&&MAPV.path&&routeDays(h,MAPV.path)?' <span class=\'dn\'>'+routeDays(h,MAPV.path)+'d</span>':''}</button><button class="btn rtt" id="btn-rtt" data-tip="Return to Town (R): set a route to your nearest town (it is kept across days); press again or 🐎 Move to march.">🏰 ${h.route&&h.route.toTown?'Go to '+q(routeName(h.route)):'Return to Town'}</button></div>
-      <label class="autoroute" data-tip="When on, every hero with a saved route walks it automatically at the start of each day."><input type="checkbox" id="cb-autoroute" ${localStorage.getItem('boa_autoroute')==='1'?'checked':''}> Auto-continue routes each morning</label><label class="autoroute" data-tip="When on, battles against wandering monsters you outclass (threat: Trivial) are resolved instantly with the normal combat rules."><input type="checkbox" id="cb-autotrivial" ${autoTrivialOn()?'checked':''}> Auto-resolve trivial fights</label>`;
+      <label class="autoroute" data-tip="When on, every hero with a saved route walks it automatically at the start of each day."><input type="checkbox" id="cb-autoroute" ${localStorage.getItem('boa_autoroute')==='1'?'checked':''}> Auto-continue routes each morning</label>`;
     $('#sh-port').onclick=openHeroScreen; $('#side-hero').querySelectorAll('[data-sa]').forEach(el=>el.onclick=()=>armyStackClick(h,+el.dataset.sa)); $('#btn-rtt').onclick=returnToTown; $('#btn-move').onclick=moveHero; $('#cb-autoroute').onchange=e=>{ try{ localStorage.setItem('boa_autoroute',e.target.checked?'1':'0'); }catch(_){} }; { const at=$('#cb-autotrivial'); if(at) at.onchange=e=>setAutoTrivial(e.target.checked); } }
   else el.innerHTML=`<div class="nohero">No hero selected.<br>Hire heroes at a town's Tavern (${HIRE_COST} gold, up to ${MAX_HEROES}).</div>`;
   $('#side-log').innerHTML=G.log.slice(0,5).map(l=>`<div>${l}</div>`).join(''); }
@@ -5795,7 +5885,7 @@ async function executeMove(h, pr){ MAPV.moving=true; BUSY=true; const vis=heroSt
     if(!tileOnScreen(h.x,h.y,0.2)) centerOn(h.x,h.y);
     renderSide();
     if(i===pr.path.length-1) arrived=true;
-    const gm=guardingMonster(h.x,h.y); if(gm){ MAPV.path=null; await fightMonster(h,gm); if(!h.alive||G.over) return; if(!arrived) break; } }
+    const gm=guardingMonster(h.x,h.y); if(gm){ MAPV.path=null; h._encFrom={x:fx,y:fy,c}; const fr=await fightMonster(h,gm); h._encFrom=null; if(!h.alive||G.over) return; if(fr&&fr.left){ arrived=false; h.route=null; pr={path:[],target:{x:h.x,y:h.y}}; break; } if(!arrived) break; } }
   MAPV.path=null; if(arrived) h.route=null;
   if(arrived && h.alive){ const tx=pr.target.x, ty=pr.target.y; const eh=heroAt(tx,ty); const tw=G.towns.find(t=>t.x===tx&&t.y===ty);
     if(eh && eh!==h && eh.owner!==ME && !tw && Math.max(Math.abs(eh.x-h.x),Math.abs(eh.y-h.y))<=1) await heroBattle(h,eh);
@@ -5867,9 +5957,9 @@ function offerInfo(h,o){ if(o.type==='perk'){ const p=perkDef(o.id); const sk=p.
 async function doLevelUps(h,n){ for(let i=0;i<n;i++){ const lvl=h.level-n+i+1; const stat=rollStat(h); h[stat]++; const offers=makeOffers(h);
     const names={atk:'Attack',def:'Defense',sp:'Spellpower',kn:'Knowledge'};
     if(window.FAST_AI){ if(offers.length) applyOffer(h,offers[Math.floor(Math.random()*offers.length)]); continue; }
-    await new Promise(res=>{ const cards=offers.map((o,k)=>{ const f=offerInfo(h,o); return `<div class="offer" data-k="${k}"><div class="badge">${f.badge}</div><h3>${f.name}</h3><div class="dim">${f.sub}</div><p>${f.desc}</p>${f.down?`<p class="bad">⚠ ${f.down}</p>`:''}${f.excl.length?`<p class="bad">⛔ Locks out: ${f.excl.join(', ')}</p>`:''}</div>`; }).join('');
+    await new Promise(res=>{ const cards=offers.map((o,k)=>{ const f=offerInfo(h,o); return `<div class="offer" data-k="${k}"><div class="badge">${f.badge}</div><h3>${f.name}</h3><div class="dim">${f.sub}</div><p>${f.desc}</p>${f.down?`<div class="offer-down"><b>⚠ Downside:</b> ${f.down}</div>`:''}${f.excl.length?`<p class="bad">⛔ Locks out: ${f.excl.join(', ')}</p>`:''}</div>`; }).join('');
       const m=modal(`<h2>${h.name}: Level ${lvl}!</h2><p>${h.name} gains <b>+1 ${names[stat]}</b>. ${offers.length?`Choose one of ${offers.length} (${CLASSES[h.cls].name}, ${TRAITS[h.trait].name}):`:'No skills left to learn.'}</p>
-        <div class="lvl-flex"><div class="offers">${cards||''}</div><div class="lvl-wheel"><canvas class="wheelcv" width="440" height="440"></canvas><div class="dim" style="text-align:center">Pulsing nodes are on offer. You can also click them.</div></div></div>${offers.length?'':'<div class="row"><button class="btn primary" id="lv-ok">OK</button></div>'}`,'wide levelup');
+        <div class="lvl-flex"><div class="offers">${cards||''}</div><div class="lvl-wheel"><canvas class="wheelcv" width="440" height="440"></canvas><div class="dim" style="text-align:center">Pulsing nodes are on offer. ${(document.documentElement.classList.contains('touch')||document.documentElement.classList.contains('mob'))?'Tap one to see its card above, then tap the card to choose.':'You can also click them.'}</div></div></div>${offers.length?'':'<div class="row"><button class="btn primary" id="lv-ok">OK</button></div>'}`,'wide levelup');
       const cv=m.querySelector('.wheelcv'); let done=false; const pick=(o)=>{ if(done) return; done=true; const nm=offerInfo(h,o).name; applyOffer(h,o); addLog(`${h.name} learned ${nm}.`); wh.stop(); closeModal(m); res(); };
       const wh=attachWheel(cv,h,{offers, onPick:pick});
       m.querySelectorAll('.offer').forEach(el=>el.onclick=()=>pick(offers[+el.dataset.k])); const ok=m.querySelector('#lv-ok'); if(ok) ok.onclick=()=>{ wh.stop(); closeModal(m); res(); }; }); }
@@ -5917,7 +6007,8 @@ function nodeTip(h,n){ if(n.kind==='skill'){ const r=h.skills[n.id]||0; const ra
 function attachWheel(cv, h, opts={}){ const L=wheelLayout(h,cv.width); opts.portrait=heroPortrait(h,120,120); let run=true; const loop=(now)=>{ if(!run||!cv.isConnected) return; drawWheel(cv.getContext('2d'),h,L,opts,now/1000); requestAnimationFrame(loop); }; requestAnimationFrame(loop);
   const hit=(e)=>{ const r=cv.getBoundingClientRect(); const x=(e.clientX-r.left)*cv.width/r.width, y=(e.clientY-r.top)*cv.height/r.height; return L.nodes.find(n=>Math.hypot(n.x-x,n.y-y)<n.r+3); };
   cv.onmousemove=e=>{ const n=hit(e); if(n){ showTip(nodeTip(h,n),e.clientX,e.clientY); cv.style.cursor= opts.offers&&opts.offers.some(o=>o.id===n.id)?'pointer':'help'; } else { hideTip(); cv.style.cursor='default'; } };
-  cv.onmouseleave=hideTip; cv.onclick=e=>{ const n=hit(e); if(n && opts.onPick && opts.offers){ const o=opts.offers.find(o=>o.id===n.id); if(o) opts.onPick(o); } };
+  cv.onmouseleave=hideTip; cv.onclick=e=>{ const n=hit(e); if(n && opts.onPick && opts.offers){ const o=opts.offers.find(o=>o.id===n.id); if(!o) return; const touchy=document.documentElement.classList.contains('touch')||document.documentElement.classList.contains('mob'); const k=opts.offers.indexOf(o); const card=cv.closest('.modal')&&cv.closest('.modal').querySelector(`.offer[data-k="${k}"]`);
+      if(touchy && card){ cv.closest('.modal').querySelectorAll('.offer.hl').forEach(x=>x.classList.remove('hl')); card.classList.add('hl'); card.scrollIntoView({block:'center',behavior:'smooth'}); toast('Read it, then tap the card to choose it.'); return; } opts.onPick(o); } };
   return {stop:()=>{run=false;}}; }
 
 // ---- 07b_screens.js ----
@@ -5951,7 +6042,7 @@ function renderHeroScreen(){ const h=selHero(); if(!h){ closeHeroScreen(); retur
      <tr><td>🐎 Movement</td><td>${st.moveMax}</td></tr><tr><td>⚑ Army slots</td><td>${st.slots}</td></tr><tr><td>👁 Vision</td><td>${st.vision}</td></tr>${st.goldDaily?`<tr><td>💰 Hero income</td><td>+${st.goldDaily}/day</td></tr>`:''}<tr data-tip="Weekly gold for this hero's army."><td>⚖ Upkeep</td><td>${Math.round(heroUpkeep(h))}/week</td></tr></table>
     <div class="trait"><b>Faction ability: ${F.ability}</b><br>${F.abilityDesc}</div></div>
    <div class="hs-mid"><canvas id="wheel" class="wheelcv" width="620" height="620"></canvas><div class="legend"><span class="lg learned"></span>Learned <span class="lg avail"></span>Available <span class="lg locked"></span>Locked <span class="lg down"></span>Trade-off · ⬡ combo perk · top: faction ultimate</div></div>
-   <div class="hs-right"><h3>Artifacts <span class="dim">(${h.arts.length}/${lim} worn)</span></h3><div class="arts">${Array.from({length:ART_SLOTS},(_,i)=>{ const a=h.arts[i]; if(i>=lim) return '<div class="art locked" data-tip="Ascetic Vow: only 2 artifacts.">✖</div>'; return a?`<div class="art ${ARTIFACTS[a].cursed?'cursed':''}" data-i="${i}" data-tip="${artTip(a,'<br><i>Click to unequip</i>')}">${artIcon(a)}<span>${ARTIFACTS[a].name}</span></div>`:'<div class="art empty">empty</div>'; }).join('')}</div>${setHTML}
+   <div class="hs-right"><h3>Artifacts <span class="dim">(${h.arts.length}/${lim} worn)</span></h3>${lim<ART_SLOTS?`<div class="art-lim bad">🔒 Your <b>Ascetic Vow</b> perk (+3 Spellpower) allows only <b>${lim}</b> of ${ART_SLOTS} artifacts to be worn. Extra artifacts wait in the pack.</div>`:''}<div class="arts">${Array.from({length:ART_SLOTS},(_,i)=>{ const a=h.arts[i]; if(i>=lim) return `<div class="art locked" data-tip="<b>Ascetic Vow</b> (perk): +3 Spellpower, but only ${lim} artifacts can be worn."><span class="lk">🔒</span><span>Locked by <b>Ascetic Vow</b></span></div>`; return a?`<div class="art ${ARTIFACTS[a].cursed?'cursed':''}" data-i="${i}" data-tip="${artTip(a,'<br><i>Click to unequip</i>')}">${artIcon(a)}<span>${ARTIFACTS[a].name}</span></div>`:'<div class="art empty">empty</div>'; }).join('')}</div>${setHTML}
     <h4>Pack</h4><div class="arts pack">${h.pack.map((a,i)=>`<div class="art ${ARTIFACTS[a].cursed?'cursed':''}" data-p="${i}" data-tip="${artTip(a,'<br><i>Click to equip</i>')}">${artIcon(a)}<span>${ARTIFACTS[a].name}</span></div>`).join('')||'<i class="dim">empty</i>'}</div>
     <h3>Spellbook</h3><div class="spells small">${h.spells.map(id=>`<div class="spell"><div class="sp-icon" style="background:radial-gradient(circle at 35% 35%,#fff,${SPELLS[id].icon} 45%,#1a1020)"></div><div><b>${SPELLS[id].name}</b> <span class="dim" style="color:${SCHOOLS[SPELLS[id].school].color}">${SCHOOLS[SPELLS[id].school].name} ${SPELLS[id].level}</span> <span class="dim">${spellCost(h,id)} mana</span><br>${SPELLS[id].desc(st.sp)}</div></div>`).join('')||'<i class="dim">No spells.</i>'}</div>${typeof advBookHtml==='function'?advBookHtml(h):''}
     <h3>Army</h3><div class="army big">${h.army.map(s=>slotHTML(s)).join('')}</div></div>
@@ -7095,7 +7186,7 @@ function splitDialog(title,max,def,destLabel){ return new Promise(res=>{
   r.oninput=()=>upd(r.value); nn.oninput=()=>upd(nn.value);
   const done=v=>{ closeModal(m); res(v); };
   m.querySelector('#sd-ok').onclick=()=>done(upd(nn.value)); m.querySelector('#sd-cancel').onclick=()=>done(null); m.querySelector('#sd-half').onclick=()=>{ upd(Math.max(1,Math.floor((max+1)/2))); };
-  nn.addEventListener('keydown',e=>{ if(e.key==='Enter') done(upd(nn.value)); if(e.key==='Escape') done(null); }); nn.focus(); nn.select(); }); }
+  nn.addEventListener('keydown',e=>{ if(e.key==='Enter') done(upd(nn.value)); if(e.key==='Escape') done(null); }); nn.focus({preventScroll:true}); nn.select(); }); }
 function dndClear(){ document.querySelectorAll('.slot.drop-ok,.slot.drop-bad,.slot.drop-merge,.slot.drop-swap,.slot.dragging').forEach(e=>e.classList.remove('drop-ok','drop-bad','drop-merge','drop-swap','dragging')); }
 function dndTarget(x,y){ const e=document.elementFromPoint(x,y); return e? e.closest('.slot[data-army]'):null; }
 document.addEventListener('mousedown',e=>{ if(e.button!==0||!DND.ctx) return; const el=e.target.closest&&e.target.closest('.slot[data-army]'); if(!el) return; const ref=DND.ctx(el.dataset.army); const i=+el.dataset.i; if(!ref||!ref.arr[i]) return; DND.st={key:el.dataset.army,i,x:e.clientX,y:e.clientY,began:false,el}; });
@@ -7331,8 +7422,7 @@ async function preBattleMode(sides){ const hs=sides.findIndex(s=>s.owner===ME); 
   if(t==='Trivial' && !foe.hero && !foe.town && autoTrivialOn()) return 'quiet';
   const who=foe.town? `the defenders of <b>${foe.town.name}</b>${foe.fort?' (walled)':''}` : foe.hero? `<b>${foe.hero.name}</b> (${ownerName(foe.owner)})` : 'the wandering creatures';
   const html=`<p>${me.hero?`<b>${me.hero.name}</b>`:'Your garrison'} faces ${who}.</p><p class="dim">Enemy: ${armyListHtml(foe.army)}</p><p>Estimated threat: <b>${threatHtml(sideStrength(me),sideStrength(foe))}</b></p>
-    <p class="dim">Auto-resolve plays the whole battle instantly with the normal combat rules, letting the battle AI command your troops, then shows your losses. It is not a shortcut: you may lose more troops than you would by fighting yourself.</p>
-    <label class="autoroute"><input type="checkbox" id="pb-trivial" ${autoTrivialOn()?'checked':''}> Always auto-resolve trivially easy fights against wandering monsters</label>`;
+    <p class="dim">Auto-resolve plays the whole battle instantly with the normal combat rules, letting the battle AI command your troops, then shows your losses. It is not a shortcut: you may lose more troops than you would by fighting yourself.</p>`;
   const p=choiceBox('Battle!',html,[{label:'⚔ Fight it yourself'},{label:'⚙ Auto-resolve'}]);
   setTimeout(()=>{ const cb=document.getElementById('pb-trivial'); if(cb) cb.onchange=e=>setAutoTrivial(e.target.checked); },0);
   const r=await p; return r===1?'auto':'fight'; }
@@ -7963,7 +8053,8 @@ function mobProxy(id){ const b=document.getElementById(id); if(b&&!b.disabled) b
 function setupMobileHUD(){ if(document.getElementById('mobbar')) return;
   const bar=document.createElement('div'); bar.id='mobbar';
   const btns=[['mb-panel','🛡','Army','Hero, army & minimap panel',()=>mobDrawer()],['mb-move','🐎','Move','Walk along the planned path',()=>{ const b=document.getElementById('btn-move'); if(b) b.click(); else if(MAPV.path&&typeof executeMove==='function') executeMove(); else toast('Tap a tile to plan a path, tap it again to walk.'); }],
-    ['mb-town','🏰','Town','Open the selected town',()=>mobProxy('btn-town')],['mb-next','⏭','Next','Next hero with movement left',()=>mobProxy('btn-next')],['mb-center','🎯','Center','Center on hero',()=>mobProxy('btn-center')],['mb-end','⏳','End','End turn',()=>mobProxy('btn-end')]];
+    ['mb-spells','📖','Spells','Cast map spells (B)',()=>{ if(typeof openMapSpells!=='function') return; if(BUSY) return; const c=document.getElementById('combat'); if(c&&!c.classList.contains('hidden')) return; mobDrawer(false); openMapSpells(); }],
+    ['mb-town','🏰','Town','Open a town (pick from a list when you own several)',()=>mobTownPick()],['mb-next','⏭','Next','Next hero with movement left',()=>mobProxy('btn-next')],['mb-center','🎯','Center','Center on hero',()=>mobProxy('btn-center')],['mb-end','⏳','End','End turn',()=>mobProxy('btn-end')]];
   for(const [id,ic,lab,tip,fn] of btns){ const b=document.createElement('button'); b.className='mbtn'; b.id=id; b.innerHTML=`<span class="mbi">${ic}</span><span class="mbl">${lab}</span>`; b.setAttribute('data-tip',tip); b.onclick=fn; bar.appendChild(b); }
   document.body.appendChild(bar);
   const tb=document.getElementById('topbar'); if(tb&&!document.getElementById('btn-more')){ const m=document.createElement('button'); m.className='btn'; m.id='btn-more'; m.textContent='☰'; m.setAttribute('data-tip','Save, load, sound, settings, help'); m.onclick=openMobMore; tb.appendChild(m); }
@@ -8078,5 +8169,208 @@ function setupAppMeta(){ try{ const head=document.head; if(!document.querySelect
     if(window.BOA_SW && 'serviceWorker' in navigator && /^https?:/.test(location.protocol)) navigator.serviceWorker.register(window.BOA_SW).catch(()=>{});
   }catch(e){} }
 window.addEventListener('load',()=>{ mobDetect(); setupAppMeta(); setupMobileHUD(); try{ setupTouchMap(); }catch(e){} if(MOB.phone){ applyUiScale(); try{ resizeMap(); }catch(e){} } });
+
+// ---------- v6.5.1: always-visible Back / Close controls on phones ----------
+function mobShown(id){ const e=document.getElementById(id); return !!(e&&!e.classList.contains('hidden')); }
+function mobBackTarget(){ if(!MOB.phone) return null; if(mobShown('combat')) return null;
+  if(mobShown('menu')) return (typeof G!=='undefined'&&G&&!G.over)?{lab:'◀ Back to Game',tip:'Return to your game',fn:()=>{ document.getElementById('menu').classList.add('hidden'); try{ renderAll(); resizeMap(); }catch(_){} }}:null;
+  if(mobShown('herosc')) return {lab:mobShown('town')?'◀ Back to Town':'🗺 Back to Map',tip:'Close the hero screen',fn:()=>closeHeroScreen()};
+  if(mobShown('town')) return {lab:'🗺 Back to Map',tip:'Leave the town and return to the adventure map',fn:()=>closeTown()};
+  return null; }
+function mobBackUpdate(){ let b=document.getElementById('mobback'); const t=mobBackTarget();
+  if(!b){ if(!t) return; b=document.createElement('button'); b.id='mobback'; b.type='button'; b.onclick=e=>{ e.preventDefault(); e.stopPropagation(); const T=mobBackTarget(); if(T) T.fn(); setTimeout(mobBackUpdate,0); }; document.body.appendChild(b); }
+  const de=document.documentElement; if(!t){ if(!b.classList.contains('hidden')) b.classList.add('hidden'); if(de.classList.contains('mobback-on')) de.classList.remove('mobback-on'); return; }
+  if(b.dataset.lab!==t.lab){ b.dataset.lab=t.lab; b.textContent=t.lab; b.setAttribute('aria-label',t.lab); }
+  if(b.classList.contains('hidden')) b.classList.remove('hidden'); if(!de.classList.contains('mobback-on')) de.classList.add('mobback-on'); }
+// every dismissible popup gets a sticky ✕ in its top corner that proxies to its own Close/Cancel/OK button
+const MCLOSE_SEL='#tv-close,#mk-close,#ab-close,#tr-ok,#uc-ok,#sb-close,#rm-close,#cp-close,#hp-ok,#ld-x,#sd-cancel,#dw-no,#cf-n,#ib-ok,#mm-close,#br-ok,#tu-skip,#lv-ok,[id$="-close"]';
+function mobCloseBtnOf(md){ let b=[...md.querySelectorAll(MCLOSE_SEL)].find(x=>x.tagName==='BUTTON'&&!x.disabled&&!x.classList.contains('mclose'));
+  if(!b) b=[...md.querySelectorAll('button.btn')].find(x=>!x.disabled&&/^(close|done|cancel|leave|ok|got it)\b|✕\s*$/i.test(x.textContent.trim()));
+  return b||null; }
+function mobDecorateModals(){ if(!MOB.phone) return; document.querySelectorAll('#modal-root .modal').forEach(md=>{ const has=md.querySelector(':scope > .mclose'); const tgt=mobCloseBtnOf(md);
+    if(!tgt){ if(has) has.remove(); return; } if(has) return;
+    const x=document.createElement('button'); x.type='button'; x.className='mclose'; x.textContent='✕'; x.setAttribute('aria-label','Close'); x.setAttribute('data-tip','Close');
+    x.onclick=e=>{ e.preventDefault(); e.stopPropagation(); const t=mobCloseBtnOf(md); if(t) t.click(); else { const w=md.closest('.modal-wrap'); if(w) closeModal(w); } };
+    md.insertBefore(x,md.firstChild); }); }
+function mobSndClose(){ const p=document.getElementById('sndpop'); if(!p||p.querySelector('.mclose')) return; const x=document.createElement('button'); x.type='button'; x.className='mclose'; x.textContent='✕'; x.setAttribute('aria-label','Close'); x.onclick=e=>{ e.stopPropagation(); p.classList.add('hidden'); }; p.insertBefore(x,p.firstChild); }
+function setupMobBack(){ let q=false; const run=()=>{ q=false; mobBackUpdate(); mobDecorateModals(); };
+  const kick=()=>{ if(!q){ q=true; Promise.resolve().then(run); } };
+  const mo=new MutationObserver(recs=>{ if(recs.every(r=>r.type==='attributes'&&r.target===document.documentElement&&r.oldValue!==null&&r.oldValue.replace(/\s*mobback-on/g,'')===r.target.className.replace(/\s*mobback-on/g,''))) return; kick(); }); ['town','herosc','menu','combat'].forEach(id=>{ const e=document.getElementById(id); if(e) mo.observe(e,{attributes:true,attributeFilter:['class']}); });
+  const mr=document.getElementById('modal-root'); if(mr) mo.observe(mr,{childList:true,subtree:true});
+  mo.observe(document.documentElement,{attributes:true,attributeFilter:['class'],attributeOldValue:true}); mobSndClose(); run(); }
+window.addEventListener('load',()=>{ try{ setupMobBack(); }catch(e){ console.warn('mobback',e); } });
+
+// ---------- v6.5.1: switching between several owned towns ----------
+function mobTownsSorted(){ const ts=townsOf(ME); const h=selHero(); if(!h) return ts.slice(); return ts.slice().sort((a,b)=>Math.hypot(a.x-h.x,a.y-h.y)-Math.hypot(b.x-h.x,b.y-h.y)); }
+function mobTownPick(){ if(typeof G==='undefined'||!G||BUSY) return; const ts=mobTownsSorted(); if(!ts.length){ toast('You have no town!'); return; } mobDrawer(false);
+  if(ts.length===1){ openTown(ts[0]); return; }
+  const m=modal(`<h2>🏰 Your towns</h2><p class="dim">Tap a town to open it (nearest first). Inside a town, ◀ ▶ switch between them.</p><div class="mtpick">${ts.map((t,i)=>{ const v=visitingHero(t); return `<button class="btn mtp" data-ti="${i}" style="--fc:${FACTIONS[t.faction].color}"><b>🏰 ${t.name}</b><span class="dim">${FACTIONS[t.faction].name}${v?' · '+v.name+' visiting':''}${t.builtToday?'':' · can build today'}</span></button>`; }).join('')}</div><div class="row"><button class="btn" id="tp-close">Close</button></div>`,'mobmodal townpick');
+  m.querySelectorAll('[data-ti]').forEach(b=>b.onclick=()=>{ const t=ts[+b.dataset.ti]; closeModal(m); openTown(t); });
+  m.querySelector('#tp-close').onclick=()=>closeModal(m); return m; }
+function townStep(d){ if(!CUR_TOWN) return; const ts=townsOf(ME); if(ts.length<2) return; let i=ts.indexOf(CUR_TOWN); if(i<0) i=0; const t=ts[(i+d+ts.length)%ts.length];
+  document.querySelectorAll('#modal-root .modal-wrap').forEach(w=>closeModal(w)); openTown(t); const sc=document.querySelector('#town .screen'); if(sc) sc.scrollTop=0; }
+(function(){ const _rt=renderTown; renderTown=function(){ const r=_rt.apply(this,arguments); try{ const t=CUR_TOWN; const ts=t?townsOf(ME):[]; const h1=document.querySelector('#town .scr-head h1');
+    if(t&&h1&&ts.length>1&&!h1.parentNode.classList.contains('tw-nav')){ const i=Math.max(0,ts.indexOf(t)); const nav=document.createElement('div'); nav.className='tw-nav';
+      const mk=(id,txt,tip,d)=>{ const b=document.createElement('button'); b.className='btn tw-arrow'; b.id=id; b.textContent=txt; b.setAttribute('data-tip',tip); b.onclick=e=>{ e.stopPropagation(); townStep(d); }; return b; };
+      const prev=ts[(i-1+ts.length)%ts.length], next=ts[(i+1)%ts.length];
+      h1.parentNode.insertBefore(nav,h1); nav.appendChild(mk('tw-prev','◀','Previous town: '+prev.name,-1)); nav.appendChild(h1); const c=document.createElement('span'); c.className='tw-count dim'; c.textContent=(i+1)+'/'+ts.length; nav.appendChild(c); nav.appendChild(mk('tw-next','▶','Next town: '+next.name,1)); } }catch(e){ console.warn('townnav',e); } return r; }; })();
+
+// ---------- v6.5.1: compact resource strip on phones (all six resources + date visible) ----------
+function mobNum(n){ n=Math.round(n||0); const a=Math.abs(n); if(a<10000) return String(n); if(a<1e6) return (a<100000?(n/1000).toFixed(1).replace(/\.0$/,''):Math.round(n/1000))+'k'; return (n/1e6).toFixed(1).replace(/\.0$/,'')+'M'; }
+(function(){ const _rt=renderTop; renderTop=function(){ const r=_rt.apply(this,arguments); try{ if(MOB.phone&&G){ const R=G.players[ME].res;
+      document.querySelectorAll('#res .resv').forEach((el,i)=>{ const k=RES[i]; const sp=el.querySelector('span'); if(sp&&k){ sp.textContent=mobNum(R[k]); sp.dataset.full=R[k]; } const sm=el.querySelector('small'); if(sm) sm.textContent=sm.textContent.replace(/\d{4,}/,m=>mobNum(+m)); });
+      const w=Math.floor((G.day-1)/7)+1, d=(G.day-1)%7+1; const dl=document.getElementById('daylbl'); if(dl){ const chip=(typeof weekEventChip==='function'?weekEventChip():''); dl.innerHTML=`<b>Wk ${(w-1)%4+1} · Day ${d}</b>Month ${Math.floor((w-1)/4)+1}${chip}`; dl.setAttribute('data-tip',`Month ${Math.floor((w-1)/4)+1}, Week ${(w-1)%4+1}, Day ${d}`); } } }catch(e){ console.warn('mobres',e); } return r; }; })();
+window.addEventListener('resize',()=>{ try{ if(G) renderTop(); }catch(e){} });
+
+// ---------- v6.5.1: keep the scroll position when a screen re-renders after a tap ----------
+// renderTown / renderHeroScreen rebuild their whole panel with innerHTML, which used to throw a phone back to the top.
+function scrollKey(el,root){ const parts=[]; let e=el; while(e&&e!==root){ const p=e.parentNode; if(e.id){ parts.unshift('#'+e.id); break; } const cls=(e.className&&typeof e.className==='string')?e.className.split(/\s+/).filter(c=>c&&!/^(open|on|sel|flash|hidden|active)$/.test(c)).sort().join('.'):''; const sib=p?[...p.children].filter(x=>x.tagName===e.tagName&&x.className===e.className):[]; parts.unshift(e.tagName+(cls?'.'+cls:'')+':'+Math.max(0,sib.indexOf(e))); e=p; } return parts.join('>'); }
+function scrollSnapshot(root){ if(!root) return []; const out=[]; const all=[root,...root.querySelectorAll('*')]; for(const e of all){ if(e.scrollTop>0||e.scrollLeft>0) out.push({k:scrollKey(e,root),t:e.scrollTop,l:e.scrollLeft}); } return out; }
+function scrollRestore(root,snap){ if(!root||!snap.length) return; const map=new Map(); for(const e of [root,...root.querySelectorAll('*')]) { const k=scrollKey(e,root); if(!map.has(k)) map.set(k,e); }
+  const apply=()=>{ for(const s of snap){ const e=map.get(s.k); if(!e||!e.isConnected) continue; if(Math.abs(e.scrollTop-s.t)>1) e.scrollTop=s.t; if(s.l&&Math.abs(e.scrollLeft-s.l)>1) e.scrollLeft=s.l; } };
+  apply(); requestAnimationFrame(apply); setTimeout(apply,120); }
+function keepScrollWrap(name,rootSel){ const f=window[name]; if(typeof f!=='function') return; const w=function(){ const root=document.querySelector(rootSel); const vis=root&&!root.classList.contains('hidden'); const snap=vis&&!MOB.noKeep?scrollSnapshot(root):[]; const r=f.apply(this,arguments); if(snap.length) scrollRestore(document.querySelector(rootSel),snap); return r; }; window[name]=w; }
+keepScrollWrap('renderTown','#town'); keepScrollWrap('renderHeroScreen','#herosc');
+// opening a (different) town starts at the top; only re-renders of the same town keep the position
+(function(){ const _ot=openTown; openTown=function(t){ const same=CUR_TOWN===t&&!document.getElementById('town').classList.contains('hidden'); MOB.noKeep=!same; try{ return _ot.apply(this,arguments); } finally{ MOB.noKeep=false; } }; })();
+// pop-ups that redraw their own contents (market, tavern, trade, recruit…): keep the .modal scroll too
+(function(){ const mo=new MutationObserver(recs=>{ for(const r of recs){ const md=r.target&&r.target.closest&&r.target.closest('.modal'); if(md&&md.__keepT!==undefined&&md.scrollTop<md.__keepT-1&&md.scrollHeight>md.__keepT+md.clientHeight/2) md.scrollTop=md.__keepT; } });
+  const watch=()=>{ const root=document.getElementById('modal-root'); if(!root) return; mo.observe(root,{childList:true,subtree:true});
+    root.addEventListener('scroll',e=>{ const t=e.target; if(t&&t.classList&&t.classList.contains('modal')) t.__keepT=t.scrollTop; },true);
+    root.addEventListener('pointerdown',e=>{ const md=e.target.closest&&e.target.closest('.modal'); if(md) md.__keepT=md.scrollTop; },true); };
+  if(document.readyState==='loading') window.addEventListener('DOMContentLoaded',watch); else watch(); })();
+
+// ---- 18_encounter.js ----
+// ===================== v6.5.1: wild-creature encounter dialog =====================
+// Touching / stepping next to a wandering monster group ALWAYS opens this dialog for a human player:
+// the creatures, their strength, a quick-battle forecast, and Fight / Quick Battle / Leave (+ join or flee choices).
+// (Replaces the old "Always auto-resolve trivially easy fights" option, which silently skipped the battle.)
+try{ localStorage.removeItem('boa_autotrivial'); }catch(e){}
+autoTrivialOn=function(){ return false; };
+let ENC_MODE=null, ENC_SIM=false;
+{ const _pbm=preBattleMode; preBattleMode=async function(sides){ if(ENC_MODE){ const m=ENC_MODE; ENC_MODE=null; return m; } return _pbm.apply(this,arguments); }; }
+function encInteractive(h){ return h && h.owner===ME && !window.AUTO_HUMAN && !window.FAST_AI && !window.SIM_HEADLESS && !(G&&G.over); }
+// quick-battle forecast: replay the battle several times on copies of both armies with the real combat engine (nothing in the game changes)
+async function encForecast(h,mon,runs=6){ const out=[]; const prevB=B; const terrain=G.map.t[idx(mon.x,mon.y)]; const t0=performance.now();
+  for(let k=0;k<runs;k++){ if(k>=2 && performance.now()-t0>900) break;
+    try{ ENC_SIM=true; const hc=JSON.parse(JSON.stringify(h)); const sides=[{owner:h.owner,hero:hc,army:hc.army,faction:h.faction,homeSpecial:homeSpecialFor(h.owner,h)},{owner:'neutral',hero:null,army:monsterBattleStacks(mon),faction:'neutral',homeSpecial:false}];
+      setupBattle(sides,{visual:false,terrain}); B.auto=[true,true]; B.autoResolved=true; const res=await runBattle(); out.push({win:res.winner===0,lost:res.sides[0].lost,xp:res.xp||0}); }
+    catch(e){ console.warn('forecast',e); } finally { B=prevB; ENC_SIM=false; } }
+  if(!out.length) return null;
+  const wins=out.filter(r=>r.win).length; const tot={}; for(const r of out) for(const l of r.lost) tot[l.type]=(tot[l.type]||0)+l.n;
+  const lost=Object.entries(tot).map(([type,n])=>({type,n:Math.round(n/out.length)})).filter(x=>x.n>0);
+  const lostVal=out.map(r=>r.lost.reduce((a,l)=>a+unitValue(l.type)*l.n,0)); const myVal=Math.max(1,h.army.filter(Boolean).reduce((a,s)=>a+unitValue(s.type)*s.n,0));
+  const xp=Math.max(0,...out.filter(r=>r.win).map(r=>r.xp),0);
+  return {runs:out.length,wins,lost,lossPct:Math.round(100*lostVal.reduce((a,b)=>a+b,0)/out.length/myVal),xp}; }
+function encXpGain(h,xp){ return Math.round(xp*heroStats(h).xpMul); }
+function encLevelsFrom(h,xp){ let x=h.xp+encXpGain(h,xp), lv=h.level, n=0; while(x>=maxXp(h,lv)&&n<20){ lv++; n++; } return n; }
+function encStacksHtml(mon){ return `<div class="enc-stacks">${monsterStacks(mon).map(s=>`<div class="enc-st"><img src="${portraitURL(s.unit,'enemy')}" alt=""><div><b>${UNITS[s.unit].name}</b><br><span class="dim">${sizeWord(s.n)} (${typeof visionsCovers==='function'&&visionsCovers(ME,mon.x,mon.y)?s.n:countRange(s.n)})</span><br><span class="small dim">Tier ${UNITS[s.unit].tier} · HP ${UNITS[s.unit].hp} · Att ${UNITS[s.unit].atk} · Def ${UNITS[s.unit].def}</span></div></div>`).join('')}</div>`; }
+function encFcHtml(h,fc){ const lvl=fc&&fc.wins?encLevelsFrom(h,fc.xp):0;
+  return !fc?'<b>⚡ Quick Battle forecast</b><br><span class="dim">Forecast unavailable.</span>':`<b>⚡ Quick Battle forecast</b> <span class="dim">(${fc.runs} trial runs)</span><br>${fc.wins===fc.runs?'<span class="good">You win every time.</span>':fc.wins?`<span class="bad">You win ${fc.wins} of ${fc.runs}.</span>`:'<span class="bad">You lose every time.</span>'}<br>Predicted losses: ${fc.lost.length?`<span class="bad">${armyListHtml(fc.lost)}</span> <span class="dim">(~${fc.lossPct}% of your army)</span>`:'<span class="good">none</span>'}${fc.wins?`<br>Experience if you win: <b>+${encXpGain(h,fc.xp)}</b>${lvl?` <span class="good">⭐ enough to reach level ${h.level+lvl}</span>`:''}`:''}`; }
+function encDialog(h,mon,offer,fcIn){ return new Promise(res=>{ const my=armyStrength(h.army,h), th=monsterValue(mon); const U=UNITS[mon.unit];
+  let fc=fcIn&&fcIn!=='pending'?fcIn:null;
+  let offerHtml='', btns=[];
+  if(offer&&offer.flee){ offerHtml=`<p class="good">🏃 They are scared of your army and want to flee. You can let them go (no fight, no experience) or fight anyway.</p>`; btns.push(['flee','🏃 Let them flee','']); }
+  else if(offer&&offer.free){ offerHtml=`<p class="good">🤝 Awed by your host, <b>${offer.free} ${U.name}</b> offer to join you <b>for free</b>.</p>`; btns.push(['free',`🤝 Accept (${offer.free} join free)`,'']); }
+  else if(offer&&offer.cost){ const can=G.players[ME].res.gold>=offer.cost; offerHtml=`<p>🤝 They offer to serve you for <b>${offer.cost}</b> gold.${can?'':' <span class="bad">(not enough gold)</span>'}</p>`; btns.push(['paid',`💰 Hire for ${offer.cost} gold`,can?'':'disabled']); }
+  if(offer&&!offer.flee&&!joinSlotOK(h,mon.unit)){ btns=btns.filter(b=>b[0]!=='free'&&b[0]!=='paid'); offerHtml+='<p class="dim">(No free army slot to take them in.)</p>'; }
+  const guard=mon.guarding&&G.objects.find(x=>x.id===mon.guarding);
+  const m=modal(`<h2>⚔ Wild creatures!</h2><div class="encbox">${encStacksHtml(mon)}<p><b>${h.name}</b> meets ${monsterName(mon)}${guard?` <span class="dim">guarding ${guardedName(guard)}</span>`:''}.<br>Threat: <b>${threatHtml(my,th)}</b> <span class="dim">· your strength ${Math.round(my)} vs theirs ~${Math.round(th)}</span></p>${offerHtml}<div class="enc-fc">${fc?encFcHtml(h,fc):'<b>⚡ Quick Battle forecast</b><br><span class="dim">Working out predicted losses…</span>'}</div></div>
+    <div class="enc-btns">${btns.map(b=>`<button class="btn" data-enc="${b[0]}" ${b[2]}>${b[1]}</button>`).join('')}<button class="btn primary" data-enc="fight" id="enc-fight">⚔ Fight<small>fight it yourself</small></button><button class="btn" data-enc="quick" id="enc-quick">⚡ Quick Battle<small>auto-resolve now</small></button><button class="btn" data-enc="leave" id="enc-close">↩ Leave<small>step back, no fight</small></button></div>`,'encmodal');
+  const t0=performance.now(); // ignore the tail of a double-tap that lands on the dialog as it opens
+  let ready=fc?Promise.resolve():null, busy=false;
+  if(!fc){ ready=new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))).then(()=>encForecast(h,mon)).then(f=>{ fc=f; encDialog.lastFc=f; const el=m.querySelector('.enc-fc'); if(el) el.innerHTML=encFcHtml(h,f); }).catch(e=>console.warn(e)); }
+  m.querySelectorAll('[data-enc]').forEach(b=>b.addEventListener('click',async e=>{ if(performance.now()-t0<250||busy){ e.preventDefault(); return; } busy=true; await ready; closeModal(m); res(b.dataset.enc); }));
+}); }
+async function encLeave(h){ const f=h._encFrom; h._encFrom=null; if(f && !heroAt(f.x,f.y)){ h.x=f.x; h.y=f.y; h.mp+=f.c||0; } h.route=null; MAPV.path=null; toast(f?`${h.name} steps back.`:`${h.name} holds position.`); return {winner:-1,xp:0,left:true}; }
+async function encSummary(h,res,mname){ const lvBefore=h.level, xpGain=res.winner===0?encXpGain(h,res.xp||0):0; const won=res.winner===0; const my=res.sides[0].lost, their=res.sides[1].lost; const L=a=>a.length?armyListHtml(a):'<span class="good">none</span>';
+  const ups=won?encLevelsFrom(h,res.xp||0):0;
+  await infoBox(won?'⚡ Quick Battle: Victory!':res.retreated===0?'⚡ Quick Battle: Retreat':'⚡ Quick Battle: Defeat',`<div class="autores"><p>Against ${mname}.</p><p><b>Your losses:</b> ${L(my)}</p><p><b>Enemy losses:</b> ${L(their)}</p>${won?`<p>Experience: <b>+${xpGain}</b>${ups?` <span class="good">⭐ LEVEL UP! Level ${lvBefore} → ${lvBefore+ups}. Choose your new skill next.</span>`:''}</p>`:''}${res.raised&&res.raised.length&&won?`<p class="good">Raised: ${res.raised.map(x=>`${x.n} ${UNITS[x.type].name}`).join(', ')}</p>`:''}<p class="dim">Survivors: ${armyListHtml(h.army)}</p></div>`); }
+{ const _fm=fightMonster; fightMonster=async function(h,mon){ if(!encInteractive(h)) return _fm.apply(this,arguments);
+  const offer=monsterJoinOffer(h,mon); encDialog.lastFc=null;
+  let c; for(;;){ c=await encDialog(h,mon,offer,encDialog.lastFc); const U=UNITS[mon.unit];
+    if(c==='leave') return encLeave(h);
+    if(c==='flee'){ h._encFrom=null; const i=G.objects.indexOf(mon); if(i>=0) G.objects.splice(i,1); addLog(`${U.name} fled from ${h.name}.`); toast(`The ${U.name} flee.`); return {winner:0,xp:0,joined:true}; }
+    if(c==='free'||c==='paid'){ const n=c==='free'?offer.free:offer.total, cost=c==='free'?0:offer.cost; if(applyJoin(h,mon,n,cost)){ h._encFrom=null; addLog(`${n} ${U.name} joined ${h.name}${cost?` for ${cost} gold`:' for free'}.`); toast(`${n} ${U.name} join ${h.name}!`); sfxSafe(cost?'gold':'recruit'); G.stats.joined=(G.stats.joined||0)+n; return {winner:0,xp:0,joined:true}; } toast('They cannot join right now.'); continue; }
+    break; }
+  // fight it out (manual or quick)
+  h._encFrom=null; if(offer && !offer.flee) mon.nojoin=1;
+  return encBattle(h,mon,c==='quick'); }; }
+async function encBattle(h,mon,quick){ const army=monsterBattleStacks(mon); const terrain=G.map.t[idx(mon.x,mon.y)]; const mname=monsterName(mon); const slain=monsterTotal(mon);
+  const sides=[{owner:h.owner,hero:h,army:h.army,faction:h.faction},{owner:'neutral',hero:null,army,faction:'neutral'}];
+  addLog(`Battle with ${mname} (${slain}).`);
+  ENC_MODE=quick?'auto':'fight'; const _sar=showAutoResult; if(quick) showAutoResult=async()=>{}; let res; try{ res=await doBattle(sides,terrain); } finally { ENC_MODE=null; showAutoResult=_sar; }
+  const xpGain=res.winner===0?encXpGain(h,res.xp||0):0;
+  if(quick) await encSummary(h,res,mname).catch(e=>console.warn(e));
+  if(res.winner===0){ const i=G.objects.indexOf(mon); if(i>=0) G.objects.splice(i,1);
+    if(hasPerk(h,'plu_ransom')){ const k=Math.min(8,Math.floor(slain/6)); for(let j=0;j<k;j++) G.players[h.owner].res[['wood','ore','crystal'][j%3]]++; }
+    G.stats.won++; addLog(`Victory over ${mname}! +${xpGain} XP.`); await afterBattleHero(h,res,true); return res; }
+  monsterApplySurvivors(mon,army); if(mon.n<=0){ const i=G.objects.indexOf(mon); if(i>=0) G.objects.splice(i,1); }
+  heroDefeated(h, res.retreated===0, null); return res; }
+
+// ---- 19_trade.js ----
+// ===================== v6.5.1: hero meeting / trade screen (artifacts by tap or drag, armies as before) =====================
+function trCanTakeOff(h,a){ return !(ARTIFACTS[a]&&ARTIFACTS[a].cursed) || heroInOwnTown(h); }
+// move an artifact. src/dst: {h, w:'w'|'p', i}. dst.i may be undefined (= first free / end of pack). Returns '' on success or a reason.
+function trMoveArt(src,dst){ const sl=src.w==='w'?src.h.arts:src.h.pack; const a=sl[src.i]; if(!a) return 'Nothing there.';
+  if(src.h===dst.h && src.w===dst.w && (dst.i===undefined||dst.i===src.i)) return 'same';
+  if(src.w==='w' && !trCanTakeOff(src.h,a)) return `${ARTIFACTS[a].name} is cursed: it can only be taken off inside one of your towns.`;
+  const A=ARTIFACTS[a]; const dl=dst.w==='w'?dst.h.arts:dst.h.pack; const lim=artLimit(dst.h);
+  if(dst.w==='w' && dst.i!==undefined && dst.i>=lim) return `${dst.h.name} can only wear ${lim} artifacts (Ascetic Vow).`;
+  const other=(dst.i!==undefined)?dl[dst.i]:undefined;
+  if(other!==undefined){ // swap with the item on the target spot
+    if(dst.w==='w' && !trCanTakeOff(dst.h,other)) return `${ARTIFACTS[other].name} is cursed: it can only be taken off inside one of your towns.`;
+    if(src.w==='w' && ARTIFACTS[other].cursed && src.h!==dst.h) return `Cursed relics are not put on by trading. Drop ${ARTIFACTS[other].name} in the pack instead.`;
+    if(dst.w==='w' && A.cursed && src.h!==dst.h) return `Cursed relics are not put on by trading. Drop ${A.name} in ${dst.h.name}'s pack instead.`;
+    sl[src.i]=other; dl[dst.i]=a; return ''; }
+  if(dst.w==='w'){ if(A.cursed && src.h!==dst.h) return `Cursed relics are not put on by trading. Drop ${A.name} in ${dst.h.name}'s pack instead.`; if(dst.h.arts.length>=lim) return `${dst.h.name}'s artifact slots are full (${lim}/${lim}). Drop it on an item to swap, or in the pack.`; }
+  sl.splice(src.i,1); if(dst.w==='w') dst.h.arts.push(a); else dst.h.pack.push(a); return ''; }
+// keep the old helper honest too: respects slot limits and cursed items
+tradeArt=function(from,to,i,packFrom){ return trMoveArt({h:from,w:packFrom?'p':'w',i},{h:to,w:(!packFrom&&to.arts.length<artLimit(to)&&!ARTIFACTS[from.arts[i]]?.cursed)?'w':'p'})===''; };
+
+openTrade=function(a,b){ let sel=null; const H=k=>k==='a'?a:b;
+  const artCell=(h,k,w,i,x)=>{ const A=ARTIFACTS[x]; const isSel=sel&&sel.k===k&&sel.w===w&&sel.i===i; const lockC=w==='w'&&A.cursed&&!heroInOwnTown(h);
+    return `<div class="art tr-art ${A.cursed?'cursed':''} ${w==='p'?'packed':''} ${isSel?'tr-sel':''}" draggable="true" data-ak="${k}" data-w="${w}" data-i="${i}" data-tip="${artTip(x,lockC?'<br><i>Cursed: only removable in your town</i>':'')}">${artIcon(x)}<span>${A.name}${lockC?' ☠🔒':''}</span></div>`; };
+  const side=(h,k)=>{ const st=heroStats(h); const lim=artLimit(h);
+    return `<div class="trcol" data-side="${k}"><div class="trhead"><img src="${heroURL(h,64,64)}"><div><b>${h.name}</b><br><span class="dim">Lv ${h.level} ${CLASSES[h.cls].name} · ${h.army.length}/${st.slots} troop slots</span></div></div>
+      <div class="army">${Array.from({length:7},(_,i)=>{ const s=h.army[i]; if(i>=st.slots) return '<div class="slot locked">✖</div>'; if(!s) return `<div class="slot empty" data-army="${k}" data-i="${i}" data-tip="Drop a stack here"></div>`; return slotHTML(s,'ally',`data-tk="${k}" data-ti="${i}" data-army="${k}" data-i="${i}"`); }).join('')}</div>
+      <div class="tr-lab">Worn artifacts <span class="dim">(${h.arts.length}/${lim})</span></div>
+      <div class="arts tr-worn" data-drop="${k}" data-w="w">${Array.from({length:ART_SLOTS},(_,i)=>{ const x=h.arts[i]; if(i>=lim) return `<div class="art locked"><span class="lk">🔒</span><span>Locked by <b>Ascetic Vow</b></span></div>`; return x?artCell(h,k,'w',i,x):`<div class="art empty tr-slot" data-drop="${k}" data-w="w" data-i="${i}">empty</div>`; }).join('')}</div>
+      <div class="tr-lab">Pack <span class="dim">(${h.pack.length})</span></div>
+      <div class="arts tr-pack" data-drop="${k}" data-w="p">${h.pack.map((x,i)=>artCell(h,k,'p',i,x)).join('')}<div class="art empty tr-slot" data-drop="${k}" data-w="p">＋ put in pack</div></div></div>`; };
+  const hint=()=>sel?`<div class="tr-hint good">Selected <b>${ARTIFACTS[(sel.w==='w'?H(sel.k).arts:H(sel.k).pack)[sel.i]].name}</b>. Now tap a slot, an item to swap with, or a pack. Tap it again to cancel.</div>`:`<div class="tr-hint dim">Tap an artifact, then tap where it should go (the other hero's slot or pack). With a mouse you can also drag it.</div>`;
+  const draw=()=>`<h2>⇄ Heroes meet</h2><p class="dim">Armies: drag a stack onto the other hero's army (drop on the same unit to merge, another to swap, Shift-drag to split) or tap a stack to send it across. Each hero keeps at least one stack.</p>${hint()}<div class="trade">${side(a,'a')}<div class="trmid">⇄</div>${side(b,'b')}</div><div class="row"><button class="btn primary" id="tr-ok">Done</button></div>`;
+  const m=modal(draw(),'wide trademodal'); const redraw=()=>{ const p=m.firstChild; const st=p.scrollTop; p.innerHTML=draw(); bind(); p.scrollTop=st; };
+  DND.ctx=key=>{ const hh=key==='a'?a:key==='b'?b:null; return hh?{arr:hh.army,slots:heroStats(hh).slots,label:hh.name+"'s army",minKeep:1}:null; }; DND.after=()=>redraw();
+  const apply=(dst)=>{ if(!sel) return; const r=trMoveArt({h:H(sel.k),w:sel.w,i:sel.i},{h:H(dst.k),w:dst.w,i:dst.i}); if(r&&r!=='same'){ toast(r); return; } sel=null; redraw(); };
+  const bind=()=>{ m.querySelector('#tr-ok').onclick=()=>{ DND.ctx=null; DND.after=null; closeModal(m); for(const h of [a,b]) while(h.arts.length>artLimit(h)) h.pack.push(h.arts.pop()); renderAll(); if(CUR_TOWN) renderTown(); };
+    m.querySelectorAll('[data-tk]').forEach(el=>el.onclick=()=>{ const from=el.dataset.tk==='a'?a:b, to=from===a?b:a; if(!tradeStack(from,to,+el.dataset.ti,heroStats(to).slots)) toast(from.army.length<=1?'A hero must keep at least one stack.':'No free slot.'); redraw(); });
+    m.querySelectorAll('.tr-art').forEach(el=>{ const me={k:el.dataset.ak,w:el.dataset.w,i:+el.dataset.i};
+      el.onclick=e=>{ e.stopPropagation(); if(Date.now()-(m.__drop||0)<300) return; if(!sel){ const h=H(me.k); const x=(me.w==='w'?h.arts:h.pack)[me.i]; if(me.w==='w'&&!trCanTakeOff(h,x)){ toast(`${ARTIFACTS[x].name} is cursed: it can only be taken off inside one of your towns.`); return; } sel=me; redraw(); return; }
+        if(sel.k===me.k&&sel.w===me.w&&sel.i===me.i){ sel=null; redraw(); return; } apply(me); };
+      el.addEventListener('dragstart',e=>{ const h=H(me.k); const x=(me.w==='w'?h.arts:h.pack)[me.i]; if(me.w==='w'&&!trCanTakeOff(h,x)){ e.preventDefault(); toast(`${ARTIFACTS[x].name} is cursed: it can only be taken off inside one of your towns.`); return; } sel=me; try{ e.dataTransfer.setData('text/plain','art'); e.dataTransfer.effectAllowed='move'; }catch(_){} el.classList.add('tr-sel'); });
+      el.addEventListener('dragover',e=>{ e.preventDefault(); }); el.addEventListener('drop',e=>{ e.preventDefault(); e.stopPropagation(); m.__drop=Date.now(); apply(me); }); });
+    m.querySelectorAll('[data-drop]').forEach(el=>{ const dst={k:el.dataset.drop,w:el.dataset.w,i:el.dataset.i!==undefined?+el.dataset.i:undefined};
+      el.addEventListener('click',e=>{ if(e.target.closest('.tr-art')) return; e.stopPropagation(); if(!sel) return; apply(dst); });
+      el.addEventListener('dragover',e=>{ if(sel){ e.preventDefault(); el.classList.add('tr-over'); } }); el.addEventListener('dragleave',()=>el.classList.remove('tr-over'));
+      el.addEventListener('drop',e=>{ if(e.target.closest('.tr-art')) return; e.preventDefault(); e.stopPropagation(); m.__drop=Date.now(); apply(dst); }); });
+    m.addEventListener('dragend',()=>{ if(sel){ setTimeout(()=>{ if(sel&&Date.now()-(m.__drop||0)>200){ sel=null; redraw(); } },50); } },{once:true}); };
+  bind(); return m; };
+
+// a hero inside a town can meet any of your heroes standing right next to the gate
+function trNeighbours(h){ return G.heroes.filter(o=>o.alive&&o!==h&&o.owner===h.owner&&Math.max(Math.abs(o.x-h.x),Math.abs(o.y-h.y))<=1); }
+(function(){ const _rt=renderTown; renderTown=function(){ const r=_rt.apply(this,arguments); try{ const t=CUR_TOWN; const h=t&&visitingHero(t); const tv=document.getElementById('tw-tavern');
+    if(h&&tv&&!document.getElementById('tw-meet')){ const ns=trNeighbours(h); if(ns.length){ const b=document.createElement('button'); b.className='btn'; b.id='tw-meet'; b.textContent='⇄ Meet '+ns[0].name.split(' ')[0]; b.setAttribute('data-tip',`Trade artifacts and troops with ${ns[0].name}, who is waiting at the gate`); b.onclick=e=>{ e.stopPropagation(); openTrade(h,ns[0]); }; tv.parentNode.insertBefore(b,tv); tv.parentNode.insertBefore(document.createTextNode(' '),tv); } } }catch(e){ console.warn('twmeet',e); } return r; }; })();
+
+// AI: heroes that meet hand their best artifacts to the main hero; the rest go back to the helper
+function aiConsolidateArts(owner){ const main=aiMainHero(owner); if(!main) return; for(const o of heroesOf(owner)){ if(o===main||!o.alive) continue; if(Math.max(Math.abs(o.x-main.x),Math.abs(o.y-main.y))>1) continue;
+    const keep=o.arts.filter(x=>!trCanTakeOff(o,x)); const give=[...o.arts.filter(x=>trCanTakeOff(o,x)),...o.pack.filter(x=>!ARTIFACTS[x].cursed)]; const cursedPack=o.pack.filter(x=>ARTIFACTS[x].cursed);
+    if(!give.length) continue; o.arts=keep; o.pack=cursedPack; main.pack.push(...give); aiManageArts(main);
+    const back=main.pack.filter(x=>!ARTIFACTS[x].cursed); main.pack=main.pack.filter(x=>ARTIFACTS[x].cursed); o.pack.push(...back); aiManageArts(o); } }
+{ const _pt=aiPassTroops; aiPassTroops=function(owner){ const r=_pt.apply(this,arguments); try{ aiConsolidateArts(owner); }catch(e){ console.error(e); } return r; }; }
+
+// ---- 20_ai651.js ----
+// ===================== v6.5.1: AI remembers towns it lost so it can come back for them =====================
+{ const _ct=captureTown; captureTown=function(h,town){ const prev=town.owner; const r=_ct.apply(this,arguments); try{ if(prev&&prev!=='neutral'&&prev!==town.owner) town._lostBy=prev; if(town._lostBy===town.owner) delete town._lostBy; }catch(e){} return r; }; }
 
 </script></body></html>
