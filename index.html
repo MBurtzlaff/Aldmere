@@ -4346,23 +4346,38 @@ function placeObjects(map, r){
   for(let i=0;i<nC;i++){ const type=contested[i%contested.length]; const s=anySpot({space:2,minT:7}); if(s){ const mo=add({kind:'mine',type,x:s.x,y:s.y,owner:null}); guard(mo, GUARD_VALUE[type]); } }
   // capturable creature dwellings (any faction, tier 1-4)
   const nD=Math.round(5*A); for(let i=0;i<nD;i++){ const f=FACTION_IDS[Math.floor(r()*FACTION_IDS.length)]; const tier=1+Math.floor(r()*Math.min(4,1+i/2)); const s=anySpot({space:2,minT:6}); if(s){ const d=add({kind:'dwelling',unit:FACTION_LINE[f][tier-1],x:s.x,y:s.y,owner:null,avail:Math.ceil(UNITS[FACTION_LINE[f][tier-1]].growth/2)}); guard(d,GUARD_VALUE.dwelling*tier+300); } }
-  // sites
-  const siteList=['shrine','shrine','spire','training','training','well','well','tower','tower','learnstone','library','windmill','stables','fountain','camp','crypt'];
+  // sites (v6.5.2: thinner; wells and fountains are placed separately, far apart)
+  const siteList=['shrine','shrine','spire','training','tower','learnstone','library','windmill','stables','camp','crypt'];
   const nS=Math.max(1,Math.round(A)); for(let k=0;k<nS;k++) for(const type of siteList){ const s=anySpot({space:2,minT:4}); if(s){ const o=add({kind:'site',type,x:s.x,y:s.y,visitedBy:[]}); if(type==='crypt'||type==='library'||type==='spire') guard(o,GUARD_VALUE[type]); } }
-  // artifacts
-  const artIds=Object.keys(ARTIFACTS).sort(()=>r()-0.5); const nA=Math.round(8*A);
-  for(let i=0;i<nA;i++){ const art=artIds[i%artIds.length], AT=ARTIFACTS[art]; const needFar=AT.cursed||AT.tier>=3?0.4:AT.tier>=2?0.2:0; let s=null; for(let t=0;t<40&&!s;t++){ const c=anySpot({space:2,minT:6}); if(c && (far(c.x,c.y)>=needFar || t>30)) s=c; } if(s){ const a=add({kind:'artifact',art,x:s.x,y:s.y}); if(i%4!==3 || ARTIFACTS[a.art].tier>=2) guard(a,GUARD_VALUE['art'+ARTIFACTS[a.art].tier]); } }
+  // v6.5.2: water sites (wells, fountains): about one per 800 tiles, never two within 12 tiles of each other
+  const nWater=Math.max(2,Math.round(MW*MH/800)); const waters=[];
+  for(let i=0;i<nWater;i++){ const type=i%3===1?'fountain':'well'; let s=null; for(let t=0;t<60&&!s;t++){ const c=anySpot({space:2,minT:5}); if(c && !waters.some(w=>Math.hypot(w.x-c.x,w.y-c.y)<12)) s=c; } if(s){ waters.push(s); add({kind:'site',type,x:s.x,y:s.y,visitedBy:[]}); } }
+  // artifacts (v6.5.2: ~45% fewer; nearly all guarded, better ones by stronger guards and further out)
+  const artIds=Object.keys(ARTIFACTS).sort(()=>r()-0.5); const nA=Math.max(3,Math.round(4.4*A));
+  for(let i=0;i<nA;i++){ const art=artIds[i%artIds.length], AT=ARTIFACTS[art]; const needFar=AT.cursed||AT.tier>=3?0.4:AT.tier>=2?0.2:0; let s=null; for(let t=0;t<40&&!s;t++){ const c=anySpot({space:2,minT:6}); if(c && (far(c.x,c.y)>=needFar || t>30)) s=c; } if(s){ const a=add({kind:'artifact',art,x:s.x,y:s.y}); if(i%6!==5 || ARTIFACTS[a.art].tier>=2) guard(a,GUARD_VALUE['art'+ARTIFACTS[a.art].tier]); } }
+  // v6.5.2: pickups keep at least one empty tile between them, and loose ones gather near guarded spots and region edges
+  const PICK=['res','chest','artifact','scroll'];
+  const pickNear=(x,y,d)=>objs.some(o=>PICK.includes(o.kind)&&Math.max(Math.abs(o.x-x),Math.abs(o.y-y))<=d);
+  const edgy=(x,y)=>{ let n=0; for(const [dx,dy] of DIRS8){ const nx=x+dx, ny=y+dy; if(!inMap(nx,ny)||!passableTerrain(map,nx,ny)) n++; } return n; };
+  const guards=()=>objs.filter(o=>o.kind==='monster'&&o.guarding);
+  const clusterSpot=(opt)=>{ const gl=guards(); let best=null, bs=-1e9; for(let t=0;t<14;t++){ const c=anySpot(opt); if(!c||pickNear(c.x,c.y,2)) continue;
+      let gd=1e9; for(const g of gl){ const d=Math.max(Math.abs(g.x-c.x),Math.abs(g.y-c.y)); if(d<gd) gd=d; }
+      const sc=(gd>=2&&gd<=4?3:gd<=6?1.2:0)+Math.min(3,edgy(c.x,c.y))*0.7+r()*0.8; if(sc>bs){ bs=sc; best=c; } } return best; };
   // chests & resource piles
-  for(let i=0;i<Math.round(12*A);i++){ const s=anySpot({space:1,minT:3}); if(s) add({kind:'chest',x:s.x,y:s.y,amt: r()<0.6?1000:1500}); }
+  for(let i=0;i<Math.round(6*A);i++){ const s=clusterSpot({space:1,minT:3}); if(s) add({kind:'chest',x:s.x,y:s.y,amt: r()<0.6?1000:1500}); }
   // v6: guarded war chests and dragon hoards (bigger reward, stronger guards, further from the starts)
-  for(let i=0;i<Math.round(3*A);i++){ const s=anySpot({space:2,minT:8}); if(s){ const c=add({kind:'chest',x:s.x,y:s.y,amt:2500+500*Math.floor(r()*2),big:1}); guard(c,GUARD_VALUE.warchest); } }
+  for(let i=0;i<Math.round(2*A);i++){ const s=anySpot({space:2,minT:8}); if(s){ const c=add({kind:'chest',x:s.x,y:s.y,amt:2500+500*Math.floor(r()*2),big:1}); guard(c,GUARD_VALUE.warchest); } }
   for(let i=0;i<Math.max(1,Math.round(1.2*A));i++){ let s=null; for(let t=0;t<40&&!s;t++){ const c=anySpot({space:2,minT:10}); if(c && far(c.x,c.y)>0.45) s=c; } if(s){ const hoardArts=artIds.filter(k=>ARTIFACTS[k].tier>=2&&!ARTIFACTS[k].cursed); const c=add({kind:'chest',x:s.x,y:s.y,amt:5000,big:2,bonusArt:hoardArts[Math.floor(r()*hoardArts.length)]}); guard(c,GUARD_VALUE.hoard); } }
-  const piles=[['gold',10],['wood',8],['ore',8],['crystal',3],['gems',3],['sulfur',3]];
-  for(const [res,cnt] of piles) for(let i=0;i<Math.round(cnt*A);i++){ const s=anySpot({space:1,minT:2.5}); if(s){ const amt = res==='gold' ? 500+250*Math.floor(r()*3) : RARE.includes(res) ? 2+Math.floor(r()*3) : 5+Math.floor(r()*6); add({kind:'res',res,amt,x:s.x,y:s.y}); } }
+  // v6.5.2: about half as many loose piles, each a little bigger
+  // a few starter piles (wood, ore, gold) a short walk from every player town, so the early build order is not starved
+  const pileAmt=res=> res==='gold' ? 750+250*Math.floor(r()*3) : RARE.includes(res) ? 3+Math.floor(r()*3) : 6+Math.floor(r()*6);
+  for(const tw of ptowns) for(const res of ['wood','ore','gold']){ let s=null; for(let t=0;t<20&&!s;t++){ const c=findSpot(tw.x,tw.y,4,8,{space:1,minT:3.5}); if(c&&!pickNear(c.x,c.y,2)) s=c; } if(s) add({kind:'res',res,amt:pileAmt(res),x:s.x,y:s.y}); }
+  const piles=[['gold',3.5],['wood',2.8],['ore',2.8],['crystal',1.3],['gems',1.3],['sulfur',1.3]];
+  for(const [res,cnt] of piles) for(let i=0;i<Math.max(1,Math.round(cnt*A));i++){ const s=clusterSpot({space:1,minT:2.5}); if(s) add({kind:'res',res,amt:pileAmt(res),x:s.x,y:s.y}); }
   // monsters: easy ones around player towns, then roamers incl. road blockers
   for(const tw of ptowns) for(let i=0;i<4;i++){ const sp=findSpot(tw.x,tw.y,5,9,{space:2,minT:5}); if(sp) groupAt(sp.x,sp.y,roamV(sp.x,sp.y)); }
   for(const tw of towns.filter(t=>t.owner==='neutral')){ const sp=findSpot(tw.x,tw.y,2,3,{space:0,road:true,minT:1.5}); if(sp){ const m=groupAt(sp.x,sp.y,roamV(sp.x,sp.y)+2200,{guard:true}); } }
-  const nM=Math.round(16*A); for(let i=0;i<nM;i++){ const onRoad=i<nM/3; const s=anySpot({space:2,road:onRoad,onRoad,minT:7}); if(s){ groupAt(s.x,s.y,roamV(s.x,s.y)*(onRoad?1.1:1)); } }
+  const nM=Math.round(14*A); // v6.5.2: 16 -> 14 so the thinner map does not fill up with extra roamers for(let i=0;i<nM;i++){ const onRoad=i<nM/3; const s=anySpot({space:2,road:onRoad,onRoad,minT:7}); if(s){ groupAt(s.x,s.y,roamV(s.x,s.y)*(onRoad?1.1:1)); } }
   return objs;
 }
 function nearestRoad(map,x,y){ let best=null,bd=1e9; for(let yy=0;yy<MH;yy++) for(let xx=0;xx<MW;xx++) if(map.road[idx(xx,yy)]){ const d=Math.hypot(xx-x,yy-y); if(d<bd){bd=d;best={x:xx,y:yy};} } return best||{x,y}; }
@@ -4517,8 +4532,8 @@ function ownerName(o){ if(o===ME) return 'You'; if(o==='neutral'||!o) return 'Ne
 const DIFFS={
   easy:  {name:'Easy',  aiStart:0.8, aiIncome:0.85, aiGrowth:0,    attackDay:36, earlyStr:1e9,   ratio:1.6,  neutral:0.75, desc:'AI starts poorer, grows slower and leaves your towns alone until about week 6. Smaller neutral packs.'},
   normal:{name:'Normal',aiStart:1.0, aiIncome:1.0,  aiGrowth:0.05, attackDay:10, earlyStr:12000, ratio:1.25, neutral:1.0, heroes:3, hunt:1.3, desc:'The AI builds every day it can, runs 3 heroes, flags mines and starts hunting your weaker heroes and empty towns from week 2.'},
-  hard:  {name:'Hard',  aiStart:1.5, aiIncome:1.3,  aiGrowth:0.2, attackDay:6, earlyStr:6000,  ratio:1.08, neutral:1.25, heroes:4, hunt:1.15, desc:'AI starts much richer, earns 30% more, grows faster, runs 4 heroes and goes on the attack from the first week. Bigger neutral packs.'},
-  brutal:{name:'Brutal',aiStart:1.7, aiIncome:1.4, aiGrowth:0.3, attackDay:8, earlyStr:5000, ratio:0.95, neutral:1.45, desc:'For veterans: the AI starts with a fat purse, earns 40% more, grows 30% faster, strikes from day 8 and will take fights that are close to even. Very large neutral packs.'},
+  hard:  {name:'Hard',  aiStart:1.6, aiIncome:1.4, aiGrowth:0.25, attackDay:6, earlyStr:6000,  ratio:1.08, neutral:1.25, heroes:4, hunt:1.15, desc:'AI starts much richer, earns 40% more, grows faster, runs 4 heroes and goes on the attack from the first week. Bigger neutral packs.'},
+  brutal:{name:'Brutal',aiStart:1.7, aiIncome:1.5, aiGrowth:0.32, attackDay:8, earlyStr:5000, ratio:0.95, neutral:1.45, desc:'For veterans: the AI starts with a fat purse, earns 50% more, grows 32% faster, strikes from day 8 and will take fights that are close to even. Very large neutral packs.'},
   finale:{name:'Finale',hidden:true,aiStart:1.5, aiIncome:1.3, aiGrowth:0.22, attackDay:10, earlyStr:6500, ratio:1.0, neutral:1.35, desc:'Campaign finale.'} };
 function diff(){ return DIFFS[(G&&G.difficulty)||'normal']||DIFFS.normal; }
 function heroesOf(owner){ return G.heroes.filter(h=>h.alive&&h.owner===owner); }
