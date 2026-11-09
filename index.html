@@ -506,6 +506,26 @@ html.mob .offer-down{ font-size:13.5px; }
 .tr-slot{ justify-content:center; color:#9a8a70; border-style:dashed; } .tr-over, .tr-slot.tr-over{ outline:2px dashed #8fd18f; }
 .tr-pack{ min-height:40px; } .trade .arts{ grid-template-columns:1fr 1fr; }
 html.mob .tr-art, html.mob .tr-slot{ min-height:44px; } html.mob .trademodal .trcol .army{ grid-template-columns:repeat(7,minmax(0,1fr)); }
+
+
+/* ===================== v6.6 ===================== */
+:root{ --txt:1; }
+html.txt-large, html.txt-xlarge{ }
+.modal, .menu-inner, #town .panel, #herosc .panel, #side, #topbar, #c-top, #c-actions, #atbbar, #toast, #banner, #tip{ font-size:calc(1em * var(--txt)); }
+html.mob{ font-size:16px; }
+html.mob.txt-large{ font-size:17.5px; }
+html.mob.txt-xlarge{ font-size:19.5px; }
+html.mob .btn{ font-size:calc(14px * var(--txt)); min-height:44px; }
+html.mob .modal h2{ font-size:calc(24px * var(--txt)); }
+html.mob .tr-art, html.mob .art{ min-height:48px; font-size:calc(14px * var(--txt)); }
+html.mob .tr-phonehint{ display:block; background:rgba(40,70,40,0.35); border:1px solid #5a8a4a; border-radius:8px; padding:8px 10px; margin:0 0 8px; font-size:13px; line-height:1.35; }
+.tr-phonehint{ display:none; }
+.trademodal .tr-worn .art, .trademodal .tr-pack .art{ min-height:44px; }
+.turnrep{ margin:8px 0 12px; padding-left:18px; line-height:1.55; }
+.turnrep .tr-capture{ color:#ffb0a0; }
+.turnrep .tr-loss{ color:#ff8a8a; }
+.turnrep .tr-mine{ color:#c8e89a; }
+#cb-fit,#cb-zin,#cb-zout{ min-width:44px; }
 </style><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"><script>window.BOA_SW='sw.js';</script></head>
 <body>
 <div id="topbar"><div class="logo">⚜ Aldmere</div><div id="res"></div><div id="daylbl"></div>
@@ -4398,7 +4418,8 @@ function findPath(hero, tx, ty, opts={}){
   const map=G.map; const goalObj=objAt(tx,ty), goalHero=heroAt(tx,ty); const goalTown=townAtTile(tx,ty);
   let goals;
   if(goalTown) { goals=[[goalTown.x,goalTown.y]]; tx=goalTown.x; ty=goalTown.y; }
-  else if((goalObj && goalObj.kind==='monster') || (goalHero && goalHero!==hero)) goals=DIRS8.map(([dx,dy])=>[tx+dx,ty+dy]).filter(([x,y])=>inMap(x,y));
+  else if((goalObj && goalObj.kind==='monster') || (goalHero && goalHero!==hero && goalHero.owner!==hero.owner)) goals=DIRS8.map(([dx,dy])=>[tx+dx,ty+dy]).filter(([x,y])=>inMap(x,y));
+  else if(goalHero && goalHero!==hero && goalHero.owner===hero.owner) goals=[[tx,ty]]; // v6.6: walk onto a friend to trade
   else goals=[[tx,ty]];
   const goalSet=new Set(goals.map(([x,y])=>idx(x,y)));
   const blocked=(x,y)=>{ if(!passableTerrain(map,x,y)) return true; const o=objAt(x,y); const k=idx(x,y);
@@ -4500,7 +4521,8 @@ function renderMap(time){
   // faint destination flags for the other heroes' saved routes
   if(G.heroes) for(const oh of G.heroes){ if(oh.owner!==ME||!oh.alive||!oh.route||oh.id===G.sel) continue; const fx=(oh.route.x+0.5)*TS, fy=(oh.route.y+0.5)*TS; ctx.globalAlpha=0.75; ctx.strokeStyle=OUTLINE; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(fx,fy+8); ctx.lineTo(fx,fy-14); ctx.stroke(); ctx.fillStyle='#ffd36b'; ctx.beginPath(); ctx.moveTo(fx,fy-14); ctx.lineTo(fx+12,fy-10); ctx.lineTo(fx,fy-6); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.globalAlpha=1; }
   ctx.restore();
-  const vg=ctx.createRadialGradient(cv.width*0.35,cv.height*0.3,cv.height*0.3,cv.width/2,cv.height/2,cv.width*0.75); vg.addColorStop(0,'rgba(255,200,120,0.05)'); vg.addColorStop(1,'rgba(10,5,25,0.45)'); ctx.fillStyle=vg; ctx.fillRect(0,0,cv.width,cv.height);
+  // v6.6: no dark vignette (it made the area around the hero look dimmer than the edges). Optional soft warm lift only.
+  if(typeof mapVignetteOn==='function'?mapVignetteOn():true){ const vg=ctx.createRadialGradient(cv.width/2,cv.height*0.45,cv.height*0.15,cv.width/2,cv.height/2,Math.max(cv.width,cv.height)*0.7); vg.addColorStop(0,'rgba(255,230,180,0.04)'); vg.addColorStop(1,'rgba(10,5,25,0.12)'); ctx.fillStyle=vg; ctx.fillRect(0,0,cv.width,cv.height); }
 }
 function countWord(n){ return n<5?'Few':n<10?'Several':n<20?'Pack':n<50?'Lots':n<100?'Horde':n<250?'Throng':'Swarm'; }
 function countRange(n){ return n<5?'1-4':n<10?'5-9':n<20?'10-19':n<50?'20-49':n<100?'50-99':n<250?'100-249':'250+'; }
@@ -5396,10 +5418,17 @@ function nearestOwnTown(h){ const ts=townsOf(h.owner); if(!ts.length) return nul
 function heroDefeated(h, retreated, victor){
   const t=nearestOwnTown(h); const spot=t&&freeTileNear(t.x,t.y);
   if(retreated && spot){ h.army.length=0; h.x=spot.x; h.y=spot.y; h.mp=0; if(h.owner===ME){ addLog(`${h.name} retreats to ${t.name}, abandoning the army.`); toast(`${h.name} retreated to ${t.name}. The army was lost.`); } }
-  else { h.alive=false; if(victor && victor.alive){ const got=[...h.arts,...h.pack]; victor.pack.push(...got); if(isAI(victor.owner)) aiManageArts(victor); if(got.length && victor.owner===ME) toast(`${victor.name} claims ${got.length} artifact${got.length>1?'s':''} from the fallen hero.`); } h.arts=[]; h.pack=[];
+  else { h.alive=false;
+    if(victor && victor.alive){ const got=[...h.arts,...h.pack]; h.arts=[]; h.pack=[];
+      const lim=artLimit(victor); const worn=[], packed=[];
+      for(const a of got){ if(!ARTIFACTS[a]) continue; if(ARTIFACTS[a].cursed || victor.arts.length>=lim){ victor.pack.push(a); packed.push(a); } else { victor.arts.push(a); worn.push(a); } }
+      if(isAI(victor.owner)) aiManageArts(victor);
+      if(got.length && victor.owner===ME){ if(typeof showSpoils==='function') showSpoils(victor,h,worn,packed); else toast(`${victor.name} claims ${got.length} artifact${got.length>1?'s':''} from the fallen hero.`); }
+    } else { h.arts=[]; h.pack=[]; }
     if(h.owner===ME){ addLog(`${h.name} has fallen!`); toast(`${h.name} has fallen in battle. Hire a new hero at a Tavern.`); } else if(isHumanP(h.owner)) addLogFor(h.owner,`${h.name} has fallen in battle.`); else if(victor&&victor.owner===ME) addLog(`${h.name} (${ownerName(h.owner)}) is defeated.`); }
   if(G.sel===h.id && !h.alive) G.sel=null;
   checkGameOver(); }
+
 async function fightMonster(h, mon){
   if(await tryMonsterJoin(h,mon)) return {winner:0,xp:0,joined:true};
   const army=monsterBattleStacks(mon); const terrain=G.map.t[idx(mon.x,mon.y)];
@@ -5885,7 +5914,8 @@ function tileTip(x,y){ if(!G.fog[idx(x,y)]) return '<i>Unexplored</i>'; const o=
   s+=(s?'<hr>':'')+`<span class="dim">${road?'Road':T0.name}${isFinite(road?70:T0.cost)?` · move cost ${road?70:nat?Math.min(100,T0.cost):T0.cost}${nat&&T0.cost>100?' (native terrain)':''}`:' · impassable'}</span>`;
   return s; }
 async function mapClick(x,y){ const h=selHero(); const tw=townAtTile(x,y);
-  const own=heroAt(x,y); if(own && own.owner===ME && (!h || own.id!==h.id) && !(h && Math.max(Math.abs(own.x-h.x),Math.abs(own.y-h.y))<=1)){ selectHero(own.id); return; }
+  const own=heroAt(x,y); if(own && own.owner===ME && h && own.id!==h.id && Math.max(Math.abs(own.x-h.x),Math.abs(own.y-h.y))>1){ setRoute(h,own.x,own.y); toast(`Path set to meet ${own.name}. Tap again to walk.`); return; }
+  if(own && own.owner===ME && (!h || own.id!==h.id) && !(h && Math.max(Math.abs(own.x-h.x),Math.abs(own.y-h.y))<=1)){ selectHero(own.id); return; }
   if(!h){ if(tw&&tw.owner===ME) openTown(tw); return; }
   if(MAPV.moving) return;
   if(h.x===x&&h.y===y){ const t=G.towns.find(t=>t.x===x&&t.y===y&&t.owner===ME); if(t) openTown(t); else openHeroScreen(); return; }
@@ -8410,5 +8440,197 @@ function aiConsolidateArts(owner){ const main=aiMainHero(owner); if(!main) retur
 // ---- 20_ai651.js ----
 // ===================== v6.5.1: AI remembers towns it lost so it can come back for them =====================
 { const _ct=captureTown; captureTown=function(h,town){ const prev=town.owner; const r=_ct.apply(this,arguments); try{ if(prev&&prev!=='neutral'&&prev!==town.owner) town._lostBy=prev; if(town._lostBy===town.owner) delete town._lostBy; }catch(e){} return r; }; }
+
+// ---- 21_v66.js ----
+// ===================== v6.6: battle zoom, easy trade UX, spoils summary, brighter map prefs,
+//                        text size, visible AI moves + turn report, save export/import =====================
+
+// ---------- prefs (all reversible; never touch saves) ----------
+const V66_PREF_KEYS=['boa_text','boa_mapbright','boa_vignette','boa_uizoom'];
+function v66Get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:v; }catch(e){ return d; } }
+function v66Set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+function mapVignetteOn(){ return v66Get('boa_vignette','0')==='1'; } // default OFF in v6.6
+function mapBrightOn(){ return v66Get('boa_mapbright','1')!=='0'; } // default ON
+
+// extend phone-defaults reset
+(function(){ if(typeof MOB_PREF_KEYS!=='undefined'){ for(const k of V66_PREF_KEYS) if(!MOB_PREF_KEYS.includes(k)) MOB_PREF_KEYS.push(k); } })();
+
+// ---------- text size / UI zoom (default larger on phones) ----------
+function textScalePref(){ const p=v66Get('boa_text', null); if(p) return p; return (typeof MOB!=='undefined'&&MOB.phone)?'large':'normal'; }
+function applyTextScale(){ const p=textScalePref(); const map={normal:1, large:1.12, xlarge:1.28}; const t=map[p]||1;
+  document.documentElement.style.setProperty('--txt', String(t));
+  document.documentElement.classList.toggle('txt-large', p==='large');
+  document.documentElement.classList.toggle('txt-xlarge', p==='xlarge');
+  // phone base font bump
+  if(typeof MOB!=='undefined'&&MOB.phone) document.documentElement.style.fontSize=(14*t).toFixed(1)+'px';
+  else document.documentElement.style.fontSize=''; }
+{ const _md=mobDetect; mobDetect=function(){ const r=_md.apply(this,arguments); try{ applyTextScale(); }catch(e){} return r; }; }
+window.addEventListener('load',()=>{ try{ applyTextScale(); }catch(e){} });
+
+// ---------- brighter adventure map ----------
+(function(){ const _rm=renderMap; renderMap=function(time){ const r=_rm.apply(this,arguments);
+  try{ if(!mapBrightOn()||!MAPV||!MAPV.cv) return r; const cv=MAPV.cv, ctx=MAPV.ctx; if(!ctx) return r;
+    // soft lift over the drawn frame (screen space, after fog) — keeps unexplored fog readable
+    ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.globalCompositeOperation='lighter';
+    ctx.fillStyle='rgba(255,236,200,0.07)'; ctx.fillRect(0,0,cv.width,cv.height); ctx.restore(); }catch(e){}
+  return r; }; })();
+
+// ---------- spoils summary ----------
+function showSpoils(victor, fallen, worn, packed){
+  const row=list=>list.length?`<div class="arts">${list.map(a=>`<div class="art">${artIcon(a)}<span>${ARTIFACTS[a].name}</span></div>`).join('')}</div>`:'<p class="dim">None</p>';
+  const html=`<h2>⚔ Spoils of war</h2><p><b>${victor.name}</b> defeated <b>${fallen.name}</b> and claimed their artifacts.</p>
+    <h3>Equipped (${worn.length})</h3>${row(worn)}<h3>Added to pack (${packed.length})</h3>${row(packed)}
+    <div class="row"><button class="btn primary" id="sp-ok">Continue</button></div>`;
+  if(window.FAST_AI||window.SIM_HEADLESS){ toast(`${victor.name} claims ${(worn.length+packed.length)} artifact(s).`); return; }
+  const m=modal(html,'wide'); m.querySelector('#sp-ok').onclick=()=>closeModal(m);
+}
+
+// ---------- easy trade: phone-friendly trade modal polish ----------
+(function(){ const _ot=openTrade; openTrade=function(a,b){ const m=_ot(a,b);
+  try{ if(m&&m.firstChild){ m.firstChild.classList.add('tr-v66');
+    const tip=document.createElement('div'); tip.className='tr-phonehint'; tip.innerHTML='📱 <b>Phone:</b> tap an artifact, then tap an empty slot, the other hero, or <b>＋ put in pack</b>. Tap <b>Done</b> when finished.';
+    const h=m.querySelector('h2'); if(h&&!m.querySelector('.tr-phonehint')) h.insertAdjacentElement('afterend',tip);
+  } }catch(e){} return m; }; })();
+
+// ---------- battle zoom / pan / fit ----------
+CV.z=CV.z||1; CV.panX=CV.panX||0; CV.panY=CV.panY||0;
+function combatFitZoom(){ CV.z=1; CV.panX=0; CV.panY=0; try{ layoutCombat(); }catch(e){} }
+function combatWorldFromScreen(sx,sy){ const z=CV.z||1; const cx=(CV.cv?CV.cv.width:0)/2, cy=(CV.cv?CV.cv.height:0)/2;
+  return {x:(sx-cx)/z+cx-CV.panX, y:(sy-cy)/z+cy-CV.panY}; }
+(function(){ const _hap=hexAtPixel; hexAtPixel=function(x,y){ if((CV.z||1)!==1||CV.panX||CV.panY){ const w=combatWorldFromScreen(x,y); return _hap(w.x,w.y); } return _hap(x,y); }; })();
+(function(){ const _cf=combatFrame; combatFrame=function(now){
+  if(!B||!CV.cv||!CV.ctx) return _cf(now);
+  const z=CV.z||1, need=(z!==1||CV.panX||CV.panY);
+  if(!need) return _cf(now);
+  const ctx=CV.ctx, cv=CV.cv; // draw into an off path by wrapping ctx transform around the original frame body
+  // Re-implement: call original but with transformed ctx — original clears and draws in screen space.
+  // Safer: temporarily monkey-patch hexCenter? Instead transform after clear.
+  const _save=ctx.save.bind(ctx), _restore=ctx.restore.bind(ctx), _set=ctx.setTransform.bind(ctx);
+  let wrapped=false;
+  const origClear=ctx.clearRect.bind(ctx);
+  ctx.clearRect=function(x,y,w,h){ origClear(x,y,w,h); if(!wrapped){ wrapped=true; _save();
+    const cx=cv.width/2, cy=cv.height/2; _set(z,0,0,z, cx-z*(cx-CV.panX), cy-z*(cy-CV.panY)); } };
+  try{ const r=_cf(now); return r; } finally { ctx.clearRect=origClear; if(wrapped) _restore(); }
+}; })();
+
+function setupCombatZoom(){ const cv=CV.cv; if(!cv||cv.dataset.cz==='1') return; cv.dataset.cz='1';
+  const P=new Map(); let g=null;
+  const two=()=>{ const [a,b]=[...P.values()]; return {d:Math.hypot(a.x-b.x,a.y-b.y)||1, mx:(a.x+b.x)/2, my:(a.y+b.y)/2}; };
+  cv.addEventListener('pointerdown',e=>{ if(e.pointerType!=='touch') return; try{ cv.setPointerCapture(e.pointerId); }catch(_){}
+    P.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(P.size===1) g={mode:'tap',x:e.clientX,y:e.clientY,px:CV.panX,py:CV.panY,t:performance.now()};
+    else if(P.size===2){ const t=two(); g={mode:'pinch',d0:t.d,z0:CV.z||1,mx:t.mx,my:t.my,px:CV.panX,py:CV.panY}; MOB.cpend=null; } },{passive:true});
+  cv.addEventListener('pointermove',e=>{ if(!P.has(e.pointerId)) return; P.set(e.pointerId,{x:e.clientX,y:e.clientY}); if(!g) return;
+    if(g.mode==='tap'&&Math.hypot(e.clientX-g.x,e.clientY-g.y)>10) g.mode='pan';
+    if(g.mode==='pan'){ const z=CV.z||1; CV.panX=g.px+(e.clientX-g.x)/z; CV.panY=g.py+(e.clientY-g.y)/z; MOB.mapSuppress=performance.now()+400; }
+    else if(g.mode==='pinch'&&P.size>=2){ const t=two(); CV.z=Math.max(0.7,Math.min(2.4,g.z0*t.d/g.d0)); MOB.mapSuppress=performance.now()+400; } },{passive:true});
+  const up=e=>{ P.delete(e.pointerId); if(P.size===0) g=null; else if(P.size===1&&g&&g.mode==='pinch'){ const [p]=[...P.values()]; g={mode:'pan',x:p.x,y:p.y,px:CV.panX,py:CV.panY}; } };
+  cv.addEventListener('pointerup',up); cv.addEventListener('pointercancel',up);
+}
+(function(){ const _oc=openCombatUI; openCombatUI=function(){ CV.z=1; CV.panX=0; CV.panY=0; const r=_oc.apply(this,arguments);
+  try{ setupCombatZoom();
+    const act=document.getElementById('c-actions'); if(act&&!document.getElementById('cb-fit')){
+      const b=document.createElement('button'); b.className='btn small'; b.id='cb-fit'; b.textContent='⛶ Fit'; b.setAttribute('data-tip','Fit the whole battlefield on screen (resets battle zoom)');
+      b.onclick=()=>{ combatFitZoom(); toast('Battlefield fitted'); }; act.appendChild(b);
+      const zin=document.createElement('button'); zin.className='btn small'; zin.id='cb-zin'; zin.textContent='＋'; zin.setAttribute('data-tip','Zoom in');
+      zin.onclick=()=>{ CV.z=Math.min(2.4,(CV.z||1)*1.15); }; act.appendChild(zin);
+      const zout=document.createElement('button'); zout.className='btn small'; zout.id='cb-zout'; zout.textContent='－'; zout.setAttribute('data-tip','Zoom out');
+      zout.onclick=()=>{ CV.z=Math.max(0.7,(CV.z||1)/1.15); if(CV.z===1){ CV.panX=0; CV.panY=0; } }; act.appendChild(zout);
+    }
+  }catch(e){ console.error(e); } return r; }; })();
+
+// ---------- visible AI moves: slower when seen; turn report ----------
+const TURN_REP={items:[]};
+function turnRepClear(){ TURN_REP.items=[]; }
+function turnRepAdd(msg, kind){ if(!msg) return; TURN_REP.items.push({msg, kind:kind||'info', t:Date.now()}); }
+function showTurnReport(){ if(window.FAST_AI||window.SIM_HEADLESS) return; const items=TURN_REP.items.slice(); turnRepClear(); if(!items.length) return;
+  const important=items.filter(i=>i.kind==='capture'||i.kind==='mine'||i.kind==='loss');
+  const rest=items.filter(i=>!important.includes(i));
+  const list=[...important,...rest].slice(0,12);
+  if(!important.length && list.length<=2){ for(const i of list) addLog(i.msg); return; }
+  const html=`<h2>👁 What changed</h2><p class="dim">While rivals moved, this happened in sight of your heroes:</p>
+    <ul class="turnrep">${list.map(i=>`<li class="tr-${i.kind}">${i.msg}</li>`).join('')}</ul>
+    <div class="row"><button class="btn primary" id="trp-ok">Continue</button></div>`;
+  const m=modal(html); m.querySelector('#trp-ok').onclick=()=>closeModal(m); }
+
+(function(){ const _as=animStep; animStep=async function(h,nx,ny){
+  const seen=typeof visibleTile==='function'&&(visibleTile(h.x,h.y)||visibleTile(nx,ny));
+  if(seen && !window.FAST_AI && !window.SIM_HEADLESS){ const fx=h.x, fy=h.y; await tween(110,p=>{ MAPV.anim={hero:h,x:fx+(nx-fx)*p,y:fy+(ny-fy)*p}; }); MAPV.anim=null; return; }
+  return _as.apply(this,arguments); }; })();
+
+(function(){ const _ct=captureTown; captureTown=function(h,town){ const prev=town.owner; const r=_ct.apply(this,arguments);
+  try{ if(prev!==h.owner){ const seen=typeof visibleTile==='function'&&(visibleTile(town.x,town.y)||visibleTile(town.x,town.y+1));
+    const msg=`${ownerName(h.owner)} took <b>${town.name}</b>${prev&&prev!=='neutral'?' from '+ownerName(prev):''}.`;
+    if(seen||h.owner===ME||prev===ME) turnRepAdd(msg, h.owner===ME?'info':(prev===ME?'loss':'capture')); } }catch(e){}
+  return r; }; })();
+
+(function(){ const _vo=visitObject; visitObject=async function(h,o){ const before=o&&o.kind==='mine'?o.owner:null; const r=await _vo.apply(this,arguments);
+  try{ if(o&&o.kind==='mine'&&o.owner===h.owner&&before!==h.owner){ const seen=typeof visibleTile==='function'&&visibleTile(o.x,o.y);
+    if(seen||h.owner===ME) turnRepAdd(`${ownerName(h.owner)} flagged a <b>${(MINES[o.type]||{}).name||o.type}</b>.`, 'mine'); } }catch(e){}
+  return r; }; })();
+
+(function(){ const _ed=endDay; endDay=async function(){ turnRepClear(); const r=await _ed.apply(this,arguments);
+  try{ if(G&&!G.over) showTurnReport(); }catch(e){ console.error(e); } return r; }; })();
+
+// ---------- save export / import ----------
+function collectSaveBundle(){ const autos=autoList().map(m=>{ let data=null; try{ data=JSON.parse(localStorage.getItem(m.key)); }catch(e){} return {...m, data}; }).filter(m=>m.data);
+  let manual=null; try{ const s=localStorage.getItem(SAVE_KEY); if(s) manual=JSON.parse(s); }catch(e){}
+  return { format:'aldmere-saves', version:1, exportedAt:Date.now(), manual, autosaves:autos }; }
+function downloadSaveBundle(){ const bundle=collectSaveBundle(); if(!bundle.manual && !bundle.autosaves.length){ toast('No saves to export.'); return; }
+  const blob=new Blob([JSON.stringify(bundle)],{type:'application/json'}); const name='aldmere-saves-'+new Date().toISOString().slice(0,10)+'.json';
+  const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=name; a.rel='noopener';
+  document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },1500);
+  // iOS home-screen fallback: also open a share if available
+  try{ if(navigator.share&&navigator.canShare){ const f=new File([blob],name,{type:'application/json'}); if(navigator.canShare({files:[f]})) navigator.share({files:[f],title:'Aldmere saves'}).catch(()=>{}); } }catch(e){}
+  toast('Save backup ready: '+name); }
+function importSaveBundle(obj){ if(!obj||obj.format!=='aldmere-saves'||!obj.version) throw new Error('Not an Aldmere save backup.');
+  if(!obj.manual && !(obj.autosaves&&obj.autosaves.length)) throw new Error('Backup has no saves in it.');
+  const nMan=obj.manual?1:0, nAuto=(obj.autosaves||[]).length;
+  return new Promise((resolve,reject)=>{
+    const m=modal(`<h2>Import saves?</h2><p>This backup has <b>${nMan}</b> manual save and <b>${nAuto}</b> autosave(s).</p>
+      <p class="bad">Importing will replace your current manual save and autosave list on this device. Export a backup first if you are unsure.</p>
+      <div class="row"><button class="btn" id="im-cancel">Cancel</button><button class="btn primary" id="im-ok">Import</button></div>`);
+    m.querySelector('#im-cancel').onclick=()=>{ closeModal(m); reject(new Error('cancelled')); };
+    m.querySelector('#im-ok').onclick=()=>{ try{
+      if(obj.manual) localStorage.setItem(SAVE_KEY, JSON.stringify(obj.manual));
+      // clear old autosave payloads referenced by index, then write new ones
+      const old=autoList(); for(const a of old) try{ localStorage.removeItem(a.key); }catch(e){}
+      const idx=[]; for(const a of (obj.autosaves||[])){ if(!a||!a.data) continue; const key=a.key||('boa_autosave_imp_'+Date.now()+'_'+Math.random().toString(36).slice(2,7));
+        localStorage.setItem(key, JSON.stringify(a.data)); idx.push({key, ts:a.ts||Date.now(), day:a.day||1, hero:a.hero||'—', faction:a.faction||'—'}); }
+      autoWriteIdx(idx); closeModal(m); toast('Saves imported.'); resolve(true); }catch(e){ closeModal(m); reject(e); } }; }); }
+function pickSaveFile(){ const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json,.json';
+  inp.onchange=async()=>{ const f=inp.files&&inp.files[0]; if(!f) return; try{ const txt=await f.text(); const obj=JSON.parse(txt); await importSaveBundle(obj); try{ openLoadMenu(); }catch(_){} }
+    catch(e){ if(e&&e.message==='cancelled') return; toast('Import failed: '+(e.message||e)); } };
+  inp.click(); }
+
+// Wire export/import into load menu and ☰
+(function(){ const _ol=openLoadMenu; openLoadMenu=function(){ const r=_ol.apply(this,arguments);
+  try{ const root=document.querySelector('#modal-root .modal'); if(!root||root.querySelector('#sv-export')) return r;
+    const box=document.createElement('div'); box.className='row'; box.style.cssText='margin-top:12px;gap:8px;flex-wrap:wrap';
+    box.innerHTML=`<button class="btn" id="sv-export">⬆ Export saves</button><button class="btn" id="sv-import">⬇ Import saves</button>
+      <span class="dim" style="flex-basis:100%">Backup file works on iPhone Safari and the home-screen app. Import asks before replacing anything.</span>`;
+    root.appendChild(box); root.querySelector('#sv-export').onclick=()=>downloadSaveBundle(); root.querySelector('#sv-import').onclick=()=>pickSaveFile();
+  }catch(e){} return r; }; })();
+
+(function(){ const _om=openMobMore; openMobMore=function(){ const r=_om.apply(this,arguments);
+  try{ const root=document.querySelector('.mobmodal')||document.querySelector('#modal-root .modal'); if(!root||root.querySelector('#mm-text')) return r;
+    const lay=root.querySelector('.mobset'); if(!lay) return r;
+    const block=document.createElement('div'); block.className='mobset';
+    const cur=textScalePref();
+    block.innerHTML=`<b>Text size</b>
+      <label><input type="radio" name="mtxt" value="normal" ${cur==='normal'?'checked':''}> Normal</label>
+      <label><input type="radio" name="mtxt" value="large" ${cur==='large'?'checked':''}> Large</label>
+      <label><input type="radio" name="mtxt" value="xlarge" ${cur==='xlarge'?'checked':''}> Extra large</label>
+      <div style="margin-top:8px"><b>Map look</b><br>
+      <label><input type="checkbox" id="m-bright" ${mapBrightOn()?'checked':''}> Brighter adventure map</label><br>
+      <label><input type="checkbox" id="m-vig" ${mapVignetteOn()?'checked':''}> Soft screen vignette</label></div>
+      <div class="row" style="margin-top:8px;gap:6px;flex-wrap:wrap"><button class="btn" id="mm-exsave" type="button">⬆ Export saves</button><button class="btn" id="mm-imsave" type="button">⬇ Import saves</button></div>`;
+    lay.parentNode.insertBefore(block, lay.nextSibling);
+    block.querySelectorAll('input[name=mtxt]').forEach(r=>r.onchange=()=>{ if(r.checked){ v66Set('boa_text',r.value); applyTextScale(); try{ resizeMap(); }catch(_){} } });
+    const br=block.querySelector('#m-bright'); if(br) br.onchange=()=>{ v66Set('boa_mapbright',br.checked?'1':'0'); };
+    const vg=block.querySelector('#m-vig'); if(vg) vg.onchange=()=>{ v66Set('boa_vignette',vg.checked?'1':'0'); };
+    block.querySelector('#mm-exsave').onclick=()=>downloadSaveBundle();
+    block.querySelector('#mm-imsave').onclick=()=>pickSaveFile();
+  }catch(e){ console.error(e); } return r; }; })();
 
 </script></body></html>
