@@ -341,7 +341,9 @@ body.is-dragging, body.is-dragging *{ cursor:grabbing !important; user-select:no
 @media (max-width:760px),(max-height:640px){ #townview{ height:220px; } }
 /* ===================== v6.5 MOBILE / TOUCH ===================== */
 :root{ --sat:env(safe-area-inset-top,0px); --sar:env(safe-area-inset-right,0px); --sab:env(safe-area-inset-bottom,0px); --sal:env(safe-area-inset-left,0px); --bar:62px; --tbh:44px; }
-#mobbar,#btn-more,#side-grab{ display:none; }
+#mobbar,#side-grab{ display:none; }
+/* v6.5.3: ☰ always reachable so layout can be changed back from Desktop */
+#btn-more{ display:inline-block; margin-left:auto; min-width:44px; min-height:38px; font-size:20px; padding:2px 10px; flex:none; }
 html.touch, html.touch body{ overscroll-behavior:none; -webkit-tap-highlight-color:transparent; -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; touch-action:manipulation; -webkit-text-size-adjust:100%; }
 html.touch input, html.touch textarea{ -webkit-user-select:text; user-select:text; }
 html.touch #map, html.touch #ccv, html.touch #minimap{ touch-action:none; }
@@ -2288,6 +2290,8 @@ function paint(ctx, build, color, bx, opt={}){
   ctx.beginPath(); build(ctx); ctx.lineWidth=opt.lw ?? 3; ctx.strokeStyle=opt.stroke||OUTLINE; ctx.lineJoin='round'; ctx.stroke();
 }
 function ell(cx,cy,rx,ry,rot=0){ return c=>c.ellipse(cx,cy,Math.abs(rx),Math.abs(ry),rot,0,Math.PI*2); }
+// v6.5.3: never throw on a negative radius from any paint path (scale/facing edge cases)
+(function(){ try{ const _e=CanvasRenderingContext2D.prototype.ellipse; CanvasRenderingContext2D.prototype.ellipse=function(x,y,rx,ry,...rest){ return _e.call(this,x,y,Math.abs(rx)||0,Math.abs(ry)||0,...rest); }; }catch(e){} })();
 function rrect(x,y,w,h,r){ return c=>{ c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r); c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath(); }; }
 function poly(pts){ return c=>{ c.moveTo(pts[0],pts[1]); for(let i=2;i<pts.length;i+=2) c.lineTo(pts[i],pts[i+1]); c.closePath(); }; }
 function blobPath(ctx,cx,cy,r,rng,n=9,j=0.25){ const pts=[]; for(let i=0;i<n;i++){ const a=i/n*Math.PI*2; const rr=r*(1-j/2+rng()*j); pts.push([cx+Math.cos(a)*rr, cy+Math.sin(a)*rr]); }
@@ -8005,7 +8009,24 @@ function aiMarket(owner){ if(!G.players[owner]||!G.players[owner].alive||!market
 // ---- 17_mobile.js ----
 // ===================== v6.5 MOBILE: phone/tablet layout, touch controls, home-screen app =====================
 const MOB={ touch:false, phone:false, land:true, safe:{t:0,r:0,b:0,l:0}, lastTouch:-1e9, lp:null, suppressUntil:0 };
+// Pref keys that control layout/graphics/zoom. NEVER include save/autosave keys.
+const MOB_PREF_KEYS=['boa_layout','boa_gfx','boa_gfx_auto','boa_mapzoom','boa_tapconfirm','boa_fullscreen','boa_edgescroll','boa_autoroute'];
 function mobPref(){ try{ return localStorage.getItem('boa_layout')||'auto'; }catch(e){ return 'auto'; } }
+function mobIsPhoneish(){ let coarse=false; try{ coarse=matchMedia('(pointer:coarse)').matches || (navigator.maxTouchPoints>0 && matchMedia('(hover:none)').matches); }catch(e){}
+  const sh=Math.min(window.innerWidth||9999, window.innerHeight||9999); return !!(coarse && sh<=640); }
+// v6.5.3: one-time escape from the Desktop-layout trap on phones (☰ used to disappear)
+function mobMigrateLayout(){ try{ if(localStorage.getItem('boa_layout_mig_653')==='1') return; localStorage.setItem('boa_layout_mig_653','1');
+    if(localStorage.getItem('boa_layout')==='desktop' && mobIsPhoneish()) localStorage.setItem('boa_layout','auto'); }catch(e){} }
+function mobResetPhoneDefaults(opt){ opt=opt||{}; try{ for(const k of MOB_PREF_KEYS) localStorage.removeItem(k); localStorage.setItem('boa_layout','auto'); }catch(e){}
+  try{ if(typeof GFX!=='undefined') GFX.q='high'; }catch(e){}
+  try{ if(typeof MAPV!=='undefined' && MAPV) MAPV.z=1; }catch(e){}
+  mobDetect(); try{ applyUiScale&&applyUiScale(); }catch(e){} try{ resizeMap&&resizeMap(); }catch(e){}
+  if(opt.toast!==false && typeof toast==='function') toast('Phone defaults restored. Your saves are untouched.'); }
+function mobHandleResetQuery(){ try{ const u=new URL(location.href); if(u.searchParams.get('reset')!=='layout') return;
+    mobResetPhoneDefaults({toast:false}); u.searchParams.delete('reset'); const q=u.searchParams.toString(); history.replaceState(null,'',u.pathname+(q?'?'+q:'')+u.hash);
+    setTimeout(()=>{ if(typeof toast==='function') toast('Layout reset via ?reset=layout. Your saves are untouched.'); },800); }catch(e){} }
+mobMigrateLayout();
+mobHandleResetQuery();
 function mobDetect(){ let coarse=false; try{ coarse=matchMedia('(pointer:coarse)').matches || (navigator.maxTouchPoints>0 && matchMedia('(hover:none)').matches); }catch(e){}
   const w=window.innerWidth, h=window.innerHeight, sh=Math.min(w,h), pref=mobPref();
   MOB.touch=coarse; MOB.phone= pref==='phone' || (pref!=='desktop' && (sh<=600 || w<=640 || (coarse && h>w && w<900))); MOB.land=w>h;
@@ -8084,12 +8105,14 @@ function openMobMore(){ const items=[...document.querySelectorAll('#topbar .btn'
   const html=`<h2>Menu</h2><div class="mobmore">${items.map((b,i)=>`<button class="btn" data-mi="${i}">${b.innerHTML} <span class="dim">${(b.getAttribute('data-tip')||'').replace(/<[^>]+>/g,'').slice(0,46)}</span></button>`).join('')}</div>
     <div class="mobset"><b>Screen layout</b> <label><input type="radio" name="mlay" value="auto" ${lay==='auto'?'checked':''}> Auto</label> <label><input type="radio" name="mlay" value="phone" ${lay==='phone'?'checked':''}> Phone</label> <label><input type="radio" name="mlay" value="desktop" ${lay==='desktop'?'checked':''}> Desktop</label></div>
     <div class="mobset"><label><input type="checkbox" id="m-tapc" ${tapConfirmOn()?'checked':''}> Battle: tap twice to confirm a move/attack</label></div>
+    <div class="mobset"><button class="btn" id="mm-reset" type="button">↩ Reset to phone defaults</button><div class="dim" style="margin-top:4px;line-height:1.4">Clears layout, graphics and zoom preferences. <b>Does not touch your saves.</b> Use this if the screen looks wrong on a phone.</div></div>
     ${ios&&!isStandalone()?'<div class="mobset dim">📲 To install: open this page in <b>Safari</b>, tap <b>Share</b> (□↑) → <b>Add to Home Screen</b>. It then opens full-screen like an app.</div>':''}
     <div class="mbtns"><button class="btn" id="mm-close">Close</button></div>`;
   const root=modal(html,'mobmodal');
   root.querySelectorAll('[data-mi]').forEach(x=>x.onclick=()=>{ const b=items[+x.dataset.mi]; closeModal(root); setTimeout(()=>b.click(),30); });
   root.querySelectorAll('input[name=mlay]').forEach(r=>r.onchange=()=>{ try{ localStorage.setItem('boa_layout',r.value); }catch(_){} mobDetect(); applyUiScale&&applyUiScale(); try{ resizeMap(); }catch(_){} });
   const tc=document.getElementById('m-tapc'); if(tc) tc.onchange=()=>{ try{ localStorage.setItem('boa_tapconfirm',tc.checked?'1':'0'); }catch(_){} };
+  const rr=root.querySelector('#mm-reset'); if(rr) rr.onclick=()=>{ closeModal(root); mobResetPhoneDefaults(); try{ openMobMore(); }catch(_){} };
   root.querySelector('#mm-close').onclick=()=>closeModal(root); }
 function tapConfirmOn(){ try{ return localStorage.getItem('boa_tapconfirm')!=='0'; }catch(e){ return true; } }
 
