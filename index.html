@@ -533,6 +533,17 @@ html.mob .tr-phonehint{ display:block; background:rgba(40,70,40,0.35); border:1p
 #tz-bar .btn, .mz-bar .btn{ min-width:40px; min-height:40px; }
 .mz-bar{ display:none; } html.mob .mz-bar{ display:flex; gap:6px; position:fixed; right:8px; top:calc(8px + env(safe-area-inset-top,0px)); z-index:10050; background:rgba(20,16,12,.85); padding:4px; border-radius:8px; }
 html.mob #tz-bar{ display:inline-flex !important; }
+
+/* v6.7 campaign packs + difficulty */
+.camp-packs{display:flex;flex-direction:column;gap:10px;max-height:55vh;overflow:auto;-webkit-overflow-scrolling:touch}
+.camp-pack{padding:12px;border:1px solid rgba(233,185,73,.45);border-radius:10px;background:rgba(30,20,40,.75)}
+.camp-pack-h{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.camp-diffpick,.camp-diffnext{margin:10px 0;padding:8px;border-radius:8px;background:rgba(0,0,0,.25)}
+.camp-diffbtns,.camp-difflab{display:inline-flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 6px 4px 0}
+.camp-select.modal,.camp-end.modal{max-width:min(720px,96vw)}
+html.mob .camp-packs{max-height:48vh}
+html.mob .camp-pack .btn,html.mob .camp-ch .btn{min-height:44px}
+html.mob .camp-difflab{font-size:15px;padding:4px 0}
 </style><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"><script>window.BOA_SW='sw.js';</script></head>
 <body>
 <div id="topbar"><div class="logo">⚜ Aldmere</div><div id="res"></div><div id="daylbl"></div>
@@ -6280,7 +6291,7 @@ function showHelp(){ const m=modal(`<h2>How to play</h2><div class="help">
   <h3>Marketplace</h3><p><b>⇄ Resources</b>: swap any resource, gold included, for any other and choose how much. The more Marketplaces you own, the better the rate (about a third of the value kept with one Marketplace, rising to 75% with six or more). <b>🗡 Artifact merchant</b>: 3-5 artifacts a week, mostly minor and major pieces, sometimes a pricey relic or a cheap <span class="bad">cursed bargain</span> (clearly marked). <b>📜 Spell scrolls</b>: 2-4 scrolls a week, combat and map spells, that teach a spell your guilds do not stock (school requirements still apply). Buying artifacts or scrolls needs a hero in the town. A Resource Silo and owning 3+ Marketplaces each add one more item to the stock.</p>
   <h3>Combat</h3><p>Turn order follows the <b>initiative bar</b>. Click a highlighted hex to move, or an enemy to attack (red hex = where you strike from). Hover enemies to see predicted damage. <b>Wait</b> acts later; <b>Defend</b> gives +30% Defense. Creatures with spells get a cast button. Your hero takes turns too: strike, cast, or use the faction power (Rally, Mark Prey, Rift Surge, Soul Drain, Inscribe, Runes). Towns with a Fort have walls, a gate and arrow towers: break the gate, fly over, or shoot. <b>Auto-combat</b> lets the AI finish.</p>
   <h3>Hotseat: several players on one computer</h3><p>In <b>New Game → 4. The world → Other players</b>, switch any slot from <b>AI</b> to <b>Human</b> and pick that player's faction, hero class, trait and hero name (<b>+ Add player</b> for up to 4 rulers in total). Players take turns in order; AI rulers move in between. When a human turn ends, a <b>"Pass to Player N — click when ready"</b> screen hides the map so the next person can sit down. Each player has their <b>own fog of war</b>, log and selected hero. If an AI attacks a human who is not at the keyboard, that player is called over to fight the battle, then the screen is handed back. The last player standing wins; saves and autosaves remember who is human. The campaign is single-player.</p>
-  <h3>Campaign: The Sundering of Aldmere</h3><p>Five chapters played with one hero (main menu → <b>⚜ Campaign</b>). Your hero keeps their level, stats, skills and spells between chapters, and at the end of each chapter you choose <b>up to 3 artifacts</b> to carry on. I-III: grow, capture, conquer. <b>IV. The Dawn Regalia</b>: find and wear all four Dawn Regalia pieces before the end of day 49; the missing pieces lie far away, each behind a large-creature guard. <b>V. The Sunderer</b>: the hard finale on a large map against three rivals; defeat Vaeloth the Sunderer, whose unique specialty makes his whole army stronger and who never retreats, while a new wave of rift raiders marches out every week. A lost chapter can be retried.</p>
+  <h3>Campaigns</h3><p>Six faction stories (main menu → <b>⚜ Campaign</b>), each with Easy–Brutal difficulty. Your hero keeps their level, stats, skills and spells between chapters, and at the end of each chapter you choose <b>up to 3 artifacts</b> to carry on. I-III: grow, capture, conquer. <b>IV. The Dawn Regalia</b>: find and wear all four Dawn Regalia pieces before the end of day 49; the missing pieces lie far away, each behind a large-creature guard. <b>V. The Sunderer</b>: the hard finale on a large map against three rivals; defeat Vaeloth the Sunderer, whose unique specialty makes his whole army stronger and who never retreats, while a new wave of rift raiders marches out every week. A lost chapter can be retried.</p>
   <h3>Keys</h3><p>E end turn · H hero · T town · N next hero · M / Space move hero along its route · R return to town · B map spells · C center on hero · F fullscreen · +/− zoom map · arrows/WASD scroll · Esc close windows · in combat: W wait, D defend, L toggle unit names</p></div><div class="row"><button class="btn" id="hp-tut">Replay tutorial</button><button class="btn primary" id="hp-ok">Got it</button></div>`,'wide'); m.querySelector('#hp-ok').onclick=()=>closeModal(m); m.querySelector('#hp-tut').onclick=()=>{ closeModal(m); showTutorial(0); }; }
 
 // ---------- boot ----------
@@ -8704,5 +8715,338 @@ function setupModalZoom(wrap){ if(!(typeof MOB!=='undefined'&&MOB.phone)) return
     if(g&&g.mode==='pinch'&&P.size>=2){ const t=two(); MODZ.z=Math.max(1,Math.min(2.2,g.z0*t.d/g.d0)); modal.style.transformOrigin='top center'; modal.style.transform=MODZ.z>1.01?`scale(${MODZ.z})`:''; } },{passive:true});
   const up=e=>{ P.delete(e.pointerId); if(P.size<2) g=null; }; modal.addEventListener('pointerup',up); modal.addEventListener('pointercancel',up); }
 (function(){ const _mo=modal; if(typeof modal!=='function') return; modal=function(){ const m=_mo.apply(this,arguments); try{ if(m) setupModalZoom(m); }catch(e){} return m; }; })();
+
+// ---- 22_campaigns67.js ----
+// ===================== v6.7: more campaigns + per-campaign difficulty =====================
+// Keeps the original CAMPAIGN array (Sundering, 5 chapters) for old saves/tests.
+// New story packs live in CAMP_PACKS; the active pack's chapters are read via campChapters().
+
+const CAMP_DIFFS=['easy','normal','hard','brutal'];
+function campDiffLabel(d){ return (DIFFS[d]&&DIFFS[d].name)||d; }
+
+// ---- migrate / storage: per-pack progress, difficulty, best completions ----
+function campLoadAll(){ try{ const raw=JSON.parse(localStorage.getItem(CAMP_KEY)||'null'); if(!raw) return {packs:{}};
+  // legacy shape {done,hero} → sundering pack
+  if(raw.done!==undefined||raw.hero){ return {packs:{sundering:{done:raw.done||0, hero:raw.hero||null, diff:raw.diff||'normal', best:raw.best||{}}}, active:raw.active||'sundering'}; }
+  if(!raw.packs) raw.packs={}; return raw; }catch(e){ return {packs:{}}; } }
+function campSaveAll(all){ try{ localStorage.setItem(CAMP_KEY,JSON.stringify(all)); }catch(e){} }
+function campPackState(id){ const all=campLoadAll(); if(!all.packs[id]) all.packs[id]={done:0,hero:null,diff:'normal',best:{}}; return all.packs[id]; }
+function campWritePack(id, st){ const all=campLoadAll(); all.packs[id]=st; all.active=id; campSaveAll(all); }
+// override legacy helpers used by 09/14
+campLoad=function(){ const id=(G&&G.campaign&&G.campaign.pack)||'sundering'; const st=campPackState(id); return {done:st.done||0, hero:st.hero||null, diff:st.diff||'normal', best:st.best||{}, pack:id}; };
+campStore=function(s){ const id=s.pack||(G&&G.campaign&&G.campaign.pack)||'sundering'; const st=campPackState(id); st.done=s.done!=null?s.done:st.done; st.hero=s.hero!==undefined?s.hero:st.hero; if(s.diff) st.diff=s.diff; if(s.best) st.best=s.best; campWritePack(id,st); };
+
+function campChapters(){ if(G&&G.campaign&&G.campaign.pack){ const p=CAMP_PACKS.find(x=>x.id===G.campaign.pack); if(p) return p.chapters; } return CAMPAIGN; }
+function campPackOf(id){ return CAMP_PACKS.find(p=>p.id===id)||CAMP_PACKS[0]; }
+
+// player starting resources scale opposite to AI when in a campaign
+function campApplyPlayerStart(diffKey){ const D=DIFFS[diffKey]||DIFFS.normal; const p=G.players[ME]; if(!p) return;
+  const m=diffKey==='easy'?1.25:diffKey==='normal'?1:diffKey==='hard'?0.85:0.7;
+  for(const k of RES) p.res[k]=Math.round((p.res[k]||0)*m); }
+
+// ---- new objective progress (wraps existing) ----
+{ const _cp=campProgress; campProgress=function(){ if(!G||!G.campaign) return null; const ch=campChapters()[G.campaign.idx]; if(!ch) return _cp.apply(this,arguments); const o=ch.obj; const h=campMainHero();
+  if(o.type==='hold'){ const t=G.towns.find(x=>x.id===G.campaign.holdTown)||townOf(ME); const own=t&&t.owner===ME; if(own){ if(G.campaign.holdDay==null) G.campaign.holdDay=G.day; } else G.campaign.holdDay=null;
+    const days=own&&G.campaign.holdDay!=null? (G.day-G.campaign.holdDay+1):0; const need=o.days||14;
+    return {met:own&&days>=need, text:`Hold ${t?t.name:'a town'} ${Math.min(days,need)}/${need} days`}; }
+  if(o.type==='escort'){ const e=G.heroes.find(x=>x.id===G.campaign.escort); const dest=G.campaign.escortDest; const alive=e&&e.alive;
+    const at=alive&&dest&&e.x===dest.x&&e.y===dest.y; const left=(o.deadline||40)-G.day;
+    return {met:!!at, failed:!alive||G.day>(o.deadline||40), text: !alive?'Escort fallen': at?'Escort arrived':`Escort ${e?e.name:'—'} → ${dest?(G.towns.find(t=>t.x===dest.x&&t.y===dest.y)||{}).name||'haven':'haven'} · Day ${G.day}/${o.deadline||40}${left<=5&&left>=0?' <span class="bad">('+(left+1)+' left)</span>':''}`}; }
+  if(o.type==='rescue'){ const done=!!G.campaign.rescued; return {met:done, text: done?'Captive rescued':`Rescue ${G.campaign.rescueName||'the captive'} from the guarded site`}; }
+  if(o.type==='boss'){ const v=G.heroes.find(x=>x.id===G.campaign.boss); const dead=!v||!v.alive; return {met:dead, text: dead?(G.campaign.bossName||'Boss')+' defeated':`Defeat ${G.campaign.bossName||'the rival'} (Lv ${v?v.level:'?'})`}; }
+  if(o.type==='survive'){ const need=o.days||28; const waves=G.campaign.waves||0; return {met:G.day>=need, text:`Survive to day ${need} · now day ${G.day} · waves ${waves}`}; }
+  if(o.type==='timed_capture'){ const n=townsOf(ME).length; const left=(o.deadline||35)-G.day;
+    return {met:n>=(o.towns||2), failed:G.day>(o.deadline||35)&&n<(o.towns||2), text:`Towns ${Math.min(n,o.towns||2)}/${o.towns||2} by day ${o.deadline||35} · Day ${G.day}${left<=7&&left>=0?' <span class="bad">('+(left+1)+' left)</span>':''}`}; }
+  // remap CAMPAIGN index lookups to active chapters for grow/capture/set/villain
+  const save=CAMPAIGN; try{ /* temporarily alias for nested _cp that reads CAMPAIGN[G.campaign.idx] */ }catch(e){}
+  // For types handled in 09/14 against CAMPAIGN[idx], patch by rewriting G.campaign.idx chapter onto a shim
+  if(['grow','capture','conquer','set','villain'].includes(o.type)){
+    if(o.type==='grow'){ const m=G.objects.filter(x=>x.kind==='mine'&&x.owner===ME).length; return {met:m>=o.mines&&h&&h.level>=o.level, text:`Mines ${Math.min(m,o.mines)}/${o.mines} · Hero level ${h?h.level:0}/${o.level}`}; }
+    if(o.type==='capture'){ const n=townsOf(ME).length; return {met:n>=o.towns, text:`Towns held ${Math.min(n,o.towns)}/${o.towns}`}; }
+    if(o.type==='conquer'){ const left=Object.entries(G.players).filter(([k,p])=>k!==ME&&k!=='neutral'&&p.alive).length; return {met:left===0, text:`Rivals remaining: ${left}`}; }
+    if(o.type==='set'){ const best=Math.max(0,...heroesOf(ME).map(hh=>campSetWorn(hh,o.set))); const S=ART_SETS[o.set]; const left=o.deadline-G.day;
+      return {met:best>=S.n, failed:G.day>o.deadline, text:`${S.name} worn ${best}/${S.n} · Day ${G.day} of ${o.deadline}${left<=7&&left>=0?' <span class="bad">('+(left+1)+' days left)</span>':''}`}; }
+    if(o.type==='villain'){ const v=G.heroes.find(x=>x.id===G.campaign.villain); const ash=G.players[G.campaign.villainOwner||'ai1'];
+      const dead=!v||!v.alive||(ash&&!ash.alive); return {met:dead, text: dead?(G.campaign.bossName||'Villain')+' has fallen':`${G.campaign.bossName||'Villain'}: level ${v?v.level:'?'}, waves ${G.campaign.waves||0}`}; }
+  }
+  return _cp.apply(this,arguments); }; }
+
+// ---- chapter start/win overrides to use packs + difficulty ----
+startCampaignChapter=function(idx, packId){ const pack=campPackOf(packId||(G&&G.campaign&&G.campaign.pack)||'sundering');
+  const chapters=pack.chapters; const C=chapters[idx]; if(!C) return;
+  const st=campPackState(pack.id); const carry= idx>0 ? st.hero : null;
+  const fac=pack.faction||'sunward';
+  const cls=carry?carry.cls:(MENU&&MENU.cls&&CLASSES[MENU.cls]&&CLASSES[MENU.cls].faction===fac?MENU.cls:classesOf(fac)[0]);
+  const trait=carry?carry.trait:'warlord';
+  const diffKey=(C.diff&&DIFFS[C.diff]&&DIFFS[C.diff].hidden)?C.diff:(st.diff||C.diff||'normal');
+  const name=carry?carry.name:(pack.heroName||FACTIONS[fac].heroNames[0]);
+  newGame({faction:fac,cls,trait,name,size:C.size,ais:C.ais,difficulty:diffKey,mapStyle:C.style||'balanced',seed:C.seed!=null?C.seed+Math.floor(Math.random()*500):undefined});
+  G.campaign={idx, pack:pack.id, diff:diffKey}; const h=selHero();
+  if(carry && h){ for(const k of ['seed','level','xp','atk','def','sp','kn']) h[k]=carry[k]; h.skills=carry.skills; h.perks=carry.perks; h.spells=[...new Set([...(h.spells||[]),...carry.spells])]; try{ h.mana=heroStats(h).maxMana; h.mp=heroStats(h).moveMax; }catch(e){} }
+  campApplyPlayerStart(diffKey);
+  if(typeof campSetup==='function') campSetup(idx,carry,h,pack);
+  for(const k in HERO_URL) delete HERO_URL[k];
+  enterGame(true); try{ localStorage.setItem('boa_tutorial_done','1'); }catch(e){}
+  if(!window.FAST_AI) infoBox(C.title, C.intro+`<p class="good"><b>Objective:</b> ${C.objText}</p><p class="dim">Difficulty: <b>${campDiffLabel(diffKey)}</b></p>`+(carry?`<p class="dim">${carry.name} returns at level ${carry.level}${carry.arts&&carry.arts.length?`, carrying ${carry.arts.map(a=>ARTIFACTS[a].name).join(', ')}`:''}.</p>`:'')+(typeof campIntroExtra==='function'?campIntroExtra(idx):''));
+  campHud(); };
+
+// wrap campSetup so pack-specific setups run (and sundering still works with pack arg ignored)
+{ const _cs=campSetup; campSetup=function(ci,carry,h,pack){ const chapters=pack?pack.chapters:campChapters(); const C=chapters[ci];
+  // always apply artifact carry from 14_campaign2 path
+  if(carry&&h&&Array.isArray(carry.arts)){ h.arts=[]; h.pack=[]; for(const a of carry.arts.slice(0,CAMP_CARRY_ARTS)) if(ARTIFACTS[a]){ if(h.arts.length<artLimit(h)) h.arts.push(a); else h.pack.push(a); } }
+  if(pack&&pack.id!=='sundering'&&C&&C.setup){ campSetupNew(C,carry,h,pack); return; }
+  // sundering / legacy: call original with (ci,carry,h) using CAMPAIGN
+  return _cs(ci,carry,h); }; }
+
+function campSetupNew(C,carry,h,pack){ const home=townOf(ME); const dist=(x,y)=>home?Math.hypot(x-home.x,y-home.y):99; const diag=Math.hypot(MW,MH);
+  const reach=new Uint8Array(MW*MH); if(home){ const qq=[[home.x,home.y]]; reach[idx(home.x,home.y)]=1; while(qq.length){ const [cx,cy]=qq.pop(); for(const [dx,dy] of DIRS8){ const nx=cx+dx, ny=cy+dy; if(!inMap(nx,ny)||reach[idx(nx,ny)]||!passableTerrain(G.map,nx,ny)) continue; reach[idx(nx,ny)]=1; qq.push([nx,ny]); } } }
+  // named rival
+  if(C.rival){ const owner=C.rival.owner||'ai1'; let r=G.heroes.find(x=>x.alive&&x.owner===owner); const fac=C.rival.faction||(G.players[owner]&&G.players[owner].faction)||'ashen';
+    if(!r){ const t=townOf(owner); if(t){ r=makeHero(owner,fac,classesOf(fac)[0],C.rival.trait||'warlord',C.rival.name,t.x,t.y+1); G.heroes.push(r); } }
+    if(r){ r.name=C.rival.name; if(C.rival.uspec) r.uspec=C.rival.uspec; const target=Math.max(C.rival.level||8,((h&&h.level)||5)+ (C.rival.levelBump||2));
+      const ups=grantXp(r,maxXp(r,target-1)+1); aiLevelUps(r,ups); if(C.rival.arts) r.arts=C.rival.arts.filter(a=>ARTIFACTS[a]).slice(0,artLimit(r));
+      if(C.rival.army){ const L=FACTION_LINE[fac]; r.army=C.rival.army.map((n,i)=>({type:L[Math.min(i,L.length-1)],n})); }
+      G.campaign.boss=r.id; G.campaign.bossName=C.rival.name; G.campaign.villain=r.id; G.campaign.villainOwner=owner; } }
+  if(C.setup==='hold_capital'){ const t=townOf(ME); G.campaign.holdTown=t&&t.id; G.campaign.holdDay=G.day; }
+  if(C.setup==='escort'){ const dest=G.towns.find(t=>t.owner==='neutral')||G.towns.find(t=>t.owner!==ME)||townOf(ME);
+    const spot=campFreeSpot((x,y)=>home&&Math.hypot(x-home.x,y-home.y)<8&&reach[idx(x,y)]); const p=spot||{x:home.x,y:home.y+1};
+    const fac=pack.faction; const e=makeHero(ME,fac,classesOf(fac)[0],'pathfinder',C.escortName||'Refugee Elder',p.x,p.y);
+    e.army=[{type:FACTION_LINE[fac][0],n:8},{type:FACTION_LINE[fac][1],n:4}]; e.escort=1; e.mp=heroStats(e).moveMax; G.heroes.push(e);
+    G.campaign.escort=e.id; G.campaign.escortDest={x:dest.x,y:dest.y}; }
+  if(C.setup==='rescue'){ const s=campFreeSpot((x,y,t)=>dist(x,y)>=diag*0.35*(t>2000?0.7:1)&&reach[idx(x,y)]); if(s){
+      const site={kind:'site',type:'camp',id:campNewId(),x:s.x,y:s.y,visitedBy:[],rescue:1}; G.objects.push(site); G.campaign.rescueId=site.id; G.campaign.rescueName=C.rescueName||'the captive';
+      const pool=campBigPool(5,7); campGuardGroup(s.x+1,s.y,4200*diff().neutral,pool,site.id); } }
+  if(C.setup==='boss'){ /* rival already placed */ G.campaign.bossName=C.rival&&C.rival.name; }
+  if(C.setup==='survive_waves'){ G.campaign.waves=0; G.campaign.waveOwner=C.waveOwner||'ai1'; G.campaign.waveFac=C.waveFac||'ashen'; }
+  if(C.setup==='set_hunt'){ const set=C.obj.set; const pieces=Object.keys(ARTIFACTS).filter(a=>ARTIFACTS[a].set===set); const owned=new Set(h?[...h.arts,...h.pack]:[]);
+    const drop=G.objects.filter(o=>o.kind==='artifact'&&ARTIFACTS[o.art].set===set); for(const o of drop){ G.objects.splice(G.objects.indexOf(o),1); for(const m of G.objects) if(m.kind==='monster'&&m.guarding===o.id) delete m.guarding; }
+    const want=pieces.filter(a=>!owned.has(a)); G.campaign.relics=[]; const pool=campBigPool(5,7); const placed=[];
+    want.forEach((art,k)=>{ const minD=diag*(0.32+0.08*k); const s=campFreeSpot((x,y,t)=>{ const ok=dist(x,y)>=minD*(t>2000?0.7:1)&&reach[idx(x,y)]&&!placed.some(p=>Math.hypot(p.x-x,p.y-y)<diag*0.16); if(!ok) return false;
+      for(const [dx,dy] of DIRS8){ const gx=x+dx,gy=y+dy; if(inMap(gx,gy)&&passableTerrain(G.map,gx,gy)&&!objAt(gx,gy)&&reach[idx(gx,gy)]) return true; } return false; });
+      if(!s) return; const a={kind:'artifact',id:campNewId(),art,x:s.x,y:s.y,relic:1}; G.objects.push(a); placed.push(s); const rec={art,id:a.id,x:s.x,y:s.y}; G.campaign.relics.push(rec);
+      let g=null; for(const [dx,dy] of DIRS8){ const gx=s.x+dx,gy=s.y+dy; if(inMap(gx,gy)&&passableTerrain(G.map,gx,gy)&&!objAt(gx,gy)&&!heroAt(gx,gy)&&reach[idx(gx,gy)]){ g={x:gx,y:gy}; break; } }
+      if(g) campGuardGroup(g.x,g.y,(5000+3000*k)*diff().neutral,pool,a.id); }); }
+}
+
+// weekly waves for survive chapters
+{ const _cw=campWave; campWave=function(){ if(!G||!G.campaign||G.over) return;
+  const ch=campChapters()[G.campaign.idx]; if(ch&&ch.setup==='survive_waves'){ const owner=G.campaign.waveOwner||'ai1'; const P=G.players[owner]; if(!P||!P.alive) return;
+    const ts=townsOf(owner); if(!ts.length) return; const raiders=heroesOf(owner).filter(x=>x.wave); if(raiders.length>=2||heroesOf(owner).length>=MAX_HEROES+1) return;
+    const t=ts[Math.floor(Math.random()*ts.length)]; let spot=null; for(const [dx,dy] of [[0,1],...DIRS8]){ const x=t.x+dx,y=t.y+dy; if(inMap(x,y)&&passableTerrain(G.map,x,y)&&!heroAt(x,y)&&!objAt(x,y)){ spot={x,y}; break; } } if(!spot) return;
+    G.campaign.waves=(G.campaign.waves||0)+1; const w=G.campaign.waves; const fac=G.campaign.waveFac||'ashen'; const L=FACTION_LINE[fac];
+    const r=makeHero(owner,fac,classesOf(fac)[w%2],'warlord',`Raid Captain ${w}`,spot.x,spot.y); r.wave=w; const ups=grantXp(r,maxXp(r,Math.min(12,3+w*2))+1); aiLevelUps(r,ups);
+    const m=1+0.3*w; r.army=[{type:L[0],n:Math.round(24*m)},{type:L[1],n:Math.round(14*m)},{type:L[2],n:Math.round(8*m)}]; if(w>=2) r.army.push({type:L[3],n:Math.round(5*m)});
+    r.mp=heroStats(r).moveMax; G.heroes.push(r); addLog(`A raid (wave ${w}) marches from ${t.name}!`); return; }
+  return _cw.apply(this,arguments); }; }
+
+// rescue on visit
+{ const _vo=visitObject; visitObject=async function(h,o){ const r=await _vo.apply(this,arguments);
+  try{ if(G&&G.campaign&&o&&o.rescue&&h.owner===ME&&!G.campaign.rescued){ G.campaign.rescued=true; const fac=G.players[ME].faction; const c=makeHero(ME,fac,classesOf(fac)[1]||classesOf(fac)[0],'tactician',G.campaign.rescueName||'Rescued Ally',h.x,h.y);
+    // place beside
+    const spot=freeTileNear(h.x,h.y)||{x:h.x,y:h.y}; c.x=spot.x; c.y=spot.y; c.army=[{type:FACTION_LINE[fac][2],n:6},{type:FACTION_LINE[fac][1],n:10}]; c.mp=heroStats(c).moveMax; G.heroes.push(c);
+    addLog(`${c.name} is free and joins your cause!`); if(h.owner===ME) toast(`${c.name} joins you!`); try{ checkGameOver(); }catch(e){} } }catch(e){}
+  return r; }; }
+
+// win screen: track best, allow lowering difficulty for next chapter
+{ const _cw=campWin; campWin=function(){ const packId=G.campaign.pack||'sundering'; const chapters=campChapters(); const idx=G.campaign.idx; const C=chapters[idx]; const st=campPackState(packId); const h=campMainHero();
+  st.done=Math.max(st.done||0,idx+1); const diffKey=G.campaign.diff||st.diff||'normal';
+  st.best=st.best||{}; const prev=st.best[diffKey]||0; st.best[diffKey]=Math.max(prev,idx+1);
+  G.over=true; try{ sfx('victory'); }catch(e){}
+  const last=idx>=chapters.length-1; const own=h?[...new Set([...h.arts,...h.pack])].filter(a=>ARTIFACTS[a]):[]; const pick=new Set(own.slice().sort((a,b)=>campArtScore(b)-campArtScore(a)).slice(0,CAMP_CARRY_ARTS));
+  const save=()=>{ if(h){ st.hero=campSnapshot(h); st.hero.arts=[...pick]; } campWritePack(packId,st); }; save();
+  const artsHTML=()=> own.length&&!last?`<h3>Carry up to ${CAMP_CARRY_ARTS} artifacts into the next chapter</h3><div class="camp-arts">${own.map(a=>`<label class="camp-art ${pick.has(a)?'on':''}" data-tip="${q(artTip(a))}"><input type="checkbox" data-ca="${a}" ${pick.has(a)?'checked':''}> ${artIcon(a)} ${ARTIFACTS[a].name}</label>`).join('')}</div><p class="dim small">Everything else stays behind.</p>`:'';
+  const curI=CAMP_DIFFS.indexOf(diffKey); const lowerOpts=CAMP_DIFFS.slice(0,curI+1); // can keep or lower, not raise from this screen — actually allow any to avoid trap, but label "you may lower"
+  const diffHTML=!last?`<div class="camp-diffnext"><b>Next chapter difficulty</b> <span class="dim">(you can lower it anytime between chapters)</span><div class="camp-diffbtns">${CAMP_DIFFS.map(d=>`<label class="camp-difflab"><input type="radio" name="nxdiff" value="${d}" ${d===diffKey?'checked':''}> ${campDiffLabel(d)}</label>`).join('')}</div></div>`:'';
+  const bestLine=`Best on ${campDiffLabel(diffKey)}: chapter ${st.best[diffKey]||0}/${chapters.length}`;
+  const m=modal(`<h2 class="win">${C.title}: Victory</h2>${C.outro}<p class="dim">${bestLine}</p><div id="cp-arts">${artsHTML()}</div>${diffHTML}<div class="row">${last?'':'<button class="btn primary" id="cp-next">Next chapter ▶</button>'}<button class="btn" id="cp-menu">Main menu</button></div>`,'wide camp-end');
+  const bind=()=>m.querySelectorAll('[data-ca]').forEach(cb=>cb.onchange=()=>{ const a=cb.dataset.ca; if(cb.checked){ if(pick.size>=CAMP_CARRY_ARTS){ cb.checked=false; toast(`You can carry at most ${CAMP_CARRY_ARTS} artifacts.`); return; } pick.add(a); } else pick.delete(a); save(); m.querySelector('#cp-arts').innerHTML=artsHTML(); bind(); }); bind();
+  if(!last) m.querySelector('#cp-next').onclick=()=>{ const sel=(m.querySelector('input[name=nxdiff]:checked')||{}).value||diffKey; st.diff=sel; save(); closeModal(m); startCampaignChapter(idx+1,packId); };
+  m.querySelector('#cp-menu').onclick=()=>{ save(); closeModal(m); showMenu(); }; }; }
+
+// HUD uses active chapters
+campHud=function(){ let el=document.getElementById('camp-hud'); if(!G||!G.campaign){ if(el) el.remove(); return; }
+  if(!el){ el=document.createElement('div'); el.id='camp-hud'; document.body.appendChild(el); }
+  const C=campChapters()[G.campaign.idx]; const p=campProgress();
+  el.innerHTML=`<b>${C?C.title:''}</b> · ${p?p.text:''} · <span class="dim">${campDiffLabel(G.campaign.diff||'normal')}</span>`;
+  el.setAttribute('data-tip',C?C.objText:''); };
+
+// ---- campaign select UI (all packs + difficulty) ----
+openCampaignMenu=function(){ const all=campLoadAll();
+  const packHTML=CAMP_PACKS.map(p=>{ const st=all.packs[p.id]||{done:0,best:{},diff:'normal'}; const best=st.best||{};
+    const bestTxt=CAMP_DIFFS.filter(d=>best[d]).map(d=>`${campDiffLabel(d)}:${best[d]}/${p.chapters.length}`).join(' · ')||'not finished yet';
+    return `<div class="camp-pack" data-pack="${p.id}"><div class="camp-pack-h"><b>${p.title}</b> <span class="dim">${FACTIONS[p.faction].name}</span></div>
+      <p class="dim">${p.blurb}</p><p class="dim small">Progress: ${st.done||0}/${p.chapters.length} · Best: ${bestTxt}</p>
+      <button class="btn primary" data-open="${p.id}">Open</button></div>`; }).join('');
+  const m=modal(`<h2>⚜ Campaigns</h2><p class="dim">Choose a story. Difficulty is set per campaign and can be lowered between chapters. Your hero carries over inside a campaign.</p>
+    <div class="camp-packs">${packHTML}</div>
+    <div class="row"><button class="btn" id="cp-close">Close</button></div>`,'wide camp-select');
+  m.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{ closeModal(m); openCampaignPack(b.dataset.open); });
+  m.querySelector('#cp-close').onclick=()=>closeModal(m); };
+
+function openCampaignPack(id){ const pack=campPackOf(id); const st=campPackState(id); const diff=st.diff||'normal';
+  const chHTML=pack.chapters.map((C,i)=>{ const open=i<=(st.done||0); return `<div class="camp-ch ${open?'':'locked'}"><div><b>${C.title}</b> ${i<(st.done||0)?'<span class="good">✔</span>':''}<p class="dim">${C.objText}</p></div>
+    <button class="btn ${open?'primary':''}" data-ch="${i}" ${open?'':'disabled'}>${open?(i<(st.done||0)?'Replay':'Play'):'🔒'}</button></div>`; }).join('');
+  const m=modal(`<h2>${pack.title}</h2><p class="dim">${pack.blurb}</p>
+    <div class="camp-diffpick"><b>Difficulty</b> ${CAMP_DIFFS.map(d=>`<label class="camp-difflab"><input type="radio" name="cdiff" value="${d}" ${d===diff?'checked':''}> ${campDiffLabel(d)}</label>`).join('')}
+    <p class="dim small">You can lower this between chapters. Best completions are tracked per difficulty.</p></div>
+    ${chHTML}
+    ${st.hero?`<p class="dim">Carried hero: <b>${st.hero.name}</b>, level ${st.hero.level}.</p>`:''}
+    <div class="row"><button class="btn" id="cp-back">◀ All campaigns</button><button class="btn" id="cp-reset">Reset this campaign</button><button class="btn" id="cp-close">Close</button></div>`,'wide camp-select');
+  const readDiff=()=>(m.querySelector('input[name=cdiff]:checked')||{}).value||'normal';
+  m.querySelectorAll('input[name=cdiff]').forEach(r=>r.onchange=()=>{ st.diff=readDiff(); campWritePack(id,st); });
+  m.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>{ st.diff=readDiff(); campWritePack(id,st); closeModal(m); startCampaignChapter(+b.dataset.ch,id); });
+  m.querySelector('#cp-back').onclick=()=>{ closeModal(m); openCampaignMenu(); };
+  m.querySelector('#cp-close').onclick=()=>closeModal(m);
+  m.querySelector('#cp-reset').onclick=()=>{ campWritePack(id,{done:0,hero:null,diff:readDiff(),best:st.best||{}}); closeModal(m); openCampaignPack(id); }; }
+
+// ===================== NEW CAMPAIGN CONTENT =====================
+const CAMP_PACKS=[
+  { id:'sundering', title:'The Sundering of Aldmere', faction:'sunward', heroName:'Aldric',
+    blurb:'Five chapters for the Sunward Order: hold the march, break the Grey Accord, claim the heartland, gather the Dawn Regalia, and end Vaeloth the Sunderer.',
+    chapters: CAMPAIGN },
+
+  { id:'wildwood', title:'Roots of the Wildwood', faction:'thornwild', heroName:'Sael of Briar',
+    blurb:'The Thornwild Circle wakes to axes at the forest edge. Escort the elders, hold the Heartoak, reclaim the green relics, and break the Timber-Lord.',
+    chapters:[
+      { title:'I. The Fleeing Grove', size:'small', style:'balanced', ais:['deepforge'], diff:'easy', setup:'escort', escortName:'Elder Mirelle',
+        obj:{type:'escort', deadline:28}, objText:'Escort Elder Mirelle to the neutral haven town before day 28. She must survive.',
+        rival:{name:'Hark the Timber-Lord', faction:'deepforge', owner:'ai1', level:6, trait:'warlord', arts:['conqhelm']},
+        intro:`<p>Axes ring at the forest edge. Deepforge Clans have come for timber and tribute, and the Heartoak grove is next.</p><p>Elder Mirelle flees with the seed-vault. <b>Get her to the haven town alive</b> before the Timber-Lord's riders cut her off.</p>`,
+        outro:`<p>Mirelle reaches the haven with the vault intact. The Circle has a breathing space — and a debt of blood to pay.</p>` },
+      { title:'II. Heartoak Held', size:'medium', style:'balanced', ais:['deepforge','ashen'], diff:'normal', setup:'hold_capital',
+        obj:{type:'hold', days:14}, objText:'Keep your starting town (the Heartoak) under your control for 14 consecutive days.',
+        rival:{name:'Hark the Timber-Lord', faction:'deepforge', owner:'ai1', level:9, trait:'warlord', arts:['conqhelm','conqgreaves']},
+        intro:`<p>The Heartoak is yours again, but Hark will not leave it standing. Ashen raiders smell smoke and join the harvest.</p><p><b>Hold the Heartoak for two full weeks</b> without losing it. Build, recruit, and meet every siege at the walls.</p>`,
+        outro:`<p>Fourteen dawns. The Heartoak still stands. Hark withdraws to the ridges, cursing greenwood and grit alike.</p>` },
+      { title:'III. Green Relics', size:'medium', style:'choke', ais:['deepforge','gravecourt'], diff:'hard', setup:'set_hunt',
+        obj:{type:'set', set:'smith', deadline:42}, objText:'Find and wear all pieces of the Smith-King\'s Set before day 42.',
+        rival:{name:'Hark the Timber-Lord', faction:'deepforge', owner:'ai1', level:11, trait:'warlord'},
+        intro:`<p>The Smith-King's Set was scattered when the last Grove-Queen fell. Without its craft the Heartoak will wither in a season.</p><p>Hark hunts the same relics for his forges. <b>Wear the full Smith-King's Set</b> before day 42.</p>`,
+        outro:`<p>The set closes. Sap rises in the Heartoak like a tide. Even the Gravecourt scouts turn aside from the glowing boughs.</p>` },
+      { title:'IV. The Timber-Lord', size:'large', style:'choke', ais:['deepforge','ashen','gravecourt'], diff:'brutal', setup:'boss',
+        obj:{type:'boss'}, objText:'Defeat Hark the Timber-Lord (or destroy the Deepforge Clans).',
+        rival:{name:'Hark the Timber-Lord', faction:'deepforge', owner:'ai1', level:14, levelBump:4, trait:'warlord', arts:['conqhelm','conqaxe','conqbanner'], army:[40,24,14,8,4]},
+        intro:`<p>Hark has chained three clans into one host. He wears the Conqueror's kit and will not treat with the Circle.</p><p><b>Find him and end him</b>, or burn every Deepforge banner from the map.</p>`,
+        outro:`<p>The Timber-Lord falls beneath the Heartoak's shade. The Clans scatter. For a generation, the Wildwood will remember your name in leaf and thorn.</p><p><b>Roots of the Wildwood is complete.</b></p>` }
+    ]},
+
+  { id:'deepforge', title:'Hammers of Deepforge', faction:'deepforge', heroName:'Bruna Ironvein',
+    blurb:'The Clans are late to the Sundering. Race the calendar for ore-towns, rescue a captive thane, weather the Ashen waves, and break the Star-Pyre cabal.',
+    chapters:[
+      { title:'I. Ore by Sunset', size:'small', style:'open', ais:['spireborn'], diff:'easy', setup:'hold_capital',
+        obj:{type:'timed_capture', towns:2, deadline:24}, objText:'Hold at least 2 towns by day 24 (starting town counts).',
+        rival:{name:'Lyra of the Star-Pyre', faction:'spireborn', owner:'ai1', level:7, trait:'arcanist', arts:['voidtome']},
+        intro:`<p>Deepforge forges starve without ore. Spireborn brokers have bought the valley's neutrality out from under you.</p><p><b>Hold two towns by day 24</b> or the clans will melt away to mercenary work.</p>`,
+        outro:`<p>Two keeps, two anvils lit. The Clans stay. Lyra of the Star-Pyre notes your name in her ledger of grudges.</p>` },
+      { title:'II. The Chained Thane', size:'medium', style:'balanced', ais:['spireborn','ashen'], diff:'normal', setup:'rescue', rescueName:'Thane Korri',
+        obj:{type:'rescue'}, objText:'Rescue Thane Korri from the guarded camp in the wilds.',
+        rival:{name:'Lyra of the Star-Pyre', faction:'spireborn', owner:'ai1', level:9, trait:'arcanist'},
+        intro:`<p>Thane Korri was taken on the ore-road. Spireborn wards hold him in a wild camp under heavy guard.</p><p><b>Break the camp and free him.</b> Ashen scavengers will try to claim the ransom first.</p>`,
+        outro:`<p>Korri walks free, hammer in hand. He swears the Ironvein oath to you — and names Lyra as the one who sold him.</p>` },
+      { title:'III. Ember Weeks', size:'medium', style:'choke', ais:['ashen','spireborn'], diff:'hard', setup:'survive_waves', waveOwner:'ai1', waveFac:'ashen',
+        obj:{type:'survive', days:28}, objText:'Survive until day 28 while Ashen raid waves march from their towns.',
+        rival:{name:'Lyra of the Star-Pyre', faction:'spireborn', owner:'ai2', level:11, trait:'arcanist'},
+        intro:`<p>Ashen rifts open along the slag-hills. Every week a new raid captain marches. Lyra watches, waiting for you to crack.</p><p><b>Hold out until day 28.</b> Do not lose your last town.</p>`,
+        outro:`<p>The twenty-eighth dawn. The rifts gutter. Your forges still burn. Lyra's patience is gone — she will come herself next.</p>` },
+      { title:'IV. Star-Pyre', size:'large', style:'choke', ais:['spireborn','ashen','gravecourt'], diff:'brutal', setup:'boss',
+        obj:{type:'boss'}, objText:'Defeat Lyra of the Star-Pyre (or destroy the Spireborn Arcanum).',
+        rival:{name:'Lyra of the Star-Pyre', faction:'spireborn', owner:'ai1', level:15, levelBump:5, trait:'arcanist', arts:['voidtome','dawnsignet'], army:[36,22,14,10,6,3]},
+        intro:`<p>Lyra gathers the Star-Pyre cabal above the slag-caldera. Spells and undead auxiliaries answer her call.</p><p><b>Defeat Lyra</b> and the Clans will own the mountain roads again.</p>`,
+        outro:`<p>The Star-Pyre goes dark. Deepforge hammers ring from ridge to ridge. Bruna Ironvein's name is struck into the clan tablets.</p><p><b>Hammers of Deepforge is complete.</b></p>` }
+    ]},
+
+  { id:'spireborn', title:'The Spireborn Schism', faction:'spireborn', heroName:'Quill Adept Venn',
+    blurb:'The Arcanum splits: one tower would seal the rifts, another would feed them. Secure libraries, hold the Observatory, gather the Glyph set, and overthrow Archmage Solen.',
+    chapters:[
+      { title:'I. Schism at Dusk', size:'small', style:'balanced', ais:['spireborn'], diff:'easy', setup:'hold_capital',
+        obj:{type:'capture', towns:2}, objText:'Hold at least 2 towns at once.',
+        rival:{name:'Archmage Solen', faction:'spireborn', owner:'ai1', level:7, trait:'arcanist'},
+        intro:`<p>Two towers claim the Arcanum. Yours would seal the rifts; Archmage Solen's would drink them dry.</p><p>The Gravecourt sells bones to both sides. <b>Take and hold a second town</b> so your tower has a second gate.</p>`,
+        outro:`<p>Two banners of the blue flame. Solen retreats to the Observatory and begins the glyph-binding you hoped to prevent.</p>` },
+      { title:'II. The Silent Procession', size:'medium', style:'balanced', ais:['gravecourt','ashen'], diff:'normal', setup:'escort', escortName:'Scribe Halduin',
+        obj:{type:'escort', deadline:30}, objText:'Escort Scribe Halduin to the haven town before day 30.',
+        rival:{name:'Archmage Solen', faction:'spireborn', owner:'ai1', level:9, trait:'arcanist', arts:['voidtome']},
+        intro:`<p>Scribe Halduin carries the counter-glyphs that can unmake Solen's working. The Gravecourt wants the parchment; the Ashen want the scribe burned.</p><p><b>Get Halduin to the haven alive by day 30.</b></p>`,
+        outro:`<p>Halduin reaches the haven. The counter-glyphs are copied in triplicate. Solen feels the first of his bindings slip.</p>` },
+      { title:'III. Observatory', size:'medium', style:'choke', ais:['gravecourt','ashen'], diff:'hard', setup:'hold_capital',
+        obj:{type:'hold', days:12}, objText:'Hold your capital for 12 consecutive days while rivals press the siege.',
+        rival:{name:'Archmage Solen', faction:'spireborn', owner:'ai1', level:12, trait:'arcanist'},
+        intro:`<p>You have seized the Observatory. Solen's loyalists and their hired dead will not let you keep the lenses.</p><p><b>Hold the Observatory for 12 days.</b></p>`,
+        outro:`<p>Twelve nights of starlight and siege. The lenses stay yours. Solen prepares a final rite in the Ashen caldera.</p>` },
+      { title:'IV. Against Solen', size:'large', style:'choke', ais:['spireborn','gravecourt','ashen'], diff:'brutal', setup:'boss',
+        obj:{type:'boss'}, objText:'Defeat Archmage Solen (or destroy his Spireborn loyalists — ai1).',
+        rival:{name:'Archmage Solen', faction:'spireborn', owner:'ai1', level:16, levelBump:5, trait:'arcanist', arts:['voidtome','glassheart','dawnmantle'], army:[30,20,16,12,8,4,2]},
+        intro:`<p>Solen stands at the caldera lip with loyal Spireborn, Gravecourt auxiliaries and Ashen fire-priests.</p><p><b>Defeat Archmage Solen</b> and end the schism.</p>`,
+        outro:`<p>Solen's staff shatters. The rifts above the caldera close like eyes. The Arcanum is one tower again — yours.</p><p><b>The Spireborn Schism is complete.</b></p>` }
+    ]},
+
+  { id:'ashen', title:'Embers of the Ashen Host', faction:'ashen', heroName:'Varka Ember-Eye',
+    blurb:'The Ashen Host rides the rifts. Seize a second pyre, escort the fire-priests, survive the counter-crusade, and topple Knight-Captain Roderic.',
+    chapters:[
+      { title:'I. Second Pyre', size:'small', style:'open', ais:['sunward'], diff:'easy', setup:'hold_capital',
+        obj:{type:'timed_capture', towns:2, deadline:22}, objText:'Hold at least 2 towns by day 22.',
+        rival:{name:'Knight-Captain Roderic', faction:'sunward', owner:'ai1', level:6, trait:'warlord', arts:['conqhelm']},
+        intro:`<p>Ash falls on the march. The Sunward Order has bottled your Host into one crater-town.</p><p><b>Take a second town by day 22</b> or the Host will starve of tribute.</p>`,
+        outro:`<p>Two pyres burn. Roderic marks your name on his crusade roll.</p>` },
+      { title:'II. The Fire-Priests', size:'medium', style:'balanced', ais:['sunward','thornwild'], diff:'normal', setup:'escort', escortName:'Flame-Priest Oruun',
+        obj:{type:'escort', deadline:30}, objText:'Escort Flame-Priest Oruun to the haven town before day 30.',
+        rival:{name:'Knight-Captain Roderic', faction:'sunward', owner:'ai1', level:9, trait:'warlord'},
+        intro:`<p>Oruun carries the rift-key. Without it the Host cannot open a clean gate home.</p><p><b>Get him to the haven alive by day 30.</b> Sunward and Thornwild both want him dead.</p>`,
+        outro:`<p>Oruun reaches the haven. The key is copied. Roderic swears a winter crusade.</p>` },
+      { title:'III. Winter Crusade', size:'medium', style:'choke', ais:['sunward','deepforge'], diff:'hard', setup:'survive_waves', waveOwner:'ai1', waveFac:'sunward',
+        obj:{type:'survive', days:28}, objText:'Survive until day 28 while Sunward crusade waves march.',
+        rival:{name:'Knight-Captain Roderic', faction:'sunward', owner:'ai1', level:12, trait:'warlord', arts:['conqhelm','conqbanner']},
+        intro:`<p>Roderic's crusade arrives weekly. Deepforge sells them steel.</p><p><b>Hold out until day 28.</b></p>`,
+        outro:`<p>The twenty-eighth dawn. The crusade banners thin. Roderic will come himself.</p>` },
+      { title:'IV. Roderic', size:'large', style:'choke', ais:['sunward','deepforge','thornwild'], diff:'brutal', setup:'boss',
+        obj:{type:'boss'}, objText:'Defeat Knight-Captain Roderic (or destroy the Sunward Order).',
+        rival:{name:'Knight-Captain Roderic', faction:'sunward', owner:'ai1', level:15, levelBump:5, trait:'warlord', arts:['conqhelm','conqaxe','conqbanner','conqgreaves'], army:[44,26,16,10,5]},
+        intro:`<p>Roderic stands at the Lightgate with three banners at his back.</p><p><b>Defeat him</b> and the Ashen Host will ride free.</p>`,
+        outro:`<p>Roderic falls. Embers rise. The Host names you Ember-Eye forever.</p><p><b>Embers of the Ashen Host is complete.</b></p>` }
+    ]},
+
+  { id:'gravecourt', title:'Banners of the Gravecourt', faction:'gravecourt', heroName:'Lady Mire of Barrows',
+    blurb:'The Gravecourt wakes. Rescue a bound duke, hold the Bone Keep, gather the Barrow Regalia, and unmake the living usurper Cassian.',
+    chapters:[
+      { title:'I. The Bound Duke', size:'small', style:'balanced', ais:['spireborn'], diff:'easy', setup:'rescue', rescueName:'Duke Halvern',
+        obj:{type:'rescue'}, objText:'Rescue Duke Halvern from the guarded camp.',
+        rival:{name:'Cassian the Living', faction:'spireborn', owner:'ai1', level:7, trait:'arcanist', arts:['voidtome']},
+        intro:`<p>Duke Halvern was chained by Spireborn wards before he could die properly.</p><p><b>Free him</b> so the Court has a marshal again.</p>`,
+        outro:`<p>Halvern rises, grateful and cold. Cassian's name is next on the ledger.</p>` },
+      { title:'II. Bone Keep', size:'medium', style:'balanced', ais:['spireborn','sunward'], diff:'normal', setup:'hold_capital',
+        obj:{type:'hold', days:12}, objText:'Hold your capital for 12 consecutive days.',
+        rival:{name:'Cassian the Living', faction:'spireborn', owner:'ai1', level:10, trait:'arcanist'},
+        intro:`<p>The Bone Keep is yours, but Cassian and Sunward zealots want the crypts sealed forever.</p><p><b>Hold the Keep for 12 days.</b></p>`,
+        outro:`<p>Twelve nights. The Keep stands. Cassian retreats to hunt the Barrow Regalia first.</p>` },
+      { title:'III. Barrow Regalia', size:'medium', style:'choke', ais:['spireborn','ashen'], diff:'hard', setup:'set_hunt',
+        obj:{type:'set', set:'barrow', deadline:40}, objText:'Find and wear all pieces of the Barrow Regalia before day 40.',
+        rival:{name:'Cassian the Living', faction:'spireborn', owner:'ai1', level:12, trait:'arcanist', arts:['voidtome']},
+        intro:`<p>The Barrow Regalia binds the Court to the land. Cassian would melt it for reagents.</p><p><b>Wear the full Barrow Regalia</b> before day 40.</p>`,
+        outro:`<p>The Regalia closes. The dead answer louder. Cassian feels the first true fear.</p>` },
+      { title:'IV. Cassian Unmade', size:'large', style:'choke', ais:['spireborn','sunward','ashen'], diff:'brutal', setup:'boss',
+        obj:{type:'boss'}, objText:'Defeat Cassian the Living (or destroy his Spireborn cabal).',
+        rival:{name:'Cassian the Living', faction:'spireborn', owner:'ai1', level:16, levelBump:5, trait:'arcanist', arts:['voidtome','glassheart'], army:[32,20,14,10,6,3]},
+        intro:`<p>Cassian stands living among the dead with Sunward and Ashen hirelings.</p><p><b>Unmake him</b> and the Gravecourt will rule the night again.</p>`,
+        outro:`<p>Cassian falls. The Court lifts its banners. Lady Mire's name is whispered in every crypt.</p><p><b>Banners of the Gravecourt is complete.</b></p>` }
+    ]}
+];
+
+// sanity: every pack chapter references known sets / factions
+(function(){ try{
+  for(const p of CAMP_PACKS) for(const C of p.chapters){
+    if(C.obj&&C.obj.set&&!ART_SETS[C.obj.set]) console.warn('unknown art set',C.obj.set,C.title);
+  }
+}catch(e){ console.warn(e); } })();
+
+// ---- defeat retry keeps pack id ----
+{ const _end=showEndScreen; showEndScreen=function(win){ if(G&&G.campaign){ if(win){ campWin(); return; }
+    const idx=G.campaign.idx; const pack=G.campaign.pack||'sundering'; const C=campChapters()[idx];
+    const m=modal(`<h2 class="lose">Defeat</h2><p>${C?C.title:'Chapter'} is lost, but the campaign is not. Your hero from the previous chapter is still waiting.</p>
+      <div class="camp-diffnext"><b>Retry difficulty</b> (you may lower it)<div class="camp-diffbtns">${CAMP_DIFFS.map(d=>`<label class="camp-difflab"><input type="radio" name="rtdiff" value="${d}" ${d===(G.campaign.diff||'normal')?'checked':''}> ${campDiffLabel(d)}</label>`).join('')}</div></div>
+      <div class="row"><button class="btn primary" id="cp-retry">Retry chapter</button><button class="btn" id="cp-menu">Main menu</button></div>`);
+    try{ sfx('defeat'); }catch(e){}
+    m.querySelector('#cp-retry').onclick=()=>{ const d=(m.querySelector('input[name=rtdiff]:checked')||{}).value||G.campaign.diff||'normal'; const st=campPackState(pack); st.diff=d; campWritePack(pack,st); closeModal(m); startCampaignChapter(idx,pack); };
+    m.querySelector('#cp-menu').onclick=()=>{ closeModal(m); showMenu(); }; return; }
+  return _end.apply(this,arguments); }; }
 
 </script></body></html>
