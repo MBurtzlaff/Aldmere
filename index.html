@@ -526,6 +526,13 @@ html.mob .tr-phonehint{ display:block; background:rgba(40,70,40,0.35); border:1p
 .turnrep .tr-loss{ color:#ff8a8a; }
 .turnrep .tr-mine{ color:#c8e89a; }
 #cb-fit,#cb-zin,#cb-zout{ min-width:44px; }
+
+/* v6.6.1 town / modal zoom */
+#town{ overflow:auto; -webkit-overflow-scrolling:touch; }
+#town .panel.screen.town{ will-change:transform; }
+#tz-bar .btn, .mz-bar .btn{ min-width:40px; min-height:40px; }
+.mz-bar{ display:none; } html.mob .mz-bar{ display:flex; gap:6px; position:fixed; right:8px; top:calc(8px + env(safe-area-inset-top,0px)); z-index:10050; background:rgba(20,16,12,.85); padding:4px; border-radius:8px; }
+html.mob #tz-bar{ display:inline-flex !important; }
 </style><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"><script>window.BOA_SW='sw.js';</script></head>
 <body>
 <div id="topbar"><div class="logo">⚜ Aldmere</div><div id="res"></div><div id="daylbl"></div>
@@ -8209,7 +8216,7 @@ function mobCombatRelayout(){ if(!MOB.phone||!CV.cv||document.getElementById('co
 
 // ---------- performance: 30 fps when idle on phones, auto Low graphics if frames are slow, pause audio in background ----------
 { const _rm=renderMap; let last=0; const PR={n:0,sum:0,gap:0,lt:0,done:false};
-  renderMap=function(t){ if(MOB.phone && !MAPV.moving && performance.now()-(MOB.lastMove||0)>400 && t-last<30) return; const gap=t-last; last=t; const a=performance.now(); const r=_rm(t); const d=performance.now()-a;
+  renderMap=function(t){ if(MOB.phone && !MAPV.moving && performance.now()-(MOB.lastMove||0)>400 && t-last<30) return; const gap=t-last; last=t; const a=performance.now(); const r=_rm(t); MAPV._frameToken=(MAPV._frameToken||0)+1; const d=performance.now()-a;
     if(MOB.phone&&!PR.done&&G&&MAPV.terrain){ let explicit=null; try{ explicit=localStorage.getItem('boa_gfx'); }catch(_){} if(explicit){ PR.done=true; } else { PR.n++; if(PR.n>20){ PR.sum+=d; PR.gap+=Math.min(gap,200); } if(PR.n>=140){ PR.done=true; const avg=PR.sum/120, g2=PR.gap/120;
         const slow=avg>14||g2>45; try{ localStorage.setItem('boa_gfx_auto',slow?'low':'high'); }catch(_){} MOB.probe={avg,gap:g2,slow};
         if(slow&&gfxHigh()){ GFX.q='low'; if(MAPV.terrain){ MAPV.terrain=paintTerrain(G.map,TS); FOG_DIRTY=true; } toast('Switched to Low graphics for smoother play on this device (change it under 🔊 settings).'); } } } }
@@ -8468,9 +8475,11 @@ function applyTextScale(){ const p=textScalePref(); const map={normal:1, large:1
 window.addEventListener('load',()=>{ try{ applyTextScale(); }catch(e){} });
 
 // ---------- brighter adventure map ----------
-(function(){ const _rm=renderMap; renderMap=function(time){ const r=_rm.apply(this,arguments);
-  try{ if(!mapBrightOn()||!MAPV||!MAPV.cv) return r; const cv=MAPV.cv, ctx=MAPV.ctx; if(!ctx) return r;
-    // soft lift over the drawn frame (screen space, after fog) — keeps unexplored fog readable
+// v6.6.1: brightness only after a real draw. The phone idle throttle in 17_mobile skips redraws;
+// applying 'lighter' on those skips stacked a wash every other frame → constant flicker that stopped on touch.
+(function(){ const _rm=renderMap; renderMap=function(time){ const tok=MAPV&&MAPV._frameToken; const r=_rm.apply(this,arguments);
+  try{ if(!mapBrightOn()||!MAPV||!MAPV.cv) return r; if(MAPV._frameToken===tok) return r; // throttled skip: do not overlay
+    const cv=MAPV.cv, ctx=MAPV.ctx; if(!ctx) return r;
     ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.globalCompositeOperation='lighter';
     ctx.fillStyle='rgba(255,236,200,0.07)'; ctx.fillRect(0,0,cv.width,cv.height); ctx.restore(); }catch(e){}
   return r; }; })();
@@ -8632,5 +8641,68 @@ function pickSaveFile(){ const inp=document.createElement('input'); inp.type='fi
     block.querySelector('#mm-exsave').onclick=()=>downloadSaveBundle();
     block.querySelector('#mm-imsave').onclick=()=>pickSaveFile();
   }catch(e){ console.error(e); } return r; }; })();
+
+
+
+// ---------- v6.6.1: town (and modal) in-app pinch zoom — viewport meta blocks native zoom ----------
+const TOWNZ={z:1,x:0,y:0};
+function townZoomReset(){ TOWNZ.z=1; TOWNZ.x=0; TOWNZ.y=0; townZoomApply(); }
+function townZoomApply(){ const panel=document.querySelector('#town .panel.screen'); if(!panel) return;
+  panel.style.transformOrigin='0 0'; panel.style.transform=`translate(${TOWNZ.x}px,${TOWNZ.y}px) scale(${TOWNZ.z})`;
+  const lab=document.getElementById('tz-lab'); if(lab) lab.textContent=Math.round(TOWNZ.z*100)+'%'; }
+function townZoomBy(f,cx,cy){ const el=document.getElementById('town'); if(!el) return;
+  const z0=TOWNZ.z, z1=Math.max(1,Math.min(2.4,z0*f)); if(z1===z0) return;
+  // zoom toward point (client coords relative to town scroller)
+  const sc=el; const r=sc.getBoundingClientRect();
+  const px=(cx!=null?cx:r.left+r.width/2)-r.left, py=(cy!=null?cy:r.top+r.height/2)-r.top;
+  // content point under cursor before zoom
+  const wx=(px-TOWNZ.x)/z0, wy=(py-TOWNZ.y)/z0;
+  TOWNZ.z=z1; TOWNZ.x=px-wx*z1; TOWNZ.y=py-wy*z1; townZoomApply(); }
+function setupTownZoom(){ const root=document.getElementById('town'); if(!root||root.dataset.tz==='1') return; root.dataset.tz='1';
+  const P=new Map(); let g=null;
+  const two=()=>{ const [a,b]=[...P.values()]; return {d:Math.hypot(a.x-b.x,a.y-b.y)||1, mx:(a.x+b.x)/2, my:(a.y+b.y)/2}; };
+  root.addEventListener('pointerdown',e=>{ if(e.pointerType!=='touch') return; if(e.target.closest&&e.target.closest('button,input,select,textarea,a,.btn,.slot,.art')) return;
+    try{ root.setPointerCapture(e.pointerId); }catch(_){} P.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(P.size===1) g={mode:'tap',x:e.clientX,y:e.clientY,px:TOWNZ.x,py:TOWNZ.y};
+    else if(P.size===2){ const t=two(); g={mode:'pinch',d0:t.d,z0:TOWNZ.z,x0:TOWNZ.x,y0:TOWNZ.y,mx:t.mx,my:t.my}; } },{passive:true});
+  root.addEventListener('pointermove',e=>{ if(!P.has(e.pointerId)) return; P.set(e.pointerId,{x:e.clientX,y:e.clientY}); if(!g) return;
+    if(g.mode==='tap'&&Math.hypot(e.clientX-g.x,e.clientY-g.y)>10) g.mode=(TOWNZ.z>1.02?'pan':'tap');
+    if(g.mode==='pan'&&TOWNZ.z>1.02){ TOWNZ.x=g.px+(e.clientX-g.x); TOWNZ.y=g.py+(e.clientY-g.y); townZoomApply(); }
+    else if(g.mode==='pinch'&&P.size>=2){ const t=two(); const f=t.d/g.d0; const z1=Math.max(1,Math.min(2.4,g.z0*f));
+      const r=root.getBoundingClientRect(); const px=t.mx-r.left, py=t.my-r.top; const wx=(px-g.x0)/g.z0, wy=(py-g.y0)/g.z0;
+      TOWNZ.z=z1; TOWNZ.x=px-wx*z1; TOWNZ.y=py-wy*z1; townZoomApply(); } },{passive:true});
+  const up=e=>{ P.delete(e.pointerId); if(P.size===0) g=null; else if(P.size===1&&g&&g.mode==='pinch'){ const [p]=[...P.values()]; g={mode:'pan',x:p.x,y:p.y,px:TOWNZ.x,py:TOWNZ.y}; } };
+  root.addEventListener('pointerup',up); root.addEventListener('pointercancel',up);
+}
+function ensureTownZoomBar(){ const head=document.querySelector('#town .scr-head > div:last-child'); if(!head||document.getElementById('tz-bar')) return;
+  const bar=document.createElement('span'); bar.id='tz-bar'; bar.style.cssText='display:inline-flex;gap:4px;align-items:center;margin-left:8px;vertical-align:middle';
+  bar.innerHTML=`<button type="button" class="btn small" id="tz-out" data-tip="Zoom out">－</button><span id="tz-lab" class="dim" style="min-width:3em;text-align:center">100%</span><button type="button" class="btn small" id="tz-in" data-tip="Zoom in">＋</button><button type="button" class="btn small" id="tz-fit" data-tip="Reset town zoom">Fit</button>`;
+  head.insertBefore(bar, head.firstChild);
+  bar.querySelector('#tz-in').onclick=e=>{ e.stopPropagation(); townZoomBy(1.15); };
+  bar.querySelector('#tz-out').onclick=e=>{ e.stopPropagation(); townZoomBy(1/1.15); if(TOWNZ.z<=1.01) townZoomReset(); };
+  bar.querySelector('#tz-fit').onclick=e=>{ e.stopPropagation(); townZoomReset(); };
+  townZoomApply(); }
+(function(){ const _rt=renderTown; renderTown=function(){ const r=_rt.apply(this,arguments); try{ setupTownZoom(); ensureTownZoomBar(); townZoomApply(); }catch(e){} return r; };
+  const _ot=openTown; openTown=function(t){ townZoomReset(); return _ot.apply(this,arguments); };
+  const _ct=closeTown; closeTown=function(){ townZoomReset(); return _ct.apply(this,arguments); }; })();
+
+// Modal / dialog pinch zoom (building cards, info boxes)
+const MODZ={z:1,x:0,y:0,el:null};
+function modalZoomReset(){ MODZ.z=1; MODZ.x=0; MODZ.y=0; if(MODZ.el){ MODZ.el.style.transform=''; } }
+function setupModalZoom(wrap){ if(!(typeof MOB!=='undefined'&&MOB.phone)) return; // desktop layout tests must stay unchanged
+  const modal=wrap.querySelector('.modal'); if(!modal||modal.dataset.mz==='1') return; modal.dataset.mz='1'; MODZ.el=modal; MODZ.z=1; MODZ.x=0; MODZ.y=0;
+  // floating chrome — do NOT insert into flow (encounter Fight/Join must stay on screen)
+  if(!wrap.querySelector('.mz-bar')){ const bar=document.createElement('div'); bar.className='mz-bar'; bar.innerHTML=`<button type="button" class="btn small mz-out">－</button><button type="button" class="btn small mz-in">＋</button><button type="button" class="btn small mz-fit">Fit</button>`;
+    wrap.appendChild(bar);
+    bar.querySelector('.mz-in').onclick=e=>{ e.stopPropagation(); MODZ.z=Math.min(2.2,MODZ.z*1.15); modal.style.transformOrigin='top center'; modal.style.transform=`scale(${MODZ.z})`; };
+    bar.querySelector('.mz-out').onclick=e=>{ e.stopPropagation(); MODZ.z=Math.max(1,MODZ.z/1.15); modal.style.transformOrigin='top center'; modal.style.transform=MODZ.z>1.01?`scale(${MODZ.z})`:''; };
+    bar.querySelector('.mz-fit').onclick=e=>{ e.stopPropagation(); MODZ.z=1; modal.style.transform=''; }; }
+  const P=new Map(); let g=null; const two=()=>{ const [a,b]=[...P.values()]; return {d:Math.hypot(a.x-b.x,a.y-b.y)||1}; };
+  modal.addEventListener('pointerdown',e=>{ if(e.pointerType!=='touch') return; P.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(P.size===2){ const t=two(); g={mode:'pinch',d0:t.d,z0:MODZ.z}; } },{passive:true});
+  modal.addEventListener('pointermove',e=>{ if(!P.has(e.pointerId)) return; P.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(g&&g.mode==='pinch'&&P.size>=2){ const t=two(); MODZ.z=Math.max(1,Math.min(2.2,g.z0*t.d/g.d0)); modal.style.transformOrigin='top center'; modal.style.transform=MODZ.z>1.01?`scale(${MODZ.z})`:''; } },{passive:true});
+  const up=e=>{ P.delete(e.pointerId); if(P.size<2) g=null; }; modal.addEventListener('pointerup',up); modal.addEventListener('pointercancel',up); }
+(function(){ const _mo=modal; if(typeof modal!=='function') return; modal=function(){ const m=_mo.apply(this,arguments); try{ if(m) setupModalZoom(m); }catch(e){} return m; }; })();
 
 </script></body></html>
