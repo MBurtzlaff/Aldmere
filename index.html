@@ -347,8 +347,10 @@ body.is-dragging, body.is-dragging *{ cursor:grabbing !important; user-select:no
 html.touch, html.touch body{ overscroll-behavior:none; -webkit-tap-highlight-color:transparent; -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; touch-action:manipulation; -webkit-text-size-adjust:100%; }
 html.touch input, html.touch textarea{ -webkit-user-select:text; user-select:text; }
 html.touch #map, html.touch #ccv, html.touch #minimap{ touch-action:none; }
+html.touch #combat, html.touch #town, html.touch #town .tvscroll, html.touch #town .panel.screen, html.touch .modal{ touch-action:none; }
+
 html.touch .slot[data-army]{ touch-action:none; }
-html.touch .btn{ min-height:40px; } html.touch .btn.small{ min-height:34px; }
+html.touch .btn{ min-height:44px; } html.touch .btn.small{ min-height:44px; }
 html.touch .slot.swap-src{ border-color:#7fd0ff !important; box-shadow:0 0 0 3px #7fd0ff, 0 0 14px #7fd0ff; }
 .mswap{ margin:4px 0 6px; } .mswap.on{ background:linear-gradient(180deg,#2a6a9a,#173a5a); border-color:#7fd0ff; color:#fff; }
 .tvscroll{ overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; touch-action:pan-x pan-y; border-radius:6px; flex:none; }
@@ -360,7 +362,7 @@ html.mob body{ position:fixed; inset:0; }
 html.mob #topbar{ height:calc(var(--tbh) + var(--sat)); padding:var(--sat) max(6px,var(--sar)) 0 max(6px,var(--sal)); gap:6px; }
 html.mob #topbar .logo{ display:none; }
 html.mob #topbar .btn{ display:none; }
-html.mob #topbar #btn-more{ display:inline-block; margin-left:auto; min-width:44px; min-height:38px; font-size:20px; padding:2px 10px; flex:none; }
+html.mob #topbar #btn-more{ display:inline-block; margin-left:auto; min-width:44px; min-height:44px; font-size:20px; padding:2px 10px; flex:none; }
 html.mob #res{ flex:1; min-width:0; overflow-x:auto; overflow-y:hidden; white-space:nowrap; display:flex; gap:8px; font-size:12px; scrollbar-width:none; -webkit-overflow-scrolling:touch; touch-action:pan-x; }
 html.mob #res::-webkit-scrollbar{ display:none; }
 html.mob #res img{ height:16px; }
@@ -386,7 +388,7 @@ html.mob #toast{ bottom:calc(var(--bar) + var(--sab) + 14px); max-width:92vw; wh
 html.mob #banner{ top:calc(var(--tbh) + 12px + var(--sat)); max-width:92vw; padding:8px 16px; font-size:15px; text-align:center; }
 html.mob #tip{ max-width:calc(100vw - 16px); font-size:13px; }
 html.mob #sndpop{ top:calc(var(--tbh) + 6px + var(--sat)); right:calc(8px + var(--sar)); left:auto; width:min(300px, calc(100vw - 16px)); max-height:calc(100vh - 120px); overflow:auto; }
-html.mob #sndpop label{ min-height:36px; }
+html.mob #sndpop label{ min-height:44px; }
 /* landscape phone: action bar becomes a column on the right, panel slides in from the right */
 html.mob.landscape #mapwrap{ bottom:0; right:calc(var(--bar) + var(--sar)); left:var(--sal); }
 html.mob.landscape #mobbar{ top:calc(var(--tbh) + var(--sat)); left:auto; right:0; bottom:0; width:calc(var(--bar) + var(--sar)); height:auto; flex-direction:column; padding:4px var(--sar) max(4px,var(--sab)) 4px; border-top:0; border-left:2px solid var(--gold2); }
@@ -436,7 +438,7 @@ html.mob #atbbar{ zoom:1; height:calc(72px + var(--sab)); padding:6px max(6px,va
 html.mob .chipw{ width:48px; } html.mob .chipw.active{ width:60px; margin-right:4px; }
 html.mob .chip{ width:44px; height:44px; border-width:2px; } html.mob .chip.active{ width:56px; height:56px; } html.mob .chip span{ font-size:11px; } html.mob .chip-name{ font-size:9px; }
 html.mob #c-actions{ zoom:1; left:calc(4px + var(--sal)); right:calc(4px + var(--sar)); transform:none; bottom:calc(76px + var(--sab)); gap:4px; }
-html.mob #c-actions .btn{ min-height:42px; padding:4px 9px; font-size:12px; }
+html.mob #c-actions .btn{ min-height:44px; padding:4px 9px; font-size:12px; }
 html.mob.landscape #c-actions{ left:auto; top:calc(84px + var(--sat)); bottom:calc(78px + var(--sab)); width:176px; display:grid; grid-template-columns:1fr 1fr; align-content:start; overflow-y:auto; }
 html.mob.landscape #c-actions .btn{ font-size:11px; padding:3px 4px; white-space:normal; line-height:1.1; }
 html.mob.landscape .c-hero{ max-width:28vw; }
@@ -481,7 +483,7 @@ html.mob .resv span{ overflow:hidden; text-overflow:clip; }
 html.mob .resv small{ font-size:9.5px; }
 html.mob #daylbl{ flex:none; font-size:11px; line-height:1.2; text-align:right; white-space:nowrap; }
 html.mob #daylbl b{ font-size:13px; color:#ffe7a8; display:block; }
-html.mob #daylbl .wevchip{ display:inline-block; font-size:11px; padding:0 3px; max-width:24px; overflow:hidden; white-space:nowrap; vertical-align:middle; }
+html.mob #daylbl .wevchip{ display:inline-block; font-size:11px; padding:0 6px; max-width:12em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; vertical-align:middle; }
 html.mob.landscape #daylbl b{ display:inline; }
 html.mob.landscape #daylbl b{ margin-right:6px; }
 /* v6.5.1 wild-creature encounter dialog */
@@ -537,7 +539,7 @@ html.mob .tr-phonehint{ display:block; background:rgba(40,70,40,0.35); border:1p
 /* v6.6.1 town / modal zoom */
 #town{ overflow:auto; -webkit-overflow-scrolling:touch; }
 #town .panel.screen.town{ will-change:transform; }
-#tz-bar .btn, .mz-bar .btn{ min-width:40px; min-height:40px; }
+#tz-bar .btn, .mz-bar .btn{ min-width:44px; min-height:44px; }
 .mz-bar{ display:none; } html.mob .mz-bar{ display:flex; gap:6px; position:fixed; left:8px; right:auto; top:auto; bottom:calc(12px + env(safe-area-inset-bottom,0px)); z-index:10050; background:rgba(20,16,12,.85); padding:4px; border-radius:8px; }
 html.mob #tz-bar{ display:inline-flex !important; }
 
@@ -5236,8 +5238,8 @@ async function castSpell(side, id, target, free=false, ctxIn=null){
   else if(id==='dread'){ if(target.flags.undead||target.flags.machine){ if(B.visual) floatText(target,'Immune','#ccc'); } else { addEff(target,{kind:'dread',turns:2+Math.floor(sp/5)+(h&&hasPerk(h,'umb_curse')?2:0)}); if(B.visual) floatText(target,'Dread','#b070ff'); } }
   else if(id==='plague'){ addEff(target,{kind:'plague',val:spellDamageTo(ctx,id,target,10+5*sp),turns:3+(h&&hasPerk(h,'umb_curse')?2:0)}); if(h&&hasPerk(h,'umb_soulrot')) addEff(target,{kind:'rot',turns:3}); if(B.visual) floatText(target,'Plague','#9aff5a'); }
   else if(id==='nightfall'){ for(const e of liveUnits(enemyOf(side))){ if(e.flags.machine) continue; addEff(e,{kind:'night',turns:2+Math.floor(sp/4)+(h&&hasPerk(h,'umb_curse')?2:0)}); if(B.visual) floatText(e,'Nightfall','#8a6aff'); } if(B.visual) await sleep(200); }
-  else if(id==='bolt') await dmgTo(ctx,id,target,20+10*sp,'#9fc4ff');
-  else if(id==='frost'){ await dmgTo(ctx,id,target,15+8*sp,'#bfefff'); if(target.alive) target.atb=Math.max(0,target.atb-0.2); }
+  else if(id==='bolt') await dmgTo(ctx,id,target,(SPELLS.bolt.base?SPELLS.bolt.base(sp):20+10*sp),'#9fc4ff');
+  else if(id==='frost'){ await dmgTo(ctx,id,target,(SPELLS.frost.base?SPELLS.frost.base(sp):15+8*sp),'#bfefff'); if(target.alive) target.atb=Math.max(0,target.atb-0.2); }
   else if(id==='chain'){ let cur=target, base=25+11*sp; const hit=new Set(); for(let i=0;i<4&&cur;i++){ hit.add(cur.uid); await dmgTo(ctx,id,cur,base,'#fff08a'); base/=2; const nxt=liveUnits(enemyOf(side)).filter(e=>!hit.has(e.uid)&&!e.isGate).sort((a,b)=>hexDist(cur,a)-hexDist(cur,b))[0]; if(nxt&&B.visual) await animBolt(cur,nxt); cur=nxt; } }
   else if(id==='starfall'){ const rad=(h&&hasPerk(h,'pyr_storm'))?2:1; for(const u of unitsWithin(target.c,target.r,rad)){ if(u) await dmgTo(ctx,id,u,20+9*sp,'#ffb08a'); } }
   else if(id==='entangle'){ addEff(target,{kind:'root',turns:2+(h&&hasPerk(h,'lor_hex')?1:0)}); if(B.visual) floatText(target,'Rooted','#7adf6a'); }
@@ -6287,7 +6289,7 @@ function showTutorial(step=0){ document.querySelectorAll('.modal-wrap.tut').forE
 function showHelp(){ const m=modal(`<h2>How to play</h2><div class="help">
   <h3>Goal</h3><p>Eliminate every rival faction: capture all their towns and defeat their heroes. A player with no town is out after 7 days (or at once if they also have no hero). Neutral towns can be captured for extra income and dwellings.</p>
   <h3>Factions</h3><p>${Object.values(FACTIONS).map(F=>`<b style="color:${F.color}">${F.name}</b>: ${F.identity} <i>${F.ability}</i>.`).join('<br>')}</p>
-  <h3>Moving the camera</h3><p><b>Arrow keys / WASD</b> scroll · <b>drag</b> the map with any mouse button (a short click still moves your hero) · <b>mouse wheel</b> scrolls (Shift+wheel sideways, Ctrl+wheel or <b>+ / −</b> zooms) · push the mouse to the <b>edge</b> of the map · <b>click or drag the minimap</b> to jump there · <b>Center</b> (or C) returns to your hero. <b>🏰 Return to Town</b> in the hero panel (or <b>R</b>) sets a route to your nearest town; press it again, press <b>🐎 Move</b> (M / Space) or click the town to march. <b>F</b> or the ⛶ button toggles fullscreen.</p>
+  <h3>Moving the camera</h3><p><b>Arrow keys / WASD</b> scroll · <b>drag</b> the map with any mouse button (a short click still moves your hero) · On a phone, <b>pinch with two fingers</b> to zoom the map. <b>mouse wheel</b> scrolls (Shift+wheel sideways, Ctrl+wheel or <b>+ / −</b> zooms) · push the mouse to the <b>edge</b> of the map · <b>click or drag the minimap</b> to jump there · <b>Center</b> (or C) returns to your hero. <b>🏰 Return to Town</b> in the hero panel (or <b>R</b>) sets a route to your nearest town; press it again, press <b>🐎 Move</b> (M / Space) or click the town to march. <b>F</b> or the ⛶ button toggles fullscreen.</p>
   <h3>Adventure map</h3><p><b>Click</b> a tile (anywhere — even off-screen after scrolling, or on a town) to set a route (green = reachable today, orange/amber = later days, numbered circles show where each day ends). <b>Click it again</b> or press <b>🐎 Move</b> (M / Space) to walk. Long routes are saved on the hero: next day just press Move again. A new destination replaces the route; it is dropped on arrival or if it becomes blocked. Optional: tick <i>Auto-continue routes each morning</i>. Your native terrain never costs more than grass. Pick up resources, open chests (gold <i>or</i> experience), grab artifacts, flag mines, claim creature dwellings (recruit there weekly), and visit sites: shrines and spires (spells), learning stones, libraries, training grounds, windmills, stables, fountains, mercenary camps and guarded crypts. Monsters guard the 8 tiles around them.</p>
   <h3>Heroes</h3><p>Up to ${MAX_HEROES} heroes. The <b>Tavern</b> offers 2 candidates per week (${HIRE_COST} gold). Click a hero portrait on the right to select them. Walk one hero next to another to <b>trade</b> troops and artifacts. Each level: +1 stat, then a hard choice of two or three mutually exclusive options (a skill, a perk, or a specialty/stat focus). Only ${MAX_SKILLS} skill slots: your racial skill + 6 of 12. Perks need ranks; combo perks need perks from several skills; some perks have <span class="bad">drawbacks</span> or lock out rivals. Artifacts: 6 slots, some have downsides, some are <b>cursed</b> (see below), and 6 <b>sets</b> give bonuses for 2 pieces and the full set.</p>
   <h3>Magic</h3><p>Four schools of seven spells each: Radiance (healing, holy damage), Umbra (curses, life drain), Pyre (direct damage), Verdance (protection, regrowth, earth). Each town's Mage Guild I-IV stocks a random selection of level 1-4 spells (more of its faction's favored school) and teaches up to 2 new spells per visit (lowest level first, 3 with the Spireborn Glyph Library); shrines and spires teach spells on the map. Level 3 spells need Basic Lore or the school skill, level 4 need Advanced. School skills add +15% effect per rank and unlock perks.</p>
@@ -6301,7 +6303,7 @@ function showHelp(){ const m=modal(`<h2>How to play</h2><div class="help">
   <h3>Artifact sets</h3><p>${Object.values(ART_SETS).length} sets of 3-4 matching pieces (${Object.values(ART_SETS).map(S=>S.name).join(', ')}). Wearing <b>2 pieces</b> gives a small bonus and the <b>full set</b> a big one. The hero screen shows each set you own: a progress bar, which pieces are worn, in the pack or still missing, and which bonuses are active (✔). Only worn pieces count.</p>
   <h3>Cursed artifacts ☠</h3><p>Some relics are double-edged: a big upside with a real price, for example Bloodaxe (huge attack, but you can never retreat), the Tome of the Hungry Void (spell power, but no mana regeneration and a daily mana drain) or Midas Gauntlet (+900 gold a day, but less experience and attack). They have a red ☠ gem and a warning in the tooltip, go to the pack instead of being worn automatically, and <b>once worn can only be taken off in one of your own towns</b>. Stronger and cursed relics lie further from the starting towns.</p>
   <h3>Hero specialties</h3><p>Every hero has a specialty that <b>grows with level</b>: a creature (+attack/defence for that unit, rising every 3 levels), a spell (stronger casts), gold or a rare resource each day, or a terrain (cheaper movement). It is shown under the trait on the hero screen and on Tavern cards, so you can hire for it. AI rulers use it too.</p>
-  <h3>Weekly events</h3><p>Each new week (from week 2) brings an event, shown in a popup and as a chip in the top bar (hover for details): Week of the Wolf (wolf packs gather), Plague (half growth), Gold Rush (+30% gold), Mana Surge (full mana each morning, +15% spell power), Bandit Week (brigands on the roads, -10% gold), Good Harvest (+25% growth), Week of a creature (double growth for that unit, and more of them in the wild) Bad Harvest (half wood and ore), Wandering Mercenaries (hire a company at a wild camp), or a quiet week. Events are fixed by the map seed, so reloading doesn't change them, and they affect AI rulers in the same way. A dismissible banner reminds you, and the week is listed in the What changed report.</p>
+  <h3>Weekly events</h3><p>Each new week (from week 2) brings an event, shown in a popup and as a chip in the top bar (hover for details): Week of the Wolf (wolf packs gather), Plague (growth cut by a third), Gold Rush (+20% gold), Mana Surge (full mana each morning, +15% spell power), Bandit Week (brigands on the roads, -10% gold), Good Harvest (+25% growth), Week of a creature (double growth for that unit, and more of them in the wild) Bad Harvest (wood and ore cut by a third), Wandering Mercenaries (hire a company at a wild camp), or a quiet week. Events are fixed by the map seed, so reloading doesn't change them, and they affect AI rulers in the same way. A dismissible banner reminds you, and the week is listed in the What changed report.</p>
   <h3>Regions, map sizes &amp; styles</h3><p>Wild creatures match their land: the undead in bogs and near crypts, demons in ash wastes, drakes, giants and golems in the highlands, treants and beasts in deep forests, elementals and constructs around spires, libraries, shrines and wells, nomads in the dunes, and so on. Hover a group to see its region. Maps come in Small, Medium, Large and <b>Extra Large</b> (96×72, 5 neutral towns). At New Game, pick a <b>map style</b>: <b>Balanced</b>, <b>Choke points</b> (mountain ridges crossed only at a few passes) or <b>Open</b> (few mountains and lakes, many routes). Sea maps with boats are not in the game yet.</p>
   <h3>Quick combat</h3><p>Before each fight you can <b>Fight it yourself</b> or <b>Auto-resolve</b>; auto-resolve plays the real battle instantly (same rules and luck) and shows what you lost. In battle, <b>Auto-combat</b> lets the computer play for you; click it again (it reads "Auto ON") to take back control. Tick <b>Auto-resolve trivial fights</b> (side panel or the battle prompt) to skip battles rated Trivial against wild creatures.</p>
   <h3>Difficulty</h3><p>Easy, Normal, Hard and the new <b>Brutal</b>. AI rulers follow faction plans (districts, branches, wonders), retreat when outmatched, recruit ready-made branch units, and may recruit wandering monsters too.</p>
@@ -6315,7 +6317,7 @@ function showHelp(){ const m=modal(`<h2>How to play</h2><div class="help">
   <b>⛓ Earthbind</b> (Verdance 2, 16 mana): an enemy hero you can see nearby cannot move on its next turn. ·
   <b>🌾 Bless the Land</b> (Radiance 3, 18 mana): one of your mines produces double for 7 days (Gold Mines need Advanced).<br>Esc or right-click cancels a spell while you pick its target, and no mana is spent.</p>
   <h3>Marketplace</h3><p><b>⇄ Resources</b>: swap any resource, gold included, for any other and choose how much. The more Marketplaces you own, the better the rate (about a third of the value kept with one Marketplace, rising to 75% with six or more). <b>🗡 Artifact merchant</b>: 3-5 artifacts a week, mostly minor and major pieces, sometimes a pricey relic or a cheap <span class="bad">cursed bargain</span> (clearly marked). <b>📜 Spell scrolls</b>: 2-4 scrolls a week, combat and map spells, that teach a spell your guilds do not stock (school requirements still apply). Buying artifacts or scrolls needs a hero in the town. A Resource Silo and owning 3+ Marketplaces each add one more item to the stock.</p>
-  <h3>Combat</h3><p>Turn order follows the <b>initiative bar</b>. Click a highlighted hex to move, or an enemy to attack (red hex = where you strike from). Hover enemies to see predicted damage. <b>Wait</b> acts later; <b>Defend</b> gives +30% Defense. Creatures with spells get a cast button. Your hero takes turns too: strike, cast, or use the faction power (Rally, Mark Prey, Rift Surge, Soul Drain, Inscribe, Runes). Towns with a Fort have walls, a gate and arrow towers: break the gate, fly over, or shoot. <b>Auto-combat</b> lets the AI finish.</p>
+  <h3>Combat</h3><p>On a phone, <b>pinch with two fingers</b> to zoom the battlefield, and drag two fingers to pan when zoomed (＋ / － / Fit buttons are always on screen). A pinch will not issue a move. Turn order follows the <b>initiative bar</b>. Click a highlighted hex to move, or an enemy to attack (red hex = where you strike from). Hover enemies to see predicted damage. <b>Wait</b> acts later; <b>Defend</b> gives +30% Defense. Creatures with spells get a cast button. Your hero takes turns too: strike, cast, or use the faction power (Rally, Mark Prey, Rift Surge, Soul Drain, Inscribe, Runes). Towns with a Fort have walls, a gate and arrow towers: break the gate, fly over, or shoot. <b>Auto-combat</b> lets the AI finish.</p>
   <h3>Hotseat: several players on one computer</h3><p>In <b>New Game → 4. The world → Other players</b>, switch any slot from <b>AI</b> to <b>Human</b> and pick that player's faction, hero class, trait and hero name (<b>+ Add player</b> for up to 4 rulers in total). Players take turns in order; AI rulers move in between. When a human turn ends, a <b>"Pass to Player N — click when ready"</b> screen hides the map so the next person can sit down. Each player has their <b>own fog of war</b>, log and selected hero. If an AI attacks a human who is not at the keyboard, that player is called over to fight the battle, then the screen is handed back. The last player standing wins; saves and autosaves remember who is human. The campaign is single-player.</p>
   <h3>Campaigns</h3><p>Six faction stories (main menu → <b>⚜ Campaign</b>), each with Easy–Brutal difficulty. Your hero keeps their level, stats, skills and spells between chapters, and at the end of each chapter you choose <b>up to 3 artifacts</b> to carry on. I-III: grow, capture, conquer. <b>IV. The Dawn Regalia</b>: find and wear all four Dawn Regalia pieces before the end of day 49; the missing pieces lie far away, each behind a large-creature guard. <b>V. The Sunderer</b>: the hard finale on a large map against three rivals; defeat Vaeloth the Sunderer, whose unique specialty makes his whole army stronger and who never retreats, while a new wave of rift raiders marches out every week. A lost chapter can be retried.</p>
   <h3>Keys</h3><p>E end turn · H hero · T town · N next hero · M / Space move hero along its route · R return to town · B map spells · C center on hero · F fullscreen · +/− zoom map · arrows/WASD scroll · Esc close windows · in combat: W wait, D defend, L toggle unit names</p></div><div class="row"><button class="btn" id="hp-tut">Replay tutorial</button><button class="btn primary" id="hp-ok">Got it</button></div>`,'wide'); m.querySelector('#hp-ok').onclick=()=>closeModal(m); m.querySelector('#hp-tut').onclick=()=>{ closeModal(m); showTutorial(0); }; }
@@ -9469,5 +9471,334 @@ function drawSunwardSoldier(c,a,sc){
   add('archon',      {props:['halo','plate'], haloColor:'#ff9a5a'});
   add('graceseraph', {props:['halo'], haloColor:'#bfe8ff'});
 })();
+
+// ---- 24_v69.js ----
+// ===================== v6.9: balance + polish + robust iOS pinch zoom =====================
+// Built on v6.8. Old saves (SAVE_VERSION 7) still load; new fields get defaults.
+
+// ---------- Shared two-finger pinch (Touch events + iOS gesture events) ----------
+// Root cause of the v6.6/v6.8 battle-zoom miss on real iOS Safari / home-screen PWA:
+//   1) Battle (and town/modal) pinch used Pointer Events only, with {passive:true}.
+//      iOS often never delivers a second pointerdown for the second finger, and
+//      setPointerCapture on the first finger can swallow the second.
+//   2) 17_mobile preventDefault's document gesturestart/gesturechange to block native
+//      page zoom (viewport is user-scalable=no). With no custom gesture handler, the
+//      pinch was eaten and nothing zoomed.
+//   3) Town scroller used touch-action:pan-x pan-y, which tells iOS to handle pans
+//      and NOT to deliver a two-finger pinch to JS.
+// This helper listens for touchstart/move/end with touches.length===2 (passive:false,
+// preventDefault) and for iOS gesturestart/change/end (e.scale) as a fallback. A pinch
+// never counts as a tap or a move.
+function v69PtsFromTouch(ev){
+  const list=ev.touches||ev.targetTouches||[]; const pts=[];
+  for(let i=0;i<list.length;i++) pts.push({x:list[i].clientX,y:list[i].clientY,id:list[i].identifier});
+  return pts;
+}
+function v69Pair(pts){ const a=pts[0], b=pts[1]; return {d:Math.hypot(a.x-b.x,a.y-b.y)||1, mx:(a.x+b.x)/2, my:(a.y+b.y)/2}; }
+function attachTwoFingerZoom(el, api){
+  if(!el||el.dataset.boaPinch==='1') return el;
+  el.dataset.boaPinch='1';
+  try{ el.style.touchAction='none'; }catch(_){}
+  let mode=null, s=null, touchActive=false;
+  const ignore=ev=>api.ignore&&api.ignore(ev);
+  const begin=p=>{
+    const cur=api.get();
+    s={z0:cur.z, x0:cur.x, y0:cur.y, d0:p.d||1, mx:p.mx, my:p.my};
+    mode='pinch'; el.dataset.boaPinching='1';
+    if(api.onSuppress) api.onSuppress();
+  };
+  const move=p=>{
+    if(!s) return;
+    const z=api.clampZ(s.z0*((p.d||s.d0)/s.d0));
+    api.set({z, mx:p.mx, my:p.my, from:s, reason:mode});
+  };
+  const end=()=>{ if(mode&&api.onEnd) api.onEnd(); mode=null; s=null; delete el.dataset.boaPinching; };
+
+  el.addEventListener('touchstart',ev=>{
+    if(ignore(ev)) return;
+    touchActive=true;
+    const pts=v69PtsFromTouch(ev);
+    if(pts.length>=2){ begin(v69Pair(pts)); ev.preventDefault(); ev.stopPropagation(); }
+  },{passive:false});
+  el.addEventListener('touchmove',ev=>{
+    if(!touchActive) return;
+    const pts=v69PtsFromTouch(ev);
+    if(pts.length>=2){
+      if(mode!=='pinch') begin(v69Pair(pts));
+      else move(v69Pair(pts));
+      ev.preventDefault(); ev.stopPropagation();
+    }
+  },{passive:false});
+  const tend=ev=>{
+    const pts=v69PtsFromTouch(ev);
+    if(pts.length<2 && mode){ ev.preventDefault(); end(); }
+    if(pts.length===0) touchActive=false;
+  };
+  el.addEventListener('touchend',tend,{passive:false});
+  el.addEventListener('touchcancel',tend,{passive:false});
+
+  // iOS non-standard gesture events (scale is relative to gesturestart)
+  el.addEventListener('gesturestart',ev=>{
+    if(ignore(ev)) return;
+    if(mode==='pinch'){ ev.preventDefault(); ev.stopPropagation(); return; } // already driven by Touch events
+    begin({d:1, mx:ev.clientX, my:ev.clientY}); mode='gesture';
+    ev.preventDefault(); ev.stopPropagation();
+  },{passive:false});
+  el.addEventListener('gesturechange',ev=>{
+    if(mode==='pinch'){ ev.preventDefault(); ev.stopPropagation(); return; }
+    if(mode!=='gesture'||!s) return;
+    move({d:ev.scale||1, mx:(ev.clientX!=null?ev.clientX:s.mx), my:(ev.clientY!=null?ev.clientY:s.my)});
+    ev.preventDefault(); ev.stopPropagation();
+  },{passive:false});
+  el.addEventListener('gestureend',ev=>{
+    if(mode==='gesture') end();
+    ev.preventDefault(); ev.stopPropagation();
+  },{passive:false});
+  return el;
+}
+function v69SuppressCombatTap(){
+  try{ if(typeof MOB!=='undefined'){ MOB.cpend=null; MOB.combatSuppress=performance.now()+800; MOB.suppressUntil=performance.now()+800; MOB.mapSuppress=performance.now()+800; } }catch(_){}
+}
+function v69CanvasXY(cv, mx, my){
+  const r=cv.getBoundingClientRect(); const sx=r.width? (mx-r.left)*(cv.width/r.width) : mx, sy=r.height? (my-r.top)*(cv.height/r.height) : my;
+  return {sx,sy};
+}
+function v69WorldAt(cv,mx,my,z,panX,panY){
+  const {sx,sy}=v69CanvasXY(cv,mx,my); const cx=cv.width/2, cy=cv.height/2;
+  return {x:(sx-cx)/z+cx-panX, y:(sy-cy)/z+cy-panY};
+}
+function v69ApplyCombatPinch({z,mx,my,from}){
+  const cv=CV.cv; if(!cv){ CV.z=z; return; }
+  const z0=(from&&from.z0)||(CV.z||1);
+  const px=(from?from.x0:CV.panX)||0, py=(from?from.y0:CV.panY)||0;
+  const mid=from?{x:from.mx,y:from.my}:{x:mx,y:my};
+  const w0=v69WorldAt(cv,mid.x,mid.y,z0,px,py);
+  const {sx,sy}=v69CanvasXY(cv,mx,my); const cx=cv.width/2, cy=cv.height/2;
+  CV.z=z; CV.panX=(sx-cx)/z+cx-w0.x; CV.panY=(sy-cy)/z+cy-w0.y;
+}
+
+// Rewrite battle zoom: Touch + gesture first; pointer only for one-finger pan when already zoomed (and as a fallback if Touch never fires).
+setupCombatZoom=function(){ const cv=CV.cv; if(!cv) return;
+  if(!cv.dataset.cz){ cv.dataset.cz='1';
+    // one-finger pan when zoomed (pointer). Two-finger is handled by attachTwoFingerZoom.
+    const P=new Map(); let g=null;
+    cv.addEventListener('pointerdown',e=>{
+      if(e.pointerType!=='touch') return;
+      if(cv.dataset.boaPinching==='1') return;
+      P.set(e.pointerId,{x:e.clientX,y:e.clientY});
+      if(P.size===1) g={mode:'tap',x:e.clientX,y:e.clientY,px:CV.panX,py:CV.panY};
+      else if(P.size===2 && !cv.dataset.boaPinch){ /* pointer fallback only if touch helper missing */ }
+    },{passive:true});
+    cv.addEventListener('pointermove',e=>{
+      if(!P.has(e.pointerId)||cv.dataset.boaPinching==='1') return;
+      if(!g) return;
+      if(g.mode==='tap'&&Math.hypot(e.clientX-g.x,e.clientY-g.y)>12){ if((CV.z||1)>1.02) g.mode='pan'; }
+      if(g.mode==='pan'){ const z=CV.z||1; CV.panX=g.px+(e.clientX-g.x)/z; CV.panY=g.py+(e.clientY-g.y)/z; v69SuppressCombatTap(); }
+    },{passive:true});
+    const up=e=>{ P.delete(e.pointerId); if(P.size===0) g=null; };
+    cv.addEventListener('pointerup',up); cv.addEventListener('pointercancel',up);
+    cv.addEventListener('click',e=>{ if(typeof MOB!=='undefined'&&performance.now()<(MOB.combatSuppress||0)){ e.stopImmediatePropagation(); e.preventDefault(); } },true);
+  }
+  attachTwoFingerZoom(cv,{
+    get:()=>({z:CV.z||1,x:CV.panX||0,y:CV.panY||0}),
+    clampZ:z=>Math.max(0.7,Math.min(2.4,z)),
+    set:v69ApplyCombatPinch,
+    onSuppress:v69SuppressCombatTap,
+    onEnd:v69SuppressCombatTap
+  });
+};
+
+// Map: add the same Touch + gesture path alongside the existing one-finger pan.
+function v69AttachMapPinch(){ const cv=typeof MAPV!=='undefined'&&MAPV.cv; if(!cv) return;
+  attachTwoFingerZoom(cv,{
+    get:()=>({z:MAPV.z,x:MAPV.cam.x,y:MAPV.cam.y}),
+    clampZ:z=>Math.max(0.6,Math.min(2.2,z)),
+    set:({z,mx,my,from})=>{
+      const r=cv.getBoundingClientRect();
+      const wwx=(from.mx-r.left)/from.z0+from.x0, wwy=(from.my-r.top)/from.z0+from.y0;
+      MAPV.z=z; MAPV.cam.x=wwx-(mx-r.left)/z; MAPV.cam.y=wwy-(my-r.top)/z;
+      if(typeof clampCam==='function') clampCam(); FOG_DIRTY=true;
+    },
+    onSuppress:()=>{ try{ if(typeof MOB!=='undefined'){ MOB.mapSuppress=performance.now()+800; MAPV.justDragged=performance.now(); hideTip(); } }catch(_){} },
+    onEnd:()=>{ try{ localStorage.setItem('boa_mapzoom',String(MAPV.z)); }catch(_){} if(typeof MOB!=='undefined') MOB.mapSuppress=performance.now()+500; }
+  });
+}
+(function(){ const _st=typeof setupTouchMap==='function'?setupTouchMap:null; if(!_st) return;
+  setupTouchMap=function(){ const r=_st.apply(this,arguments); try{ v69AttachMapPinch(); }catch(e){} return r; }; })();
+
+// Town + modal
+function v69AttachTownPinch(){ const root=document.getElementById('town'); if(!root) return;
+  attachTwoFingerZoom(root,{
+    ignore:e=>e.target&&e.target.closest&&e.target.closest('button,input,select,textarea,a,.btn,.slot,.art'),
+    get:()=>({z:TOWNZ.z,x:TOWNZ.x,y:TOWNZ.y}),
+    clampZ:z=>Math.max(1,Math.min(2.4,z)),
+    set:({z,mx,my,from})=>{
+      const r=root.getBoundingClientRect(); const px=mx-r.left, py=my-r.top;
+      const wx=(from.mx-r.left-from.x0)/from.z0, wy=(from.my-r.top-from.y0)/from.z0;
+      TOWNZ.z=z; TOWNZ.x=px-wx*z; TOWNZ.y=py-wy*z; townZoomApply();
+    }
+  });
+}
+(function(){ const _st=typeof setupTownZoom==='function'?setupTownZoom:null; if(!_st) return;
+  setupTownZoom=function(){ const r=_st.apply(this,arguments); try{ v69AttachTownPinch(); }catch(e){} return r; }; })();
+(function(){ const _sm=typeof setupModalZoom==='function'?setupModalZoom:null; if(!_sm) return;
+  setupModalZoom=function(wrap){ const r=_sm.apply(this,arguments);
+    try{ const modal=wrap&&wrap.querySelector&&wrap.querySelector('.modal'); if(modal) attachTwoFingerZoom(modal,{
+      ignore:e=>e.target&&e.target.closest&&e.target.closest('button,input,select,textarea,a,.btn'),
+      get:()=>({z:MODZ.z,x:MODZ.x,y:MODZ.y}),
+      clampZ:z=>Math.max(1,Math.min(2.2,z)),
+      set:({z})=>{ MODZ.z=z; modal.style.transformOrigin='top center'; modal.style.transform=z>1.01?`scale(${z})`:''; }
+    }); }catch(e){}
+    return r; };
+})();
+
+// ---------- Balance: measured gold tweaks from equal-value AI-vs-AI sims ----------
+const V69_GOLD={cinderling:55,tinkerling:40,bloomling:60,halberdier:75,thornling:40,ironwall:55,gargoyle:110,threehead:190,axethrower:110,arbalest:125,whirlblade:150,emberhound:165,stormgargoyle:135,obsidiangargoyle:130,swordsman:240,zealot:320,mauler:295,ironpelt:360,gorebrute:290,phantom:220,glimmerhorn:470,bloodcount:730,crimsonduke:825,stormhawk:545,eldercount:805,archmagus:450,battlemagus:405,pyrewitch:410,berserker:385,antlerguard:1085,cleric:1055,windbound:1095,runepriest:1070,hellsteed:1310,deathspeaker:1070,dreadsteed:1240,archlich:1020,wishbound:1000,flamepriest:985,plaguecaller:985,mender:860,serpentmatron:2265,pyrefiend:1855,bastion:1665,jadematron:2430,thane:1860,treant:1690,grimrider:1825,ragebark:1855,coilempress:2080,doomrider:1735,stormthane:1735,abysswarden:1665,pyretyrant:1530,bastioncolossus:6090,colossus:5125,wyrm:3675,riftlord:4325,seraph:4160,magmadrake:3910,emeraldwyrm:3480,archon:3780,plaguedrake:2875,spectraldrake:3265,graceseraph:3665};
+(function(){ if(typeof UNITS==='undefined') return;
+  for(const id in V69_GOLD) if(UNITS[id]&&UNITS[id].cost) UNITS[id].cost.gold=V69_GOLD[id];
+  // upgrades must cost more than their base, or upgrading is free
+  if(typeof FACTION_IDS!=='undefined') for(const f of FACTION_IDS) for(const b of FACTION_LINE[f]){
+    const base=UNITS[b]; if(!base||!base.ups) continue;
+    const floor=Math.round(base.cost.gold*1.1/5)*5;
+    for(const u of base.ups){ if(UNITS[u]&&UNITS[u].cost.gold<floor) UNITS[u].cost.gold=floor; }
+  }
+  // berserker (0% wr): slightly less glass-cannon so the whirl is usable
+  if(UNITS.berserker&&UNITS.berserker.def!=null) UNITS.berserker.def=Math.max(UNITS.berserker.def, UNITS.brawler?UNITS.brawler.def-1:UNITS.berserker.def);
+})();
+
+// Spells: Arcane Bolt was ~50% more damage-per-mana than every other single-target nuke.
+(function(){ if(typeof SPELLS==='undefined') return;
+  if(SPELLS.bolt){ SPELLS.bolt.base=sp=>16+8*sp; SPELLS.bolt.mana=6; SPELLS.bolt.desc=sp=>`Deals ${16+8*sp} damage to one enemy stack.`; }
+  if(SPELLS.frost){ SPELLS.frost.base=sp=>22+11*sp; SPELLS.frost.desc=sp=>`Deals ${22+11*sp} damage and pushes the target 0.2 back on the bar.`; }
+  const _cs=typeof castSpell==='function'?castSpell:null; if(!_cs) return;
+  // bolt/frost numbers are also hard-coded inside castSpell; wrap those paths by patching after the original reads base when possible.
+})();
+// Hard-coded bolt/frost damage in 05b_magic.js — wrap dmgTo call sites via a small intercept of spell formulas used there.
+(function(){ const _cs=typeof castSpell==='function'?castSpell:null; if(!_cs) return;
+  // Re-bind by wrapping the inner numeric formulas through a known hook: patch after load using string-less wrap of the functions that use 20+10*sp.
+  // Safest: wrap dmgTo's callers can't be done cleanly; instead monkey-patch by re-defining the two branches through a pre-step on spell id.
+  const _dt=typeof dmgTo==='function'?dmgTo:null; if(!_dt) return;
+  // We leave dmgTo alone and wrap castSpell to rewrite those two ids with the new bases before the original switch runs — can't intercept switch.
+  // Direct wrap: call original, but for testing paper numbers we already changed SPELLS.base. For actual combat, hook at the start and
+  // temporarily... no. Replace 20+10*sp by wrapping the whole castSpell? Too heavy. Copy the two lines with a before-hook:
+})();
+// Reliable combat hook: wrap dmgTo to scale bolt/frost if the `base` argument still uses the old formula.
+// Better approach below: wrap castSpell's usage by overriding the numeric literals via a proxy on spellPower? Skip — we'll patch 05b after identifying.
+// We'll patch 05b_magic.js literals in a wrap of castSpell by intercepting with a shim around the file's bolt/frost branches:
+(function(){ if(typeof dmgTo!=='function') return;
+  const _dt=dmgTo;
+  dmgTo=function(ctx,id,u,base,color){
+    if(id==='bolt'&&SPELLS.bolt&&SPELLS.bolt.base){ const sp=(ctx&&ctx.sp)||0; const want=SPELLS.bolt.base(sp); if(base===20+10*sp) base=want; }
+    if(id==='frost'&&SPELLS.frost&&SPELLS.frost.base){ const sp=(ctx&&ctx.sp)||0; const want=SPELLS.frost.base(sp); if(base===15+8*sp) base=want; }
+    return _dt.call(this,ctx,id,u,base,color);
+  };
+})();
+
+// Weekly events: slightly softer swings (plague / gold rush / bad harvest).
+(function(){
+  if(WEEK_EVENTS&&WEEK_EVENTS.plague) WEEK_EVENTS.plague.desc='Sickness spreads: creature growth in every town is reduced by a third this week.';
+  if(WEEK_EVENTS.goldrush) WEEK_EVENTS.goldrush.desc='Prospectors strike it rich: all gold income +20% this week.';
+  if(WEEK_EVENTS.badharvest) WEEK_EVENTS.badharvest.desc='Frost and blight: wood and ore income is cut by a third this week.';
+  const _wg=weeklyGrowth; weeklyGrowth=function(t,tier){ const g=_wg.apply(this,arguments); try{
+    const E=G&&G.weekEvent; if(E&&E.week===weekNo()&&E.id==='plague'){ // original already applied 0.5; ease to ~0.67 of pre-event
+      return Math.max(1,Math.round(g*1.34)); } // 0.5*1.34≈0.67
+  }catch(e){} return g; };
+  const _di=dailyIncome; dailyIncome=function(owner){ const inc=_di.apply(this,arguments); try{
+    if(weekEv('goldrush')) inc.gold=Math.round(inc.gold/1.3*1.2); // was +30%, now +20%
+    if(weekEv('badharvest')){ inc.wood=Math.round(inc.wood/0.5*0.67); inc.ore=Math.round(inc.ore/0.5*0.67); }
+  }catch(e){} return inc; };
+})();
+
+// Castle sieges were a wall: 1.6× value never won when the defender had a hero. Ease the Castle a little.
+(function(){ const _td=typeof townDefense==='function'?townDefense:null; if(_td) townDefense=function(t){ let v=_td.apply(this,arguments); try{ if(t&&t.built&&t.built.includes('fort3')) v=v/1.15*1.08; }catch(e){} return v; };
+  const _ss=typeof v68SetupSiege==='function'?v68SetupSiege:null;
+  if(_ss){ v68SetupSiege=function(sides){ const r=_ss.apply(this,arguments); try{
+    if(!B||!B.siege) return r; const tier=typeof v68FortTier==='function'?v68FortTier(sides[1]):0;
+    if(tier===3){ const gate=B.units.find(u=>u.isGate); if(gate){ gate.maxHp=Math.min(gate.maxHp,950); if(gate.hp>gate.maxHp) gate.hp=gate.maxHp; } }
+  }catch(e){} return r; }; }
+})();
+
+// Normal AI: still must build and attack. Nudge the late first-strike (one seed waited until day 19) a little earlier.
+(function(){ if(typeof DIFFS!=='undefined'&&DIFFS.normal){ DIFFS.normal.attackDay=8; DIFFS.normal.earlyStr=10000;
+  DIFFS.normal.desc='The AI builds every day it can, runs 3 heroes, flags mines and starts hunting your weaker heroes and empty towns from week 2.'; } })();
+
+// Level-ups: the +2/+1 stat card was in every choice set. Now it appears on about half of levels, and the boost is a clean +2 to one stat.
+(function(){ if(typeof v68StatOffer!=='function'||typeof v68MakeChoices!=='function') return;
+  v68StatOffer=function(h){ const pref=CLASSES[h.cls]&&CLASSES[h.cls].might?['atk','def']:['sp','kn'];
+    const a=pref[0]; const names={atk:'Attack',def:'Defense',sp:'Spellpower',kn:'Knowledge'};
+    return {type:'statboost', id:'statboost-'+a, stats:{[a]:2}, name:`${names[a]} focus`,
+      desc:`Gain <b>+2 ${names[a]}</b> instead of a skill this level.`,
+      trade:'You will not learn a new skill or perk this level.'}; };
+  const _mk=v68MakeChoices;
+  v68MakeChoices=function(h){
+    const skill=makeOffers(h).slice(0,3);
+    const r=mulberry32((h.seed||1)+h.level*9176)();
+    if(r<0.5) return skill.slice(0, Math.max(2, Math.min(3,skill.length)));
+    const extras=[v68StatOffer(h), v68SpecOffer(h)];
+    const extra=extras[r<0.75?0:1];
+    const two=skill.slice(0,2);
+    return (two.length? [...two, extra] : [extra, extras[1-(r<0.75?0:1)]]).slice(0,3);
+  };
+})();
+
+// Map density: Mike wants sparse loose piles and wells. Keep the starter piles by each town.
+(function(){ const _po=typeof placeObjects==='function'?placeObjects:null; if(!_po) return;
+  placeObjects=function(map,r){
+    const objs=_po.apply(this,arguments);
+    try{
+      // thin extra wells/fountains and loose piles that ended up closer than intended on small maps
+      const tiles=(map.w||MW)*(map.h||MH);
+      const water=objs.filter(o=>o.kind==='site'&&(o.type==='well'||o.type==='fountain'));
+      const wantW=Math.max(2,Math.round(tiles/1100));
+      if(water.length>wantW){
+        // drop the excess furthest from towns if we can, else last-placed
+        const drop=water.slice(wantW);
+        const dropIds=new Set(drop.map(o=>o.id));
+        for(let i=objs.length-1;i>=0;i--) if(dropIds.has(objs[i].id)) objs.splice(i,1);
+      }
+      const piles=objs.filter(o=>o.kind==='res');
+      const wantP=Math.max(6,Math.round(tiles*11/1000));
+      if(piles.length>wantP){
+        // keep piles near player towns (starter piles), drop the rest first
+        const towns=(map.towns||[]).filter(t=>t.owner&&t.owner!=='neutral');
+        const near=p=>towns.some(t=>Math.hypot((t.x||0)-p.x,(t.y||0)-p.y)<=9);
+        const loose=piles.filter(p=>!near(p));
+        const keepN=Math.max(0,wantP-piles.filter(near).length);
+        const drop=loose.slice(keepN);
+        const dropIds=new Set(drop.map(o=>o.id));
+        for(let i=objs.length-1;i>=0;i--) if(dropIds.has(objs[i].id)) objs.splice(i,1);
+      }
+    }catch(e){}
+    return objs;
+  };
+})();
+
+// Slightly snappier battle animations on the phone (sleep is a const; wrap fastAnim instead).
+(function(){ const _fa=typeof fastAnim==='function'?fastAnim:null; if(!_fa) return;
+  fastAnim=function(){ try{ if(typeof MOB!=='undefined'&&MOB.phone&&B&&B.visual) return true; }catch(e){} return _fa.apply(this,arguments); }; })();
+
+
+function v69EnsureCombatZoomButtons(){
+  const act=document.getElementById('c-actions'); if(!act) return;
+  if(!document.getElementById('cb-fit')){
+    const b=document.createElement('button'); b.className='btn small'; b.id='cb-fit'; b.textContent='⛶ Fit'; b.setAttribute('data-tip','Fit the whole battlefield on screen (resets battle zoom)');
+    b.onclick=()=>{ combatFitZoom(); toast('Battlefield fitted'); }; act.appendChild(b);
+  }
+  if(!document.getElementById('cb-zin')){
+    const zin=document.createElement('button'); zin.className='btn small'; zin.id='cb-zin'; zin.textContent='＋'; zin.setAttribute('data-tip','Zoom in');
+    zin.onclick=()=>{ CV.z=Math.min(2.4,(CV.z||1)*1.15); }; act.appendChild(zin);
+  }
+  if(!document.getElementById('cb-zout')){
+    const zout=document.createElement('button'); zout.className='btn small'; zout.id='cb-zout'; zout.textContent='－'; zout.setAttribute('data-tip','Zoom out');
+    zout.onclick=()=>{ CV.z=Math.max(0.7,(CV.z||1)/1.15); if(CV.z===1){ CV.panX=0; CV.panY=0; } }; act.appendChild(zout);
+  }
+}
+(function(){ const _rc=typeof refreshCombatUI==='function'?refreshCombatUI:null; if(!_rc) return;
+  refreshCombatUI=function(){ const r=_rc.apply(this,arguments); try{ v69EnsureCombatZoomButtons(); }catch(e){} return r; }; })();
+(function(){ const _oc=typeof openCombatUI==='function'?openCombatUI:null; if(!_oc) return;
+  openCombatUI=function(){ const r=_oc.apply(this,arguments); try{ v69EnsureCombatZoomButtons(); if(typeof setupCombatZoom==='function') setupCombatZoom(); }catch(e){} return r; }; })();
+
+// Version label
+(function(){ const _sm=showMenu; showMenu=function(){ const r=_sm.apply(this,arguments); try{ const sub=document.querySelector('#menu .subtitle'); if(sub&&!/v6\.9/.test(sub.textContent)) sub.textContent='v6.9 · Six factions · heroes, armies and hard choices'; }catch(e){} return r; }; })();
 
 </script></body></html>
