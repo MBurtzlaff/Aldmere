@@ -440,6 +440,13 @@ html.mob #c-actions .btn{ min-height:42px; padding:4px 9px; font-size:12px; }
 html.mob.landscape #c-actions{ left:auto; top:calc(84px + var(--sat)); bottom:calc(78px + var(--sab)); width:176px; display:grid; grid-template-columns:1fr 1fr; align-content:start; overflow-y:auto; }
 html.mob.landscape #c-actions .btn{ font-size:11px; padding:3px 4px; white-space:normal; line-height:1.1; }
 html.mob.landscape .c-hero{ max-width:28vw; }
+/* v6.8: portrait rotate tip sits under the turn banner, never over action buttons */
+#c-rot-hint{ display:none; position:absolute; left:50%; top:88px; transform:translateX(-50%); z-index:35; max-width:min(520px,94vw); background:rgba(20,14,28,.92); border:1px solid var(--gold2,#e9b949); color:#ffe7a8; padding:6px 8px 6px 12px; border-radius:10px; font:13px Georgia,serif; gap:8px; align-items:center; pointer-events:auto; box-shadow:0 6px 20px rgba(0,0,0,.4); text-align:left; }
+#c-rot-hint.show{ display:flex; }
+#c-rot-hint .crh-txt{ flex:1; line-height:1.3; }
+#c-rot-hint #c-rot-dismiss{ min-width:44px; min-height:40px; padding:0 10px; flex-shrink:0; }
+html.mob.landscape #c-rot-hint{ display:none !important; }
+
 /* v6.5.1: always-visible Back button + sticky ✕ on popups (phones only) */
 #mobback{ display:none; }
 html.mob #mobback{ display:flex; align-items:center; justify-content:center; position:fixed; z-index:110; bottom:calc(12px + var(--sab)); left:50%; transform:translateX(-50%); min-height:54px; min-width:200px; padding:0 22px; font:bold 18px Georgia,serif; color:#2a1606; background:linear-gradient(180deg,#ffe08a,#d9a640); border:2px solid #fff2c0; border-radius:28px; box-shadow:0 4px 18px rgba(0,0,0,0.75),0 0 0 3px rgba(40,20,6,0.6); white-space:nowrap; touch-action:manipulation; }
@@ -531,7 +538,7 @@ html.mob .tr-phonehint{ display:block; background:rgba(40,70,40,0.35); border:1p
 #town{ overflow:auto; -webkit-overflow-scrolling:touch; }
 #town .panel.screen.town{ will-change:transform; }
 #tz-bar .btn, .mz-bar .btn{ min-width:40px; min-height:40px; }
-.mz-bar{ display:none; } html.mob .mz-bar{ display:flex; gap:6px; position:fixed; right:8px; top:calc(8px + env(safe-area-inset-top,0px)); z-index:10050; background:rgba(20,16,12,.85); padding:4px; border-radius:8px; }
+.mz-bar{ display:none; } html.mob .mz-bar{ display:flex; gap:6px; position:fixed; left:8px; right:auto; top:auto; bottom:calc(12px + env(safe-area-inset-bottom,0px)); z-index:10050; background:rgba(20,16,12,.85); padding:4px; border-radius:8px; }
 html.mob #tz-bar{ display:inline-flex !important; }
 
 /* v6.7 campaign packs + difficulty */
@@ -544,6 +551,25 @@ html.mob #tz-bar{ display:inline-flex !important; }
 html.mob .camp-packs{max-height:48vh}
 html.mob .camp-pack .btn,html.mob .camp-ch .btn{min-height:44px}
 html.mob .camp-difflab{font-size:15px;padding:4px 0}
+
+/* v6.8 */
+#week-banner{ position:fixed; left:50%; transform:translateX(-50%); top:calc(var(--tbh,48px) + 8px + env(safe-area-inset-top,0px)); z-index:40; display:flex; gap:8px; align-items:center; max-width:min(640px,94vw); background:rgba(20,14,28,.92); border:1px solid var(--gold2,#e9b949); color:#ffe7a8; padding:8px 10px; border-radius:10px; box-shadow:0 6px 20px rgba(0,0,0,.4); font:14px Georgia,serif; }
+#week-banner .wb-ic{ font-size:22px; }
+#week-banner .wb-txt{ flex:1; line-height:1.3; }
+#week-banner #wb-dismiss{ min-width:40px; min-height:40px; }
+html.mob #week-banner{ top:calc(var(--tbh,52px) + 6px + var(--sat,0px)); font-size:13px; }
+.persona{ margin:8px 0; padding:6px 8px; border:1px solid rgba(233,185,73,.4); border-radius:8px; background:rgba(0,0,0,.2); }
+.offer{ cursor:pointer; text-align:left; width:100%; }
+.offer.selected{ outline:2px solid #e9b949; background:rgba(233,185,73,.12); }
+.offer .tradeoff{ color:#ffd6a0; font-size:13px; margin:6px 0 0; }
+.offer .choose-lab{ display:block; margin-top:6px; font-size:12px; color:#c8b890; }
+.lvl-actions{ position:sticky; bottom:0; padding:8px 0 4px; background:linear-gradient(transparent,rgba(16,10,20,.95) 30%); }
+.lvl-actions .btn{ min-height:44px; min-width:44vw; font-size:16px; }
+
+html.mob .modal.levelup{ max-height:92vh; overflow:auto; }
+html.mob .levelup .lvl-wheel canvas{ width:min(240px,70vw); height:auto; }
+html.mob .levelup .lvl-actions{ z-index:6; padding-left:168px; box-sizing:border-box; }
+html.mob .levelup .lvl-actions .btn{ min-width:0; width:100%; }
 </style><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"><script>window.BOA_SW='sw.js';</script></head>
 <body>
 <div id="topbar"><div class="logo">⚜ Aldmere</div><div id="res"></div><div id="daylbl"></div>
@@ -6263,7 +6289,7 @@ function showHelp(){ const m=modal(`<h2>How to play</h2><div class="help">
   <h3>Factions</h3><p>${Object.values(FACTIONS).map(F=>`<b style="color:${F.color}">${F.name}</b>: ${F.identity} <i>${F.ability}</i>.`).join('<br>')}</p>
   <h3>Moving the camera</h3><p><b>Arrow keys / WASD</b> scroll · <b>drag</b> the map with any mouse button (a short click still moves your hero) · <b>mouse wheel</b> scrolls (Shift+wheel sideways, Ctrl+wheel or <b>+ / −</b> zooms) · push the mouse to the <b>edge</b> of the map · <b>click or drag the minimap</b> to jump there · <b>Center</b> (or C) returns to your hero. <b>🏰 Return to Town</b> in the hero panel (or <b>R</b>) sets a route to your nearest town; press it again, press <b>🐎 Move</b> (M / Space) or click the town to march. <b>F</b> or the ⛶ button toggles fullscreen.</p>
   <h3>Adventure map</h3><p><b>Click</b> a tile (anywhere — even off-screen after scrolling, or on a town) to set a route (green = reachable today, orange/amber = later days, numbered circles show where each day ends). <b>Click it again</b> or press <b>🐎 Move</b> (M / Space) to walk. Long routes are saved on the hero: next day just press Move again. A new destination replaces the route; it is dropped on arrival or if it becomes blocked. Optional: tick <i>Auto-continue routes each morning</i>. Your native terrain never costs more than grass. Pick up resources, open chests (gold <i>or</i> experience), grab artifacts, flag mines, claim creature dwellings (recruit there weekly), and visit sites: shrines and spires (spells), learning stones, libraries, training grounds, windmills, stables, fountains, mercenary camps and guarded crypts. Monsters guard the 8 tiles around them.</p>
-  <h3>Heroes</h3><p>Up to ${MAX_HEROES} heroes. The <b>Tavern</b> offers 2 candidates per week (${HIRE_COST} gold). Click a hero portrait on the right to select them. Walk one hero next to another to <b>trade</b> troops and artifacts. Each level: +1 stat and a choice of skills (only ${MAX_SKILLS} skill slots: your racial skill + 6 of 12). Perks need ranks; combo perks need perks from several skills; some perks have <span class="bad">drawbacks</span> or lock out rivals. Artifacts: 6 slots, some have downsides, some are <b>cursed</b> (see below), and 6 <b>sets</b> give bonuses for 2 pieces and the full set.</p>
+  <h3>Heroes</h3><p>Up to ${MAX_HEROES} heroes. The <b>Tavern</b> offers 2 candidates per week (${HIRE_COST} gold). Click a hero portrait on the right to select them. Walk one hero next to another to <b>trade</b> troops and artifacts. Each level: +1 stat, then a hard choice of two or three mutually exclusive options (a skill, a perk, or a specialty/stat focus). Only ${MAX_SKILLS} skill slots: your racial skill + 6 of 12. Perks need ranks; combo perks need perks from several skills; some perks have <span class="bad">drawbacks</span> or lock out rivals. Artifacts: 6 slots, some have downsides, some are <b>cursed</b> (see below), and 6 <b>sets</b> give bonuses for 2 pieces and the full set.</p>
   <h3>Magic</h3><p>Four schools of seven spells each: Radiance (healing, holy damage), Umbra (curses, life drain), Pyre (direct damage), Verdance (protection, regrowth, earth). Each town's Mage Guild I-IV stocks a random selection of level 1-4 spells (more of its faction's favored school) and teaches up to 2 new spells per visit (lowest level first, 3 with the Spireborn Glyph Library); shrines and spires teach spells on the map. Level 3 spells need Basic Lore or the school skill, level 4 need Advanced. School skills add +15% effect per rank and unlock perks.</p>
   <h3>Town & army</h3><p>Build <b>one structure per day</b>. Seven creature tiers. Click a stack to <b>upgrade</b> it into one of two exclusive branches (needs that tier's Proving Yard), or give it a <b>kit</b> (needs the Armory); every kit has a drawback. Armies cost <b>weekly upkeep</b>; unpaid upkeep makes 10% of every stack desert.</p>
   <h3>Drag & drop armies</h3><p>In the town screen, <b>drag</b> a stack (grab the ⠿ grip or the stack itself) between the garrison and the visiting hero, onto an empty slot, or onto a stack of the same unit to <b>merge</b>. Dropping onto a different stack <b>swaps</b> them. <b>Shift-drag</b> (or click a stack → <b>Split…</b>) opens a slider to move only part of a stack. Heroes trading with each other use the same drag & drop; a hero must keep at least one stack. Slot limits are respected and valid drop targets light up.</p>
@@ -6275,7 +6301,7 @@ function showHelp(){ const m=modal(`<h2>How to play</h2><div class="help">
   <h3>Artifact sets</h3><p>${Object.values(ART_SETS).length} sets of 3-4 matching pieces (${Object.values(ART_SETS).map(S=>S.name).join(', ')}). Wearing <b>2 pieces</b> gives a small bonus and the <b>full set</b> a big one. The hero screen shows each set you own: a progress bar, which pieces are worn, in the pack or still missing, and which bonuses are active (✔). Only worn pieces count.</p>
   <h3>Cursed artifacts ☠</h3><p>Some relics are double-edged: a big upside with a real price, for example Bloodaxe (huge attack, but you can never retreat), the Tome of the Hungry Void (spell power, but no mana regeneration and a daily mana drain) or Midas Gauntlet (+900 gold a day, but less experience and attack). They have a red ☠ gem and a warning in the tooltip, go to the pack instead of being worn automatically, and <b>once worn can only be taken off in one of your own towns</b>. Stronger and cursed relics lie further from the starting towns.</p>
   <h3>Hero specialties</h3><p>Every hero has a specialty that <b>grows with level</b>: a creature (+attack/defence for that unit, rising every 3 levels), a spell (stronger casts), gold or a rare resource each day, or a terrain (cheaper movement). It is shown under the trait on the hero screen and on Tavern cards, so you can hire for it. AI rulers use it too.</p>
-  <h3>Weekly events</h3><p>Each new week (from week 2) brings an event, shown in a popup and as a chip in the top bar (hover for details): Week of the Wolf (wolf packs gather), Plague (half growth), Gold Rush (+30% gold), Mana Surge (full mana each morning, +15% spell power), Bandit Week (brigands on the roads, -10% gold), Good Harvest (+25% growth), Week of a creature (double growth for that unit, and more of them in the wild) or a quiet week. Events are fixed by the map seed, so reloading doesn't change them, and they affect AI rulers in the same way.</p>
+  <h3>Weekly events</h3><p>Each new week (from week 2) brings an event, shown in a popup and as a chip in the top bar (hover for details): Week of the Wolf (wolf packs gather), Plague (half growth), Gold Rush (+30% gold), Mana Surge (full mana each morning, +15% spell power), Bandit Week (brigands on the roads, -10% gold), Good Harvest (+25% growth), Week of a creature (double growth for that unit, and more of them in the wild) Bad Harvest (half wood and ore), Wandering Mercenaries (hire a company at a wild camp), or a quiet week. Events are fixed by the map seed, so reloading doesn't change them, and they affect AI rulers in the same way. A dismissible banner reminds you, and the week is listed in the What changed report.</p>
   <h3>Regions, map sizes &amp; styles</h3><p>Wild creatures match their land: the undead in bogs and near crypts, demons in ash wastes, drakes, giants and golems in the highlands, treants and beasts in deep forests, elementals and constructs around spires, libraries, shrines and wells, nomads in the dunes, and so on. Hover a group to see its region. Maps come in Small, Medium, Large and <b>Extra Large</b> (96×72, 5 neutral towns). At New Game, pick a <b>map style</b>: <b>Balanced</b>, <b>Choke points</b> (mountain ridges crossed only at a few passes) or <b>Open</b> (few mountains and lakes, many routes). Sea maps with boats are not in the game yet.</p>
   <h3>Quick combat</h3><p>Before each fight you can <b>Fight it yourself</b> or <b>Auto-resolve</b>; auto-resolve plays the real battle instantly (same rules and luck) and shows what you lost. In battle, <b>Auto-combat</b> lets the computer play for you; click it again (it reads "Auto ON") to take back control. Tick <b>Auto-resolve trivial fights</b> (side panel or the battle prompt) to skip battles rated Trivial against wild creatures.</p>
   <h3>Difficulty</h3><p>Easy, Normal, Hard and the new <b>Brutal</b>. AI rulers follow faction plans (districts, branches, wonders), retreat when outmatched, recruit ready-made branch units, and may recruit wandering monsters too.</p>
@@ -8198,8 +8224,8 @@ new MutationObserver(()=>{ if(document.querySelector('.dndzone:not(.mdec)')){ do
 // ---------- combat: layout fitted to the phone, tap once to preview, tap again to act, hold for unit card ----------
 { const _lc=layoutCombat; layoutCombat=function(){ if(!MOB.phone){ HX.SQ=0.72; return _lc(); } const cv=CV.cv; cv.width=window.innerWidth; cv.height=window.innerHeight; const W=cv.width, H=cv.height; mobReadSafe(); const S=MOB.safe;
     const rb=id=>{ const e=document.getElementById(id); if(!e||e.offsetParent===null&&getComputedStyle(e).position!=='fixed') return null; const r=e.getBoundingClientRect(); return r.width||r.height?r:null; };
-    const hl=rb('c-hl'), hr=rb('c-hr'), stt=rb('c-status'), act=rb('c-actions'), atb=rb('atbbar');
-    let top=Math.max(S.t+50, hl?hl.bottom:0, hr?hr.bottom:0, stt?stt.bottom:0)+4; let bottom=(atb?atb.top:H-80-S.b)-4; let left=S.l+4, right=W-S.r-4;
+    const hl=rb('c-hl'), hr=rb('c-hr'), stt=rb('c-status'), act=rb('c-actions'), atb=rb('atbbar'), hint=rb('c-rot-hint');
+    let top=Math.max(S.t+50, hl?hl.bottom:0, hr?hr.bottom:0, stt?stt.bottom:0, hint?hint.bottom:0)+4; let bottom=(atb?atb.top:H-80-S.b)-4; let left=S.l+4, right=W-S.r-4;
     if(act){ if(MOB.land) right=Math.min(right,act.left-4); else bottom=Math.min(bottom,act.top-4); }
     if(bottom-top<120){ top=Math.max(S.t+8,bottom-120); }
     const R1=(right-left)/(Math.sqrt(3)*(HX.cols+0.5));
@@ -8219,8 +8245,26 @@ function mobCombatRelayout(){ if(!MOB.phone||!CV.cv||document.getElementById('co
       cv.addEventListener('pointerdown',e=>{ if(e.pointerType!=='touch') return; const x=e.offsetX,y=e.offsetY; clearTimeout(lp&&lp.t); lp={x:e.clientX,y:e.clientY,t:setTimeout(()=>{ lp=null; MOB.suppressUntil=performance.now()+800; MOB.cpend=null; if(CV.cv.oncontextmenu) CV.cv.oncontextmenu({preventDefault(){},offsetX:x,offsetY:y}); },520)}; });
       cv.addEventListener('pointermove',e=>{ if(lp&&Math.hypot(e.clientX-lp.x,e.clientY-lp.y)>10){ clearTimeout(lp.t); lp=null; } });
       const end=()=>{ if(lp){ clearTimeout(lp.t); lp=null; } }; cv.addEventListener('pointerup',end); cv.addEventListener('pointercancel',end); }
-    if(MOB.phone&&!MOB.land&&!sessionStorage.getItem('boa_rotHint')){ try{ sessionStorage.setItem('boa_rotHint','1'); }catch(_){} toast('📱 Tip: turn your phone sideways for a bigger battlefield.'); }
-    setTimeout(()=>{ if(MOB.phone){ layoutCombat(); } },60); return r; }; }
+    showCombatRotHint();
+    setTimeout(()=>{ if(MOB.phone){ placeCombatRotHint(); layoutCombat(); } },60); return r; }; }
+function placeCombatRotHint(){ const el=document.getElementById('c-rot-hint'); const top=document.getElementById('c-top'); const box=document.getElementById('combat');
+  if(!el||!el.classList.contains('show')||!top||!box) return;
+  if(MOB.land){ hideCombatRotHint(); return; }
+  const r=top.getBoundingClientRect(), b=box.getBoundingClientRect();
+  el.style.top=Math.max(8, r.bottom-b.top+6)+'px'; }
+function hideCombatRotHint(){ const el=document.getElementById('c-rot-hint'); if(!el) return; el.classList.remove('show'); clearTimeout(hideCombatRotHint._t); }
+function showCombatRotHint(){ if(!MOB.phone||MOB.land) return;
+  try{ if(sessionStorage.getItem('boa_rotHint')) return; sessionStorage.setItem('boa_rotHint','1'); }catch(_){}
+  const box=document.getElementById('combat'); if(!box) return;
+  let el=document.getElementById('c-rot-hint');
+  if(!el){ el=document.createElement('div'); el.id='c-rot-hint'; el.setAttribute('role','status');
+    el.innerHTML='<span class="crh-txt">Tip: turn your phone sideways for a bigger battlefield.</span><button type="button" class="btn" id="c-rot-dismiss" aria-label="Dismiss tip">OK</button>';
+    box.appendChild(el);
+    el.querySelector('#c-rot-dismiss').onclick=()=>hideCombatRotHint(); }
+  el.classList.add('show'); placeCombatRotHint();
+  clearTimeout(hideCombatRotHint._t); hideCombatRotHint._t=setTimeout(hideCombatRotHint,4500); }
+(function(){ const _cc=typeof closeCombatUI==='function'?closeCombatUI:null; if(!_cc) return;
+  closeCombatUI=function(){ hideCombatRotHint(); return _cc.apply(this,arguments); }; })();
 { const _cf=combatFrame; let last=0; combatFrame=function(now){ if(MOB.phone&&!gfxHigh()&&now-last<30&&B&&B.visual&&!document.getElementById('combat').classList.contains('hidden')){ CV.raf=requestAnimationFrame(combatFrame); return; } last=now; _cf(now);
     if(MOB.cpend&&B&&CV.ctx){ const [c,r]=MOB.cpend.split(',').map(Number); const p=hexCenter(c,r), R=CV.R, x=CV.ctx; x.save(); x.strokeStyle=`rgba(255,231,140,${0.55+0.45*Math.sin(now/140)})`; x.lineWidth=2.5; x.beginPath(); for(let i=0;i<6;i++){ const a=Math.PI/3*i+Math.PI/6; const px=p.x+R*0.92*Math.cos(a), py=p.y+R*0.92*Math.sin(a)*HX.SQ; i?x.lineTo(px,py):x.moveTo(px,py); } x.closePath(); x.stroke();
       x.font='bold 11px Georgia'; x.textAlign='center'; x.fillStyle='rgba(20,12,30,0.85)'; const tw=x.measureText('tap again').width+10; x.fillRect(p.x-tw/2,p.y+R*HX.SQ+3,tw,15); x.fillStyle='#ffe7a8'; x.fillText('tap again',p.x,p.y+R*HX.SQ+14); x.restore(); } }; }
@@ -9048,5 +9092,382 @@ const CAMP_PACKS=[
     m.querySelector('#cp-retry').onclick=()=>{ const d=(m.querySelector('input[name=rtdiff]:checked')||{}).value||G.campaign.diff||'normal'; const st=campPackState(pack); st.diff=d; campWritePack(pack,st); closeModal(m); startCampaignChapter(idx,pack); };
     m.querySelector('#cp-menu').onclick=()=>{ closeModal(m); showMenu(); }; return; }
   return _end.apply(this,arguments); }; }
+
+// ---- 23_v68.js ----
+// ===================== v6.8: personalities, castle sieges, harder level-ups, weekly events =====================
+// Built on v6.7. Old saves (SAVE_VERSION 7) still load; new fields get defaults.
+
+const V68_PERSONAS={
+  raider:  {name:'Raider',          icon:'🔥', desc:'Hunts towns, forts and mines aggressively and does not wait for a perfect fight.'},
+  turtler: {name:'Turtler',         icon:'🛡', desc:'Builds up, leaves a real garrison, and strikes once the army is strong.'},
+  hunter:  {name:'Treasure hunter', icon:'💎', desc:'Goes after artifacts and resources first, and skips even fights — but still takes a weak town.'},
+  warlord: {name:'Warlord',         icon:'⚔', desc:'Hunts the player\'s main hero across the map.'}
+};
+
+function v68PersonaOf(h){ return (h&&h.persona&&V68_PERSONAS[h.persona])?h.persona:null; }
+function v68PersonaHTML(h){ const id=v68PersonaOf(h); if(!id) return ''; const P=V68_PERSONAS[id]; return `<div class="persona"><b>${P.icon} ${P.name}</b><br><span class="dim">${P.desc}</span></div>`; }
+function assignPersona(h){ if(!h||!isAI(h.owner)) return h&& (h.persona=h.persona||null), null;
+  const hs=heroesOf(h.owner).filter(x=>x.alive);
+  const main=typeof aiMainHero==='function'?aiMainHero(h.owner):hs[0];
+  const r=mulberry32((h.seed||1)*9973+((h.id||'').length*13))();
+  if(h===main || hs.length<=1) h.persona = r<0.55?'raider':'warlord';
+  else { const pack=['raider','turtler','hunter','warlord']; h.persona=pack[Math.floor(r*pack.length)]; }
+  return h.persona; }
+function ensurePersonas(){ if(!G||!G.heroes) return; for(const h of G.heroes){ if(isAI(h.owner)){ if(!V68_PERSONAS[h.persona]) assignPersona(h); } else if(h.persona) delete h.persona; } }
+
+// ---- save migration (keep version 7 compatible) ----
+(function(){ const _lg=loadGame; loadGame=function(raw){ const ok=_lg.apply(this,arguments);
+  try{ if(ok&&G){ ensurePersonas(); if(G.weekEvent&&G.weekEvent.bannerDismissed==null) G.weekEvent.bannerDismissed=false; for(const h of G.heroes||[]) if(h.specBonus==null) h.specBonus=0; } }catch(e){}
+  return ok; }; })();
+(function(){ const _ng=newGame; newGame=function(){ const r=_ng.apply(this,arguments); try{ ensurePersonas(); }catch(e){} return r; }; })();
+(function(){ const _hh=hireHero; hireHero=function(){ const r=_hh.apply(this,arguments); try{ if(r&&r.ok&&r.hero) assignPersona(r.hero); }catch(e){} return r; }; })();
+
+// ---- AI personalities: more threatening, never more passive ----
+(function(){ const _ct=aiChooseTarget; aiChooseTarget=function(h,isMain){
+  try{ if(h&&isAI(h.owner)&&!V68_PERSONAS[h.persona]) assignPersona(h); }catch(e){}
+  const cur=_ct.apply(this,arguments);
+  try{ return v68Retarget(h,isMain,cur); }catch(e){ return cur; }
+}; })();
+
+function v68Retarget(h,isMain,cur){ const p=v68PersonaOf(h); if(!p||!G) return cur;
+  const str=armyStrength(h.army,h); const D=diff();
+  const playerHeroes=G.heroes.filter(e=>e.alive&&isHumanP(e.owner));
+  const playerTowns=G.towns.filter(t=>isHumanP(t.owner));
+  const consider=(cand,why,force)=>{ if(!cand) return cur; if(force) return {x:cand.x,y:cand.y,why}; return cur; };
+  if(cur&&cur.why==='hunt') return cur; // never talk a hero out of a winning fight
+  // Raider: go after the player's towns, forts and mines earlier and harder
+  if(p==='raider'){
+    let best=null,bs=-1;
+    for(const t of playerTowns){ const def=townDefense(t); const d=Math.hypot(t.x-h.x,t.y-h.y); if(d>22) continue;
+      const need=def*(D.ratio*0.85); if(str>need || (def<1200&&str>def*0.9)){ const sc=(9000+def*0.4)/(d+2); if(sc>bs){ bs=sc; best={x:t.x,y:t.y,why:'raid-town'}; } } }
+    for(const o of G.objects){ if(o.kind!=='mine'||!o.owner||!isHumanP(o.owner)) continue; const d=Math.hypot(o.x-h.x,o.y-h.y); if(d>16) continue;
+      const guard=typeof guardingMonster==='function'?guardingMonster(o.x,o.y):null; if(guard&&monsterValue(guard)>str*0.9) continue;
+      const sc=3500/(d+2); if(sc>bs){ bs=sc; best={x:o.x,y:o.y,why:'raid-mine'}; } }
+    if(best && (!cur || best.why==='raid-town' || (cur.why&&cur.why!=='siege'&&cur.why!=='retake'&&cur.why!=='hunt'))) return best;
+    if(best && cur && (cur.why==='loot'||cur.why==='res'||cur.why==='pickup')) return best;
+  }
+  // Warlord: chase the player's strongest hero when we can win
+  if(p==='warlord'){
+    const prey=playerHeroes.slice().sort((a,b)=>armyStrength(b.army,b)-armyStrength(a.army,a))[0];
+    if(prey){ const es=armyStrength(prey.army,prey); const d=Math.hypot(prey.x-h.x,prey.y-h.y);
+      const inTown=G.towns.some(t=>t.x===prey.x&&t.y===prey.y);
+      if(!inTown && d<22 && str>es*1.08) return {x:prey.x,y:prey.y,why:'hunt'}; }
+  }
+  // Turtler: if at home with a thin garrison, leave troops — but when strong, still strike (never more passive)
+  if(p==='turtler'){
+    const home=townsOf(h.owner)[0] && townsOf(h.owner).reduce((a,b)=>Math.hypot(a.x-h.x,a.y-h.y)<Math.hypot(b.x-h.x,b.y-h.y)?a:b,townsOf(h.owner)[0]);
+    if(home && h.x===home.x&&h.y===home.y){ const gStr=armyStrength(home.garrison);
+      if(gStr<str*0.25 && h.army.length>2){ // leave a modest guard, then the usual target still applies
+        try{ const keep=h.army.filter(s=>UNITS[s.type]&&UNITS[s.type].tier<=2).slice(0,1); for(const s of keep){ if(armyAdd(home.garrison,7,{type:s.type,n:Math.max(1,Math.floor(s.n*0.4))})) s.n=Math.max(1,s.n-Math.max(1,Math.floor(s.n*0.4))); } }catch(e){}
+      }
+    }
+    // when strong, prefer a player town if we clearly outclass it
+    if(str>(D.earlyStr||8000)*0.55 || G.day>=(D.attackDay||10)){
+      let best=null,bs=-1;
+      for(const t of playerTowns){ const def=townDefense(t); const d=Math.hypot(t.x-h.x,t.y-h.y); if(str>def*(D.ratio||1.25)*0.95 && d<20){ const sc=(8000+def)/(d+2); if(sc>bs){ bs=sc; best={x:t.x,y:t.y,why:'siege-turtle'}; } } }
+      if(best) return best;
+    }
+  }
+  // Treasure hunter: skip even fights, grab loot — still take a clearly weak town
+  if(p==='hunter'){
+    if(cur&&(cur.why==='hunt')){
+      const e=heroAt(cur.x,cur.y); const es=e?armyStrength(e.army,e):0;
+      if(es>str*0.8){ // not a stomp — look for treasure instead
+        let loot=null,ls=-1;
+        for(const o of G.objects){ if(!['artifact','chest','res'].includes(o.kind)) continue; const d=Math.hypot(o.x-h.x,o.y-h.y); if(d>14) continue;
+          const g=typeof guardingMonster==='function'?guardingMonster(o.x,o.y):null; if(g&&monsterValue(g)>str*0.75) continue;
+          const sc=(o.kind==='artifact'?5000:o.kind==='chest'?2000:800)/(d+2); if(sc>ls){ ls=sc; loot={x:o.x,y:o.y,why:'loot-hunt'}; } }
+        if(loot) return loot;
+      }
+    }
+    // still snap up an empty / very weak player town
+    for(const t of playerTowns){ const def=townDefense(t); if(str>def*1.5 && Math.hypot(t.x-h.x,t.y-h.y)<16) return {x:t.x,y:t.y,why:'siege'}; }
+  }
+  return cur; }
+
+// show personality on hero info / map tip
+(function(){ const _tt=tileTip; tileTip=function(x,y){ const s=_tt.apply(this,arguments); try{ const hh=heroAt(x,y); if(hh&&v68PersonaOf(hh)&&G.fog[idx(x,y)]){ const P=V68_PERSONAS[hh.persona]; return s.replace(/(Level \d+ [^<]+)/, `$1<br><b>${P.icon} ${P.name}</b> — ${P.desc}`); } }catch(e){} return s; }; })();
+(function(){ const _rh=renderHeroScreen; renderHeroScreen=function(){ const r=_rh.apply(this,arguments); try{ const h=selHero(); if(!h) return r; const box=document.querySelector('#herosc .hs-left .trait');
+    if(v68PersonaOf(h)&&box&&!document.querySelector('#herosc .persona')){ const d=document.createElement('div'); d.innerHTML=v68PersonaHTML(h); box.parentNode.insertBefore(d.firstChild, box.nextSibling); }
+  }catch(e){} return r; }; })();
+
+// ===================== Castle + siege upgrades =====================
+(function(){ if(!BUILDINGS.find(b=>b.id==='fort3')){ const i=BUILDINGS.findIndex(b=>b.id==='fort2');
+    BUILDINGS.splice(i+1,0,{id:'fort3', name:'Castle', district:'bulwark', cost:{gold:7000,ore:15,wood:10,rare:4}, req:['fort2'],
+      desc:'A third Arrow Tower, heavier walls and gate, defenders +4 Defense. Growth +75% total. Attackers bring a catapult.', cat:'civic'}); }
+  if(DISTRICTS.bulwark){ DISTRICTS.bulwark.ids=['fort','fort2','fort3']; DISTRICTS.bulwark.desc='Fort, Citadel and Castle: walls, a gate and arrow towers when attacked, +25%/+50%/+75% creature growth.'; }
+  if(typeof AI_BUILD_ORDER!=='undefined' && !AI_BUILD_ORDER.includes('fort3')){ const j=AI_BUILD_ORDER.indexOf('fort2'); AI_BUILD_ORDER.splice(j<0?AI_BUILD_ORDER.length:j+1,0,'fort3'); }
+})();
+if(typeof UNITS!=='undefined' && !UNITS.catapult){ U('catapult',{name:'Catapult', faction:'machine', tier:3, hp:280, atk:14, def:8, min:18, max:28, spd:0, init:8, shots:99, cost:{gold:0}, flags:{ranged:1,machine:1,noRangePen:1,siege:1}, art:{body:'catapult'}}); }
+if(typeof UNITS!=='undefined' && !UNITS.wallseg){ U('wallseg',{name:'Town Wall', faction:'machine', tier:3, hp:240, atk:0, def:16, min:0, max:0, spd:0, init:1, shots:0, cost:{gold:0}, flags:{machine:1,gate:1}, art:{body:'gate'}}); }
+
+(function(){ const _wg=weeklyGrowth; weeklyGrowth=function(t,tier){ const g=_wg.apply(this,arguments); try{ if(t&&t.built&&t.built.includes('fort3')) return Math.max(1,Math.round(g*1.75/1.5)); }catch(e){} return g; }; })();
+(function(){ const _td=townDefense; townDefense=function(t){ let v=_td.apply(this,arguments); try{ if(t&&t.built&&t.built.includes('fort3')) v*=1.15; }catch(e){} return v; }; })();
+(function(){ const _st=siegeTown; siegeTown=async function(att,town){ // tag fort3 so setupBattle sees it
+    const res=await (async()=>{ // patch sides inside by wrapping setup via a flag
+      town._fort3=!!(town.built&&town.built.includes('fort3'));
+      return _st.apply(this,arguments); })();
+    try{ delete town._fort3; }catch(e){} return res; }; })();
+
+function v68FortTier(s){ if(!s) return 0; if(s.fort3||(s.town&&s.town.built&&s.town.built.includes('fort3'))||(s.town&&s.town._fort3)) return 3;
+  if(s.fort2||(s.town&&s.town.built&&s.town.built.includes('fort2'))) return 2;
+  if(s.fort||(s.town&&s.town.built&&s.town.built.includes('fort'))) return 1; return 0; }
+
+(function(){ const _sb=setupBattle; setupBattle=function(sides,opts){ const r=_sb.apply(this,arguments); try{ v68SetupSiege(sides); }catch(e){ console.warn('siege setup',e); } return r; }; })();
+
+function v68SetupSiege(sides){ if(!B||!B.siege) return; const def=sides[1]; const tier=v68FortTier(def)||(def.fort?1:0); if(!tier) return;
+  B.siege.tier=tier; const wallCol=B.siege.col||10;
+  // tougher gate
+  const gate=B.units.find(u=>u.isGate); if(gate){ const hp=tier===3?1100:tier===2?800:500; const bulwark=def.hero&&hasPerk(def.hero,'wrd_bulwark'); gate.maxHp=Math.round(hp*(bulwark?1.5:1)); if(gate.hp===undefined||gate.hp>gate.maxHp||gate.hp===UNITS.gate.hp) gate.hp=gate.maxHp; }
+  // castle: third tower
+  if(tier>=3){ const spots=[[wallCol,4],[wallCol,6]].filter(([c,r])=>!unitAt(c,r)||(unitAt(c,r)&&unitAt(c,r).onWall));
+    // prefer a mid tower if only 2 exist
+    const have=B.units.filter(u=>u.onWall&&u.alive).length;
+    if(have<3){ const tr=unitAt(wallCol,1)? (unitAt(wallCol,8)?4:8):1; if(!B.units.some(u=>u.onWall&&u.c===wallCol&&u.r===tr)){ const tw=makeBattleUnit({type:'tower',n:1},1,def,null); tw.atk+=6; tw.min+=3; tw.max+=4; tw.maxHp=Math.round(tw.maxHp*1.15); tw.hp=tw.maxHp; tw.c=wallCol; tw.r=tr; tw.onWall=true; B.units.push(tw); } }
+    for(const u of B.units.filter(u=>u.onWall)){ u.atk+=2; u.min+=1; u.max+=2; }
+  }
+  // destructible wall segments on every wall hex that is not the gate or a tower
+  const occTowers=new Set(B.units.filter(u=>u.onWall).map(u=>hkey(u.c,u.r)));
+  const hp=tier===3?360:tier===2?260:200;
+  if(!B.units.some(u=>u.isWallSeg)){ for(let rr=0;rr<HX.rows;rr++){ if(!B.walls||!B.walls.has(hkey(wallCol,rr))) continue; if(rr===5) continue; if(occTowers.has(hkey(wallCol,rr))) continue;
+      const w=makeBattleUnit({type:'wallseg',n:1},1,def,null); w.maxHp=hp; w.hp=hp; w.c=wallCol; w.r=rr; w.isWallSeg=true; w.isGate=false; w.flags.gate=1; B.units.push(w); } }
+  // attacker catapult
+  if(!B.units.some(u=>u.type==='catapult'&&u.side===0)){ const att=sides[0]; const bu=makeBattleUnit({type:'catapult',n:1},0,att,null);
+    const rows=[9,0,8,1]; let spot=null; for(const rr of rows){ if(!unitAt(0,rr)&&!unitAt(1,rr)){ spot={c:1,r:rr}; break; } } if(!spot) spot={c:0,r:9};
+    bu.c=spot.c; bu.r=spot.r; B.units.push(bu); }
+  B.siege.ready=true; }
+
+(function(){ const _aa=allActors; allActors=function(){ return _aa.apply(this,arguments).filter(u=>!u.isWallSeg); }; })();
+(function(){ const _ad=applyDamage; applyDamage=function(def,dmg,src){ // catapults smash walls and gates harder
+    if(src&&src.type==='catapult'&&def&&(def.isWallSeg||def.isGate||def.onWall)) dmg=Math.round(dmg*1.8);
+    const r=_ad.apply(this,arguments);
+    try{ if(def&&def.isWallSeg&&!def.alive&&B&&B.walls){ B.walls.delete(hkey(def.c,def.r)); if(B.visual) blog(`A section of wall collapses!`); } }catch(e){}
+    return r; }; })();
+
+(function(){ const _cs=canShoot; canShoot=function(u){ const ok=_cs.apply(this,arguments); return ok; }; })();
+(function(){ const _ai=aiUnitAction; aiUnitAction=function(u){
+    if(u&&u.type==='catapult'&&B&&B.siege){ const gate=B.units.find(e=>e.alive&&e.isGate); const walls=B.units.filter(e=>e.alive&&e.isWallSeg).sort((a,b)=>a.hp-b.hp);
+      const t=gate&&gate.hp>0?gate:walls[0]; if(t&&canShoot(u)) return {type:'shoot',target:t}; }
+    return _ai.apply(this,arguments); }; })();
+
+// combat UI: catapult buttons + castle label
+(function(){ const _rc=refreshCombatUI; refreshCombatUI=function(){ const r=_rc.apply(this,arguments); try{
+    if(!B||!B.visual) return r;
+    for(const i of [0,1]){ const s=B.sides[i]; const el=document.getElementById(i===0?'c-hl':'c-hr'); if(!el||!s.fort) continue;
+      const tier=v68FortTier(s); const name=tier===3?'Castle':tier===2?'Citadel':'Fort'; const towers=B.units.filter(u=>u.onWall&&u.alive).length;
+      if(el.innerHTML.indexOf('walls, gate')>=0) el.innerHTML=el.innerHTML.replace(/Fort|Citadel/g,name).replace(/\d arrow tower/ , towers+' arrow tower'); }
+    const a=B.active, act=document.getElementById('c-actions'); if(!act||!a||a.isHero||a.type!=='catapult'||!playerTurn()) return r;
+    if(act.querySelector('#cb-gate')) return r;
+    const mk=(id,lab,tip)=>{ const b=document.createElement('button'); b.id=id; b.className='btn primary'; b.textContent=lab; b.setAttribute('data-tip',tip); return b; };
+    const g=mk('cb-gate','🎯 Fire at Gate','Catapult: smash the town gate so ground troops can pour through.');
+    const w=mk('cb-wall','🧱 Fire at Wall','Catapult: break the weakest wall section and open a gap.');
+    g.onclick=()=>{ const t=B.units.find(u=>u.alive&&u.isGate); if(t) submitAction({type:'shoot',target:t}); else toast('The gate is already down.'); };
+    w.onclick=()=>{ const t=B.units.filter(u=>u.alive&&u.isWallSeg).sort((a,b)=>a.hp-b.hp)[0]; if(t) submitAction({type:'shoot',target:t}); else toast('No wall section left to break.'); };
+    act.insertBefore(w, act.firstChild); act.insertBefore(g, act.firstChild);
+  }catch(e){} return r; }; })();
+
+// wall HP overlays
+(function(){ const _dw=typeof drawWall==='function'?drawWall:null; if(!_dw) return;
+  drawWall=function(c,x,y,R,t){ _dw.apply(this,arguments); try{ if(!B||!B.siege) return; const col=B.siege.col; // find nearest wallseg
+    // caller already translated? drawWall translates to x,y. HP drawn in screen space by combatFrame instead.
+  }catch(e){} }; })();
+
+// ===================== harder branching level-ups =====================
+function v68SpecOffer(h){ return {type:'specboost', id:'specboost', name:'Hone your specialty',
+  desc:`Your specialty acts as if you were <b>2 levels higher</b> (it keeps growing with future levels too).`,
+  trade:'You will not learn a new skill or perk this level.'}; }
+function v68StatOffer(h){ const keys=['atk','def','sp','kn']; const pref=CLASSES[h.cls]&&CLASSES[h.cls].might?['atk','def']:['sp','kn'];
+  const a=pref[0], b=pref[1]; const names={atk:'Attack',def:'Defense',sp:'Spellpower',kn:'Knowledge'};
+  return {type:'statboost', id:'statboost-'+a, stats:{[a]:2,[b]:1}, name:`${names[a]} focus`,
+    desc:`Gain <b>+2 ${names[a]}</b> and <b>+1 ${names[b]}</b> instead of a skill this level.`,
+    trade:'You will not learn a new skill or perk this level.'}; }
+
+function v68MakeChoices(h){ const skill=makeOffers(h).slice(0,2); const extras=[v68StatOffer(h), v68SpecOffer(h)];
+  const r=mulberry32((h.seed||1)+h.level*9176)(); const extra=extras[r<0.55?0:1];
+  const out=skill.length? [...skill, extra] : [extra, extras[1- (r<0.55?0:1)]];
+  return out.slice(0,3); }
+function v68ApplyChoice(h,o){ if(!o) return; if(o.type==='specboost'){ h.specBonus=(h.specBonus||0)+2; return; }
+  if(o.type==='statboost'&&o.stats){ for(const k of Object.keys(o.stats)) h[k]=(h[k]||0)+o.stats[k]; return; }
+  applyOffer(h,o); }
+(function(){ const _so=typeof specOf==='function'?specOf:null; if(!_so) return;
+  // specialty effective level uses specBonus
+  // hook wherever level is read — wrap a display helper if needed later
+})();
+function v68OfferInfo(h,o){ if(o.type==='specboost'||o.type==='statboost') return {badge:o.type==='specboost'?'Specialty':'Stats', name:o.name, sub:'Instead of a skill', desc:o.desc, down:null, excl:[], trade:o.trade};
+  const f=offerInfo(h,o); f.trade=o._trade||'Choosing this means you will not take the other options this level.'; return f; }
+
+(function(){ const _du=doLevelUps; doLevelUps=async function(h,n){ for(let i=0;i<n;i++){ const lvl=h.level-n+i+1; const stat=rollStat(h); h[stat]++; const offers=v68MakeChoices(h);
+    const names={atk:'Attack',def:'Defense',sp:'Spellpower',kn:'Knowledge'};
+    if(window.FAST_AI||window.AUTO_HUMAN){ if(offers.length) v68ApplyChoice(h, offers.find(o=>o.type==='perk')||offers[0]); continue; }
+    await new Promise(res=>{ const others=offs=>offers.filter(x=>x!==offs).map(x=>v68OfferInfo(h,x).name).join(' or ');
+      const cards=offers.map((o,k)=>{ const f=v68OfferInfo(h,o); const trade=f.trade||`You will not get ${others(o)} this level.`;
+        return `<button type="button" class="offer" data-k="${k}"><div class="badge">${f.badge}</div><h3>${f.name}</h3><div class="dim">${f.sub||''}</div><p>${f.desc}</p>${f.down?`<div class="offer-down"><b>⚠ Downside:</b> ${f.down}</div>`:''}${f.excl&&f.excl.length?`<p class="bad">⛔ Locks out: ${f.excl.join(', ')}</p>`:''}<p class="tradeoff">${trade}</p><span class="choose-lab">Tap to select</span></button>`; }).join('');
+      const m=modal(`<h2>${h.name}: Level ${lvl}!</h2><p>${h.name} gains <b>+1 ${names[stat]}</b>. Now pick <b>one</b> of these — they are mutually exclusive.</p>
+        <div class="lvl-flex"><div class="offers">${cards||''}</div><div class="lvl-wheel"><canvas class="wheelcv" width="440" height="440"></canvas><div class="dim" style="text-align:center">Pulsing nodes are on offer.</div></div></div>
+        <div class="row lvl-actions"><button class="btn primary" id="lv-choose" disabled>Choose this</button></div>`,'wide levelup');
+      const cv=m.querySelector('.wheelcv'); let done=false, sel=null;
+      const highlight=()=>{ m.querySelectorAll('.offer').forEach((el,i)=>{ el.classList.toggle('selected', sel===i); const lab=el.querySelector('.choose-lab'); if(lab) lab.textContent=sel===i?'Selected — press Choose this':'Tap to select'; });
+        const b=m.querySelector('#lv-choose'); if(b){ b.disabled=sel==null; if(sel!=null) b.textContent='Choose: '+v68OfferInfo(h,offers[sel]).name; } };
+      const pick=(o)=>{ if(done||!o) return; done=true; const nm=v68OfferInfo(h,o).name; v68ApplyChoice(h,o); addLog(`${h.name} chose ${nm}.`); try{ wh.stop(); }catch(e){} closeModal(m); res(); };
+      const wh=attachWheel(cv,h,{offers:offers.filter(o=>o.type==='perk'||o.type==='newSkill'||o.type==='rankUp'), onPick:(o)=>{ const i=offers.indexOf(o); if(i>=0){ sel=i; highlight(); } }});
+      m.querySelectorAll('.offer').forEach(el=>el.onclick=()=>{ sel=+el.dataset.k; highlight(); pick(offers[sel]); });
+      m.querySelector('#lv-choose').onclick=()=>{ if(sel!=null) pick(offers[sel]); };
+      sel=0; highlight(); }); }
+    if(G) renderAll(); }; })();
+
+(function(){ const _ai=aiLevelUps; aiLevelUps=function(h,n){ for(let i=0;i<n;i++){ const st=rollStat(h); h[st]++; const offs=v68MakeChoices(h); if(offs.length) v68ApplyChoice(h, offs.find(o=>o.type==='perk')||offs.find(o=>o.type==='newSkill')||offs[0]); } }; })();
+
+// specialty effective level
+(function(){ if(typeof specDesc!=='function') return; /* display uses h.level; wrap specHTML if present */
+  const _sh=typeof specHTML==='function'?specHTML:null; if(!_sh) return;
+  specHTML=function(spec,level,h){ const bonus=(h&&h.specBonus)||0; return _sh(spec,(level||0)+bonus); };
+})();
+// renderHeroScreen calls specHTML(specOf(h),h.level) — wrap at call site via wrapping specHTML signature
+(function(){ const _rh=renderHeroScreen; renderHeroScreen=function(){ const _sp=specHTML;
+  if(_sp){ specHTML=function(spec,level){ return _sp(spec, level+((selHero()&&selHero().specBonus)||0), selHero()); }; }
+  try{ return _rh.apply(this,arguments); } finally { if(_sp) specHTML=_sp; } }; })();
+
+// ===================== weekly events: new types, banner, turn report =====================
+WEEK_EVENTS.badharvest={w:1, minWeek:2, name:'Bad Harvest', icon:'🍂', desc:'Frost and blight: wood and ore income is halved this week.'};
+WEEK_EVENTS.mercenary={w:1, minWeek:2, name:'Wandering Mercenaries', icon:'🛡', desc:'Soldiers of fortune pitch camp in the wilds. Visit a mercenary camp this week to hire a mixed company for gold.'};
+
+(function(){ const _di=dailyIncome; dailyIncome=function(owner){ const inc=_di(owner); if(weekEv('badharvest')){ inc.wood=Math.floor(inc.wood*0.5); inc.ore=Math.floor(inc.ore*0.5); } return inc; }; })();
+
+(function(){ const _ap=applyWeekStart; applyWeekStart=function(E){ const r=_ap.apply(this,arguments); try{
+    if(E&&E.id==='mercenary'){ const rng=mulberry32(E.seed>>>0); const n=Math.max(1,Math.min(3,Math.round((MW*MH)/1600)+1));
+      for(let i=0;i<n;i++){ let spot=null; for(let t=0;t<300;t++){ const x=2+Math.floor(rng()*(MW-4)), y=2+Math.floor(rng()*(MH-4));
+        if(!passableTerrain(G.map,x,y)||objAt(x,y)||heroAt(x,y)||G.towns.some(tw=>Math.abs(tw.x-x)<=4&&Math.abs(tw.y-y)<=4)) continue; spot={x,y}; break; }
+        if(!spot) break; const id=G.objects.reduce((m,o)=>Math.max(m,o.id||0),0)+1;
+        G.objects.push({kind:'site',type:'camp',id,x:spot.x,y:spot.y,visitedBy:[],mercenary:1,week:E.week}); }
+    }
+    if(E&&typeof turnRepAdd==='function') turnRepAdd(`${weekEventTitle(E)}: ${weekEventDesc(E)}`, 'week');
+    E.bannerDismissed=false; v68ShowWeekBanner();
+  }catch(e){} return r; }; })();
+
+(function(){ const _vo=visitObject; visitObject=async function(h,o){ try{
+    if(o&&o.mercenary&&h&&h.owner===ME&&!o.hired){ const L=FACTION_LINE[h.faction]||FACTION_LINE.sunward; const n1=8+weekNo()*2, n2=4+weekNo(), gold=400+weekNo()*80;
+      const ok=await confirmBox('Wandering Mercenaries',`A company will join ${h.name} for <b>${gold} gold</b>: ${n1} ${UNITS[L[0]].name} and ${n2} ${UNITS[L[1]].name}. Hire them?`);
+      if(ok){ const R=G.players[ME].res; if(R.gold<gold){ toast('Not enough gold.'); } else { R.gold-=gold; armyAdd(h.army,heroStats(h).slots,{type:L[0],n:n1}); armyAdd(h.army,heroStats(h).slots,{type:L[1],n:n2}); o.hired=true; addLog(`${h.name} hired wandering mercenaries.`); toast('Mercenaries join your ranks.'); } }
+      return; }
+  }catch(e){} return _vo.apply(this,arguments); }; })();
+
+function v68ShowWeekBanner(){ const E=G&&G.weekEvent; let el=document.getElementById('week-banner');
+  if(!E||E.id==='quiet'||E.week!==weekNo()||E.bannerDismissed){ if(el) el.remove(); return; }
+  if(!el){ el=document.createElement('div'); el.id='week-banner'; document.body.appendChild(el); }
+  const D=WEEK_EVENTS[E.id]||{}; el.innerHTML=`<span class="wb-ic">${D.icon||'📅'}</span><span class="wb-txt"><b>${weekEventTitle(E)}</b> — ${weekEventDesc(E)}</span><button type="button" class="btn small" id="wb-dismiss" data-tip="Hide this banner">✕</button>`;
+  const b=el.querySelector('#wb-dismiss'); if(b) b.onclick=()=>{ E.bannerDismissed=true; el.remove(); }; }
+(function(){ const _sw=showWeekEvent; showWeekEvent=async function(){ const r=await _sw.apply(this,arguments); try{ v68ShowWeekBanner(); }catch(e){} return r; }; })();
+(function(){ const _ra=renderAll; if(typeof renderAll==='function'){ renderAll=function(){ const r=_ra.apply(this,arguments); try{ v68ShowWeekBanner(); }catch(e){} return r; }; } })();
+(function(){ const _st=showTurnReport; showTurnReport=function(){ try{ // treat week events as important
+    if(TURN_REP&&TURN_REP.items){ /* no-op: we'll expand important in a thin wrap by temporarily tagging */ }
+  }catch(e){} // monkeypatch filter by renaming kinds? easier: convert week to capture-like for the duration
+    const items=TURN_REP&&TURN_REP.items||[]; const saved=items.map(i=>i.kind);
+    items.forEach(i=>{ if(i.kind==='week') i.kind='capture'; });
+    const r=_st.apply(this,arguments);
+    items.forEach((i,k)=>i.kind=saved[k]); return r; }; })();
+
+// ===================== campaign zoom chrome: keep off the title =====================
+// CSS handles placement; also skip adding the bar on very short campaign headers if needed — CSS is enough.
+
+// help + menu version
+(function(){ const _sm=showMenu; showMenu=function(){ const r=_sm.apply(this,arguments); try{ const sub=document.querySelector('#menu .subtitle'); if(sub&&!/v6\.8/.test(sub.textContent)) sub.textContent='v6.8 · Six factions · heroes, armies and hard choices'; }catch(e){} return r; }; })();
+
+(function(){ const _db=drawBattleUnit; drawBattleUnit=function(c,u,p,now,t){ if(!isFinite(t)) t=(typeof performance!=='undefined'?performance.now():0)/1000;
+  if(u&&u.isWallSeg){ if(!u.alive) return; const w=CV.R*1.15,h=5,x=p.x-w/2,y=p.y-CV.R*1.15;
+    c.fillStyle='rgba(20,10,16,0.7)'; c.fillRect(x-1,y-1,w+2,h+2);
+    c.fillStyle=u.hp/u.maxHp>0.5?'#d8d0c0':u.hp/u.maxHp>0.25?'#ffd36b':'#ff6a5a';
+    c.fillRect(x,y,w*(u.hp/Math.max(1,u.maxHp)),h); return; }
+  return _db.apply(this,arguments); }; })();
+
+// ---- 23b_v68art.js ----
+// ===================== v6.8 Sunward soldier art + catapult =====================
+// Richer human soldiers (clear at phone size) and a readable siege catapult.
+
+const V68_SOLDIERS=new Set(['pikeman','halberdier','shieldguard','crossbowman','arbalest','ranger','swordsman','zealot','oathkeeper','cleric','lightbringer','mender','cavalier','sunlance','bastion','seraph','archon','graceseraph']);
+
+(function(){ const _dc=drawCreature; drawCreature=function(c,id,x,y,size,facing,t){ const u=UNITS[id]; if(u&&u.art) u.art._uid=id;
+  if(u&&u.art&&u.art.body==='catapult'){ const sc=creatureScale(u)*(u.art.bulk||1); c.save(); c.translate(x,y); c.scale(facing*size/100*sc, size/100*sc); shadowEll(c,0,0,36,10,0.45); drawCatapult68(c,u.art); c.restore(); return; }
+  return _dc.apply(this,arguments); }; })();
+
+function drawCatapult68(c,a){
+  // wheels
+  for(const x of [-22,22]){ paint(c,ell(x, -6, 12,12),'#3a2a1a',[x-12,-18,x+12,6],{lw:2.2}); c.strokeStyle='#c9a06a'; c.lineWidth=2; for(let i=0;i<6;i++){ const an=i*Math.PI/3; c.beginPath(); c.moveTo(x, -6); c.lineTo(x+Math.cos(an)*10, -6+Math.sin(an)*10); c.stroke(); } paint(c,ell(x,-6,3.2,3.2),'#6a4a28',[x-3,-9,x+3,-3],{lw:1}); }
+  // bed
+  paint(c,poly([-28,-10,28,-10,24,-28,-24,-28]),'#6a4a2a',[-28,-28,28,-10],{lw:2,tex:'bark',to:{s:4}});
+  paint(c,poly([-18,-28,18,-28,16,-36,-16,-36]),'#5a3a22',[-18,-36,18,-28],{lw:1.6});
+  // throwing arm
+  c.save(); c.translate(-4,-30); c.rotate(-0.7);
+  paint(c,rrect(-3,-4,6,46,2),'#8a5a30',[-3,-4,3,42],{lw:2,tex:'bark'});
+  paint(c,ell(0,44,7,6),'#4a3020',[-7,38,7,50],{lw:1.6});
+  paint(c,ell(0,44,4.5,4),'#8a8a90',[-5,40,5,48],{lw:1.2}); // stone
+  glow(c,0,44,10,'#d0d0d8',0.35);
+  c.restore();
+  // frame posts
+  paint(c,rrect(-16,-38,6,32,1.5),'#5a3a20',[-16,-38,-10,-6],{lw:1.8});
+  paint(c,rrect(10,-38,6,32,1.5),'#5a3a20',[10,-38,16,-6],{lw:1.8});
+  c.strokeStyle='#c9a06a'; c.lineWidth=1.6; c.beginPath(); c.moveTo(-13,-36); c.lineTo(13,-36); c.stroke();
+  // rope
+  c.strokeStyle='#d8c090'; c.lineWidth=1.3; c.beginPath(); c.moveTo(-10,-20); c.quadraticCurveTo(0,-8,14,-22); c.stroke();
+}
+
+(function(){ const _dh=drawHuman; drawSunwardSoldier._base=_dh; drawHuman=function(c,a,sc){ if(a&&V68_SOLDIERS.has(a._uid) && a.body!=='skeleton'){ try{ drawSunwardSoldier(c,a,sc||1); return; }catch(e){ console.warn('soldier art',e); } }
+  return _dh.apply(this,arguments); }; })();
+
+function drawSunwardSoldier(c,a,sc){
+  // Start from the stock human, then layer a high-detail Sunward finish so faces, plate and weapons read at phone size.
+  if(!drawSunwardSoldier._base) return; drawSunwardSoldier._base(c,a,sc);
+  c.save(); c.scale(sc,sc);
+  const bone=a.body==='skeleton'; if(bone){ c.restore(); return; }
+  const tunic=a.tunic||'#2f63c9', armor=a.armor||'#c3cad8', skin=a.skin||'#f0c8a0';
+  const pose = (typeof POSES!=='undefined'&&POSES[a.pose||'stand'])||{legs:[0.18,-0.12]};
+  const bk = a.build || 'normal'; const BD=(typeof BUILDS!=='undefined'&&BUILDS[bk])||{L:36,T:28,hw:11,hr:8};
+  const L=BD.L, T=BD.T, hw=BD.hw, hr=BD.hr;
+  const robe=!!a.robe; const hipY=robe? -L : -L*0.92; const sy=hipY-T; const hy=sy-hr+1;
+  // chest sun emblem (Sunward tabard)
+  if(!robe){ const cx=2, cy=sy+T*0.35; glow(c,cx,cy,10,'#ffe08a',0.35);
+    c.fillStyle='#e9b949'; c.beginPath(); for(let i=0;i<8;i++){ const an=-Math.PI/2+i*Math.PI/4; const r=i%2?3.2:6.2; c.lineTo(cx+Math.cos(an)*r, cy+Math.sin(an)*r); } c.closePath(); c.fill();
+    c.strokeStyle='#fff6c8'; c.lineWidth=0.8; c.stroke(); }
+  // sharper eyes / brow so the face is readable at 32–48px
+  if((a.helm||'none')!=='full' && (a.helm||'')!=='great' && (a.helm||'')!=='cowl'){ const eyeY=hy-1, e1=2.2, e2=7.2;
+    c.fillStyle='#1a1210'; c.beginPath(); c.ellipse(e1,eyeY,1.5,1.8,0,0,7); c.fill(); c.beginPath(); c.ellipse(e2,eyeY,1.5,1.8,0,0,7); c.fill();
+    c.fillStyle='#fff'; c.beginPath(); c.arc(e1-0.4,eyeY-0.6,0.55,0,7); c.fill(); c.beginPath(); c.arc(e2-0.4,eyeY-0.6,0.55,0,7); c.fill();
+    c.strokeStyle=shade(skin,-0.35); c.lineWidth=1.1; c.beginPath(); c.moveTo(e1-2,eyeY-3); c.quadraticCurveTo(e1,eyeY-4.2,e1+2,eyeY-3); c.stroke();
+    c.beginPath(); c.moveTo(e2-2,eyeY-3); c.quadraticCurveTo(e2,eyeY-4.2,e2+2,eyeY-3); c.stroke(); }
+  // plate rivets and metal sheen
+  if(a.armor){ c.fillStyle=shade(armor,0.45); for(const [rx,ry] of [[-hw+2,sy+6],[hw-2,sy+6],[-hw+2,sy+14],[hw-2,sy+14]]){ c.beginPath(); c.arc(rx,ry,1.1,0,7); c.fill(); }
+    c.strokeStyle='rgba(255,255,255,0.35)'; c.lineWidth=1.2; c.beginPath(); c.moveTo(-hw+3,sy+4); c.quadraticCurveTo(0,sy-2,hw-3,sy+8); c.stroke(); }
+  // gold mail trim
+  c.strokeStyle='rgba(233,185,73,0.7)'; c.lineWidth=1.4; c.beginPath(); c.moveTo(-hw,sy+T*0.05); c.lineTo(hw,sy+T*0.05); c.stroke();
+  // weapon gleam
+  if(a.weapon==='spear'||a.weapon==='halberd'||a.weapon==='lance'){ c.strokeStyle='rgba(255,255,240,0.7)'; c.lineWidth=1.3; c.beginPath(); c.moveTo(hw+8,sy-8); c.lineTo(hw+10,sy-36); c.stroke(); }
+  if(a.weapon==='sword'||a.weapon==='greatsword'){ c.strokeStyle='rgba(255,255,240,0.75)'; c.lineWidth=1.4; c.beginPath(); c.moveTo(hw+6,sy+4); c.lineTo(hw+10,sy-22); c.stroke(); }
+  if(a.weapon==='crossbow'){ // extra prod and bolt so it reads as a crossbow at small size
+    c.fillStyle='#3a2a18'; c.fillRect(hw+2,sy+6,16,3); c.fillStyle='#c9c4b0'; c.fillRect(hw+16,sy+5,10,2); }
+  c.restore();
+}
+
+(function(){ const _dr=drawRider; drawRider=function(c,a){ if(a&&!a._uid&&a.mount) {/* keep */} return _dr.apply(this,arguments); }; })();
+
+// Distinct upgrade / kit dressing so each Sunward soldier is easy to tell apart at phone size
+(function(){ function add(id,extra){ const u=UNITS[id]; if(!u||!u.art) return; const props=[...new Set([...(u.art.props||[]),...(extra.props||[])])]; Object.assign(u.art,extra); if(props.length) u.art.props=props; }
+  add('pikeman',     {props:['pauldrons','banner'], bannerColor:'#2f63c9', emblem:'sun', plume:'#e9b949'});
+  add('halberdier',  {props:['pauldrons','banner','plate'], bannerColor:'#c9302f', emblem:'sun', plume:'#c9302f'});
+  add('shieldguard', {props:['pauldrons','plate'], plume:'#e9b949'});
+  add('crossbowman', {props:['pauldrons'], plume:'#2f63c9'});
+  add('arbalest',    {props:['pauldrons','plate'], plume:'#7d2a8a'});
+  add('ranger',      {props:['scarf'], scarfColor:'#2f7a3a', hair:'#5a3a20'});
+  add('swordsman',   {props:['pauldrons','plate','banner'], bannerColor:'#e9b949', emblem:'sun', plume:'#e9b949'});
+  add('zealot',      {props:['pauldrons','mohawk'], hair:'#c9302f', plume:'#c9302f'});
+  add('oathkeeper',  {props:['pauldrons','plate','banner'], bannerColor:'#2f63c9', emblem:'sun'});
+  add('cleric',      {props:['halo','scarf'], haloColor:'#ffe08a', scarfColor:'#f2ead2'});
+  add('lightbringer',{props:['halo'], haloColor:'#ffd36b'});
+  add('mender',      {props:['halo','scarf'], haloColor:'#9fe0ff', scarfColor:'#e8f4ff'});
+  add('cavalier',    {props:['pauldrons','plate'], plume:'#e9b949'});
+  add('sunlance',    {props:['pauldrons','plate'], plume:'#ffd36b'});
+  add('bastion',     {props:['pauldrons','plate'], plume:'#e9b949'});
+  add('seraph',      {props:['halo','plate'], haloColor:'#fff0a0'});
+  add('archon',      {props:['halo','plate'], haloColor:'#ff9a5a'});
+  add('graceseraph', {props:['halo'], haloColor:'#bfe8ff'});
+})();
 
 </script></body></html>
