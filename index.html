@@ -9801,4 +9801,41 @@ function v69EnsureCombatZoomButtons(){
 // Version label
 (function(){ const _sm=showMenu; showMenu=function(){ const r=_sm.apply(this,arguments); try{ const sub=document.querySelector('#menu .subtitle'); if(sub&&!/v6\.9/.test(sub.textContent)) sub.textContent='v6.9 · Six factions · heroes, armies and hard choices'; }catch(e){} return r; }; })();
 
+// ---- 25_v610.js ----
+// ===================== v6.10 / v6.10.1: T5 rebalance =====================
+// Built on v6.9. SAVE_VERSION stays 7; old saves still load.
+//
+// v6.10.0: Antler Guard was still winning ~97–100% of equal-value Tier 5
+// fights after the v6.9 gold bump. Gold alone was not enough. The base unit's
+// combat stats were cut; Stagcharger / Grovewarden kept their absolute stats.
+//
+// v6.10.1: Hellsteed Rider and Rune Priest were still ~94% in that same sim.
+// Same approach: trim base combat stats, leave upgrade-branch stats alone.
+
+(function(){
+  if(typeof UNITS==='undefined') return;
+  if(UNITS.antlerguard){
+    const U=UNITS.antlerguard;
+    U.hp=56; U.atk=13; U.def=10; U.min=7; U.max=11; U.spd=6; U.init=9;
+    // gold stays 1085 (v6.9). v6.10.1 shaved 2 more HP and 1 initiative so AG
+    // stays near 56% after Hellsteed and Rune Priest were trimmed. Upgrades untouched.
+  }
+  if(UNITS.hellsteed){
+    const U=UNITS.hellsteed;
+    U.hp=60; U.atk=14; U.def=11; U.min=8; U.max=12; U.spd=7; U.init=10;
+    // gold stays 1310. Do not retouch Dread Rider / Cinder Rider.
+  }
+  if(UNITS.runepriest){
+    const U=UNITS.runepriest;
+    U.hp=48; U.atk=11; U.def=10; U.min=7; U.max=10; U.spd=4; U.init=8;
+    // gold stays 1070, shots stay 6. Do not retouch Flame Priest / Rune Keeper.
+  }
+})();
+
+(function(){ const _sm=typeof showMenu==='function'?showMenu:null; if(!_sm) return;
+  showMenu=function(){ const r=_sm.apply(this,arguments);
+    try{ const sub=document.querySelector('#menu .subtitle'); if(sub&&!/v6\.10/.test(sub.textContent)) sub.textContent='v6.10.1 · Six factions · heroes, armies and hard choices'; }catch(e){}
+    return r; };
+})();
+
 </script></body></html>
