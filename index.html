@@ -347,7 +347,17 @@ body.is-dragging, body.is-dragging *{ cursor:grabbing !important; user-select:no
 html.touch, html.touch body{ overscroll-behavior:none; -webkit-tap-highlight-color:transparent; -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; touch-action:manipulation; -webkit-text-size-adjust:100%; }
 html.touch input, html.touch textarea{ -webkit-user-select:text; user-select:text; }
 html.touch #map, html.touch #ccv, html.touch #minimap{ touch-action:none; }
-html.touch #combat, html.touch #town, html.touch #town .tvscroll, html.touch #town .panel.screen, html.touch .modal{ touch-action:none; }
+/* v6.10.2: touch-action:none on #town / .modal / .panel.screen blocked one-finger
+   scrolling of build/recruit lists (and other menus) on iOS. Keep none only on
+   canvases that we fully own. Scrollable UI allows pan + pinch-zoom so a custom
+   two-finger handler can still preventDefault when touches.length===2. */
+html.touch #combat #ccv, html.touch #map, html.touch #minimap{ touch-action:none; }
+html.touch #town, html.touch #town .tvscroll, html.touch #town .panel.screen,
+html.touch #herosc, html.touch #herosc .panel.screen, html.touch .modal,
+html.touch .advbook, html.touch .mkt-items, html.touch .camp-packs,
+html.touch #side, html.mob .screen, html.mob #c-actions{
+  touch-action:pan-x pan-y pinch-zoom;
+}
 
 html.touch .slot[data-army]{ touch-action:none; }
 html.touch .btn{ min-height:44px; } html.touch .btn.small{ min-height:44px; }
@@ -9498,7 +9508,8 @@ function v69Pair(pts){ const a=pts[0], b=pts[1]; return {d:Math.hypot(a.x-b.x,a.
 function attachTwoFingerZoom(el, api){
   if(!el||el.dataset.boaPinch==='1') return el;
   el.dataset.boaPinch='1';
-  try{ el.style.touchAction='none'; }catch(_){}
+  // Canvases use 'none'. Scrollable surfaces (town, modals) must keep pan so one-finger scrolling still works.
+  try{ el.style.touchAction=api.touchAction||'none'; }catch(_){}
   let mode=null, s=null, touchActive=false;
   const ignore=ev=>api.ignore&&api.ignore(ev);
   const begin=p=>{
@@ -9629,6 +9640,7 @@ function v69AttachMapPinch(){ const cv=typeof MAPV!=='undefined'&&MAPV.cv; if(!c
 // Town + modal
 function v69AttachTownPinch(){ const root=document.getElementById('town'); if(!root) return;
   attachTwoFingerZoom(root,{
+    touchAction:'pan-x pan-y pinch-zoom',
     ignore:e=>e.target&&e.target.closest&&e.target.closest('button,input,select,textarea,a,.btn,.slot,.art'),
     get:()=>({z:TOWNZ.z,x:TOWNZ.x,y:TOWNZ.y}),
     clampZ:z=>Math.max(1,Math.min(2.4,z)),
@@ -9644,6 +9656,7 @@ function v69AttachTownPinch(){ const root=document.getElementById('town'); if(!r
 (function(){ const _sm=typeof setupModalZoom==='function'?setupModalZoom:null; if(!_sm) return;
   setupModalZoom=function(wrap){ const r=_sm.apply(this,arguments);
     try{ const modal=wrap&&wrap.querySelector&&wrap.querySelector('.modal'); if(modal) attachTwoFingerZoom(modal,{
+      touchAction:'pan-x pan-y pinch-zoom',
       ignore:e=>e.target&&e.target.closest&&e.target.closest('button,input,select,textarea,a,.btn'),
       get:()=>({z:MODZ.z,x:MODZ.x,y:MODZ.y}),
       clampZ:z=>Math.max(1,Math.min(2.2,z)),
@@ -9835,6 +9848,18 @@ function v69EnsureCombatZoomButtons(){
 (function(){ const _sm=typeof showMenu==='function'?showMenu:null; if(!_sm) return;
   showMenu=function(){ const r=_sm.apply(this,arguments);
     try{ const sub=document.querySelector('#menu .subtitle'); if(sub&&!/v6\.10/.test(sub.textContent)) sub.textContent='v6.10.1 · Six factions · heroes, armies and hard choices'; }catch(e){}
+    return r; };
+})();
+
+// ---- 26_v6102.js ----
+// ===================== v6.10.2: restore one-finger scroll on town / menus =====================
+// SAVE_VERSION stays 7. The v6.9 pinch path set touch-action:none on #town and
+// .modal (and attachTwoFingerZoom wrote that as an inline style), so iOS would
+// not scroll the build/recruit lists. Canvases keep touch-action:none; scrollable
+// UI uses pan-x pan-y pinch-zoom, and two-finger handlers still preventDefault.
+(function(){ const _sm=typeof showMenu==='function'?showMenu:null; if(!_sm) return;
+  showMenu=function(){ const r=_sm.apply(this,arguments);
+    try{ const sub=document.querySelector('#menu .subtitle'); if(sub) sub.textContent='v6.10.2 · Six factions · heroes, armies and hard choices'; }catch(e){}
     return r; };
 })();
 

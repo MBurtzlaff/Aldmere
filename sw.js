@@ -1,5 +1,5 @@
-// Banners of Aldmere offline cache (build d4124f2a32)
-const CACHE='aldmere-v6.10.1-d4124f2a32';
+// Banners of Aldmere offline cache (build 27f85945b4)
+const CACHE='aldmere-v6.10.2-27f85945b4';
 const FILES=['./','./index.html','./manifest.json','./icons/apple-touch-icon.png','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install',e=>{ e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting())); });
 self.addEventListener('activate',e=>{ e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())); });
