@@ -582,6 +582,34 @@ html.mob .modal.levelup{ max-height:92vh; overflow:auto; }
 html.mob .levelup .lvl-wheel canvas{ width:min(240px,70vw); height:auto; }
 html.mob .levelup .lvl-actions{ z-index:6; padding-left:168px; box-sizing:border-box; }
 html.mob .levelup .lvl-actions .btn{ min-width:0; width:100%; }
+
+/* v6.10.3: always-visible Back to map — fixed under the top bar, not scrolled away */
+#mapback{ display:none; }
+html.mob #mapback, html.touch #mapback{
+  display:flex; align-items:center; justify-content:center;
+  position:fixed; z-index:130;
+  top:calc(var(--tbh,44px) + var(--sat,0px) + 6px);
+  left:max(8px, var(--sal,0px));
+  min-height:44px; min-width:44px; padding:0 14px;
+  font:bold 15px/1 Georgia,serif; color:#2a1606;
+  background:linear-gradient(180deg,#ffe08a,#d9a640);
+  border:2px solid #fff2c0; border-radius:22px;
+  box-shadow:0 3px 12px rgba(0,0,0,.65),0 0 0 2px rgba(40,20,6,.45);
+  white-space:nowrap; touch-action:manipulation; -webkit-tap-highlight-color:transparent;
+}
+html.mob #mapback.hidden, html.touch #mapback.hidden{ display:none; }
+html.mob #mapback:active, html.touch #mapback:active{ filter:brightness(1.1); transform:translateY(1px); }
+html.mob.mapback-on #town, html.mob.mapback-on #herosc,
+html.touch.mapback-on #town, html.touch.mapback-on #herosc{ padding-top:52px; }
+html.mob #side-mapback, html.touch #side-mapback{
+  display:flex; align-items:center; justify-content:center;
+  width:100%; min-height:44px; margin:0 0 8px 0;
+  font:bold 16px Georgia,serif; touch-action:manipulation;
+}
+html.mob .scr-head #hs-close, html.mob .scr-head #tw-close,
+html.touch .scr-head #hs-close, html.touch .scr-head #tw-close{
+  position:sticky; top:0; z-index:6; min-height:44px;
+}
 </style><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"><script>window.BOA_SW='sw.js';</script></head>
 <body>
 <div id="topbar"><div class="logo">⚜ Aldmere</div><div id="res"></div><div id="daylbl"></div>
@@ -9862,5 +9890,178 @@ function v69EnsureCombatZoomButtons(){
     try{ const sub=document.querySelector('#menu .subtitle'); if(sub) sub.textContent='v6.10.2 · Six factions · heroes, armies and hard choices'; }catch(e){}
     return r; };
 })();
+
+// ---- 27_v6103.js ----
+// ===================== v6.10.3: Back to map, never stuck after losing a town =====================
+// SAVE_VERSION stays 7. Hero/Army had no reliable way back to the adventure map:
+// Close on the hero screen only hid the hero panel (and said "Back to Town" when
+// the town was still open underneath), the Close/Leave buttons scrolled away, and
+// the phone Army drawer had no Back-to-map control. captureTown also left the
+// town overlay open. If you then had no towns, the Town button only toasted
+// "You have no town!" and you could be stuck on a stale town or hero screen.
+
+function backToMap(){
+  try{ document.querySelectorAll('#modal-root .modal-wrap').forEach(w=>{ if(typeof closeModal==='function') closeModal(w); else w.remove(); }); }catch(_){}
+  try{ if(typeof closeHeroScreen==='function') closeHeroScreen();
+    else { const e=document.getElementById('herosc'); if(e) e.classList.add('hidden'); } }catch(_){}
+  try{ if(typeof closeTown==='function') closeTown();
+    else { const e=document.getElementById('town'); if(e) e.classList.add('hidden'); CUR_TOWN=null; } }catch(_){}
+  try{ if(typeof mobDrawer==='function') mobDrawer(false);
+    else { const s=document.getElementById('side'); if(s) s.classList.remove('open'); } }catch(_){}
+  try{ const sp=document.getElementById('sndpop'); if(sp) sp.classList.add('hidden'); }catch(_){}
+  try{ if(typeof hideTip==='function') hideTip(); }catch(_){}
+  try{ if(typeof G!=='undefined'&&G&&typeof renderAll==='function') renderAll(); }catch(_){}
+  try{ if(typeof resizeMap==='function') resizeMap(); }catch(_){}
+  try{ if(typeof mapBackUpdate==='function') mapBackUpdate(); }catch(_){}
+}
+
+function mapBackShouldShow(){
+  try{
+    if(typeof MOB!=='undefined'&&MOB.phone===false && !(document.documentElement.classList.contains('mob'))) return false;
+    const shown=id=>{ const e=document.getElementById(id); return !!(e&&!e.classList.contains('hidden')); };
+    if(shown('combat')) return false;
+    if(document.getElementById('passscr')) return false;
+    if(typeof G!=='undefined'&&G&&G.over) return false;
+    if(shown('menu')&&!shown('town')&&!shown('herosc')) return false;
+    if(shown('town')||shown('herosc')) return true;
+    const side=document.getElementById('side'); if(side&&side.classList.contains('open')) return true;
+    if(typeof G!=='undefined'&&G&&document.querySelector('#modal-root .modal-wrap')) return true;
+  }catch(_){}
+  return false;
+}
+
+function mapBackUpdate(){
+  let b=document.getElementById('mapback');
+  const show=mapBackShouldShow();
+  if(!b){
+    if(!show) return;
+    b=document.createElement('button');
+    b.id='mapback'; b.type='button';
+    b.textContent='🗺 Back to map';
+    b.setAttribute('aria-label','Back to map');
+    b.setAttribute('data-tip','Close this screen and return to the adventure map');
+    b.onclick=e=>{ e.preventDefault(); e.stopPropagation(); backToMap(); };
+    document.body.appendChild(b);
+  }
+  const de=document.documentElement;
+  b.classList.toggle('hidden',!show);
+  de.classList.toggle('mapback-on',!!show);
+}
+
+function v6103WireScreenButtons(){
+  const hs=document.getElementById('hs-close');
+  if(hs){ hs.textContent='🗺 Back to map'; hs.onclick=e=>{ e&&e.preventDefault&&e.preventDefault(); backToMap(); }; }
+  const tw=document.getElementById('tw-close');
+  if(tw){ tw.textContent='🗺 Back to map'; tw.onclick=e=>{ e&&e.preventDefault&&e.preventDefault(); backToMap(); }; }
+  const side=document.getElementById('side');
+  if(side&&!document.getElementById('side-mapback')){
+    const b=document.createElement('button');
+    b.id='side-mapback'; b.type='button'; b.className='btn';
+    b.textContent='🗺 Back to map';
+    b.setAttribute('aria-label','Back to map');
+    b.onclick=e=>{ e.preventDefault(); e.stopPropagation(); backToMap(); };
+    const grab=document.getElementById('side-grab');
+    if(grab&&grab.parentNode===side) side.insertBefore(b, grab.nextSibling);
+    else side.insertBefore(b, side.firstChild);
+  }
+  mapBackUpdate();
+}
+
+function v6103TownStillOurs(t){ return !!(t&&typeof ME!=='undefined'&&t.owner===ME); }
+
+function setupMapBack(){
+  let q=false;
+  const run=()=>{ q=false; try{ v6103WireScreenButtons(); }catch(_){} try{ mapBackUpdate(); }catch(_){} };
+  const kick=()=>{ if(!q){ q=true; Promise.resolve().then(run); } };
+  const mo=new MutationObserver(()=>kick());
+  ['town','herosc','menu','combat','side'].forEach(id=>{ const e=document.getElementById(id); if(e) mo.observe(e,{attributes:true,attributeFilter:['class']}); });
+  const mr=document.getElementById('modal-root'); if(mr) mo.observe(mr,{childList:true,subtree:true});
+  mo.observe(document.documentElement,{attributes:true,attributeFilter:['class']});
+  run();
+}
+
+(function(){
+  // Always take the player to the map, never back to a (possibly lost) town.
+  const _mbt=typeof mobBackTarget==='function'?mobBackTarget:null;
+  if(_mbt) mobBackTarget=function(){
+    const t=_mbt.apply(this,arguments); if(!t) return t;
+    const shown=id=>{ const e=document.getElementById(id); return !!(e&&!e.classList.contains('hidden')); };
+    if(shown('herosc')||shown('town')) return {lab:'🗺 Back to map', tip:'Close this screen and return to the adventure map', fn:backToMap};
+    return t;
+  };
+
+  const _ct=typeof captureTown==='function'?captureTown:null;
+  if(_ct) captureTown=function(h,town){
+    const prev=town&&town.owner;
+    const r=_ct.apply(this,arguments);
+    try{
+      if(prev===ME){
+        const stale=CUR_TOWN&&(CUR_TOWN===town||CUR_TOWN.owner!==ME);
+        if(stale||(document.getElementById('town')&&!document.getElementById('town').classList.contains('hidden')&&CUR_TOWN&&CUR_TOWN.owner!==ME)){
+          const heroOpen=(()=>{ const e=document.getElementById('herosc'); return e&&!e.classList.contains('hidden'); })();
+          if(typeof closeTown==='function') closeTown();
+          if(heroOpen){ const e=document.getElementById('herosc'); if(e) e.classList.remove('hidden'); }
+        }
+        mapBackUpdate();
+      }
+    }catch(_){}
+    return r;
+  };
+
+  const _ot=typeof openTown==='function'?openTown:null;
+  if(_ot) openTown=function(t){
+    if(!v6103TownStillOurs(t)){ try{ if(typeof toast==='function') toast('You have no town!'); }catch(_){} backToMap(); return; }
+    return _ot.apply(this,arguments);
+  };
+
+  const _rt=typeof renderTown==='function'?renderTown:null;
+  if(_rt) renderTown=function(){
+    if(CUR_TOWN&&!v6103TownStillOurs(CUR_TOWN)){ backToMap(); return; }
+    const r=_rt.apply(this,arguments);
+    try{ v6103WireScreenButtons(); }catch(_){}
+    return r;
+  };
+
+  const _rh=typeof renderHeroScreen==='function'?renderHeroScreen:null;
+  if(_rh) renderHeroScreen=function(){
+    const r=_rh.apply(this,arguments);
+    try{ v6103WireScreenButtons(); }catch(_){}
+    return r;
+  };
+
+  const _pick=typeof mobTownPick==='function'?mobTownPick:null;
+  if(_pick) mobTownPick=function(){
+    const ts=(typeof townsOf==='function'&&typeof ME!=='undefined')?townsOf(ME):[];
+    if(!ts.length){ try{ toast('You have no town!'); }catch(_){} backToMap(); return; }
+    return _pick.apply(this,arguments);
+  };
+
+  const _rtt=typeof returnToTown==='function'?returnToTown:null;
+  if(_rtt) returnToTown=function(){
+    const ts=(typeof townsOf==='function'&&typeof ME!=='undefined')?townsOf(ME):[];
+    if(!ts.length){ try{ toast('You have no town!'); }catch(_){} backToMap(); return; }
+    return _rtt.apply(this,arguments);
+  };
+
+  const _ch=typeof closeHeroScreen==='function'?closeHeroScreen:null;
+  // keep closeHeroScreen as a hide of the hero panel only (backToMap closes everything)
+
+  document.addEventListener('keydown',e=>{
+    if((e.key||e.code)==='Escape'||e.key==='escape'){
+      const shown=id=>{ const el=document.getElementById(id); return !!(el&&!el.classList.contains('hidden')); };
+      if(shown('herosc')||shown('town')){ e.preventDefault(); backToMap(); }
+    }
+  },true);
+})();
+
+(function(){ const _sm=typeof showMenu==='function'?showMenu:null; if(!_sm) return;
+  showMenu=function(){ const r=_sm.apply(this,arguments);
+    try{ const sub=document.querySelector('#menu .subtitle'); if(sub) sub.textContent='v6.10.3 · Six factions · heroes, armies and hard choices'; }catch(e){}
+    return r; };
+})();
+
+window.addEventListener('load',()=>{ try{ setupMapBack(); }catch(e){ console.warn('mapback',e); } });
+// If this file loads after window.load (tests that goto then evaluate), still wire up.
+if(document.readyState==='complete'){ try{ setupMapBack(); }catch(e){} }
 
 </script></body></html>
