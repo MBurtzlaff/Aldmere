@@ -644,6 +644,25 @@ html.mob #menu .title{ font-size:40px; line-height:1.05; }
 /* v6.11.1: the floating zoom bar must never cover a field or button: keep room under every modal's content */
 html.mob .modal{ padding-bottom:calc(84px + env(safe-area-inset-bottom,0px)); }
 .mz-bar{ opacity:.9; }
+
+/* v6.12: Battle Challenges */
+body.ch-active #topbar, body.ch-active #mapwrap, body.ch-active #side, body.ch-active #navhint, body.ch-active #mapvignette, body.ch-active #camp-hud, body.ch-active #mobbar, body.ch-active #mapback, body.ch-active .mz-bar:not(.keep){ visibility:hidden !important; }
+.ch-modal{ max-width:560px; }
+.ch-list{ display:flex; flex-direction:column; gap:10px; margin:10px 0; }
+.ch-card{ display:flex; gap:10px; align-items:center; border:1px solid rgba(233,196,106,.35); border-radius:12px; padding:10px; background:rgba(0,0,0,.25); }
+.ch-num{ min-width:30px; height:30px; border-radius:50%; background:#e9c46a; color:#2a1a10; font-weight:800; display:flex; align-items:center; justify-content:center; }
+.ch-body{ flex:1; min-width:0; } .ch-diff{ color:#ffd36b; white-space:nowrap; }
+.ch-best{ color:#cfe8ff; }
+.ch-obj{ border-left:4px solid #e9c46a; background:rgba(233,196,106,.12); padding:8px 10px; border-radius:6px; margin:8px 0; }
+.ch-chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; } .ch-chip{ display:inline-block; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); border-radius:14px; padding:2px 9px; font-size:13px; margin:2px 4px 2px 0; }
+.ch-hero{ display:flex; gap:10px; align-items:center; padding:8px; border-radius:10px; background:rgba(0,0,0,.25); margin:6px 0; } .ch-hero img{ width:56px; height:56px; border-radius:8px; border:1px solid #e9c46a; } .ch-hero.big img{ width:84px; height:84px; } .ch-hinfo{ flex:1; min-width:0; }
+.ch-stack{ display:flex; gap:10px; align-items:center; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,.05); margin:4px 0; } .ch-stack img{ width:44px; height:44px; border-radius:6px; } .ch-sinfo{ flex:1; min-width:0; } .ch-mv{ display:flex; gap:4px; } .ch-mv .btn{ min-width:44px; min-height:44px; }
+.ch-grid{ display:grid; grid-template-columns:1fr 1fr; gap:4px 12px; margin:8px 0; }
+.ch-score{ display:flex; align-items:center; justify-content:center; gap:18px; margin:8px 0; } .ch-big{ font-size:56px; font-weight:800; color:#ffd36b; line-height:1; } .ch-big span{ font-size:20px; color:#aaa; }
+.ch-grade{ width:64px; height:64px; border-radius:50%; border:3px solid #e9c46a; display:flex; align-items:center; justify-content:center; font-size:36px; font-weight:800; } .ch-grade.gS{ color:#ffd36b; border-color:#ffd36b; box-shadow:0 0 14px #ffd36b; } .ch-grade.gA{ color:#8dff9a; } .ch-grade.gB{ color:#9ad0ff; } .ch-grade.gC{ color:#ffe08a; } .ch-grade.gD{ color:#ffb27a; } .ch-grade.gF{ color:#ff8a8a; }
+.ch-st{ font-size:26px; color:#ffd36b; letter-spacing:2px; }
+.ch-comp{ margin:8px 0; } .ch-cl{ display:flex; justify-content:space-between; } .ch-bar{ height:10px; background:rgba(255,255,255,.12); border-radius:6px; overflow:hidden; } .ch-bar i{ display:block; height:100%; background:linear-gradient(90deg,#c58b2d,#ffd36b); }
+.ch-tips li{ margin:6px 0; } .ch-rbtns{ flex-wrap:wrap; }
 </style><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"><script>window.BOA_SW='sw.js';</script></head>
 <body>
 <div id="topbar"><div class="logo">⚜ Aldmere</div><div id="res"></div><div id="daylbl"></div>
@@ -10091,7 +10110,7 @@ function setupMapBack(){
 
 (function(){ const _sm=typeof showMenu==='function'?showMenu:null; if(!_sm) return;
   showMenu=function(){ const r=_sm.apply(this,arguments);
-    try{ const sub=document.querySelector('#menu .subtitle'); if(sub) sub.textContent='v6.11.1 · Six factions · heroes, armies and hard choices'; }catch(e){}
+    try{ const sub=document.querySelector('#menu .subtitle'); if(sub) sub.textContent='v6.12.0 · Six factions · heroes, armies and hard choices'; }catch(e){}
     return r; };
 })();
 
@@ -10419,5 +10438,289 @@ function campVeteranBoost(){ if(!G||!G.campaign||G.campaign.boosted) return; con
       ctx.restore();
     }catch(e){ if(!window.__v6111r){ window.__v6111r=1; console.warn('v6111 map',e); } } };
 })();
+
+// ---- 31_challenges.js ----
+// ===================== v6.12: BATTLE CHALLENGES =====================
+// Hand-built battles: fixed hero + army vs a larger enemy force, a 0-100 strategy rating, personal bests.
+// Runs on a throw-away sandbox game so a real saved game is never touched; the real state is restored on exit.
+const CH_KEY='boa_challenges_v1';
+const CH={ run:null, saved:null, active:false, sim:null };
+function chLoad(){ try{ const o=JSON.parse(localStorage.getItem(CH_KEY)); if(o&&o.best) return o; }catch(e){} return {v:1,best:{}}; }
+function chStore(o){ try{ localStorage.setItem(CH_KEY,JSON.stringify(o)); }catch(e){} }
+
+// ---- scenario data ----
+const CHD=['','Easy','Moderate','Hard','Very hard','Brutal'];
+const CH_TERRAIN={0:'Open meadow',1:'Woodland',2:'Hills',3:'Farmland',4:'Riverbank',6:'Snowfield',7:'Desert',8:'Marsh',9:'Lava field'};
+const CHALLENGES=[
+ { id:'bridge', k:1, name:'The Toll Bridge', diff:1, terrain:4, par:7,
+   story:'A raiding band from the Ashen Covenant has seized the only bridge on the Ember Road. Ser Aldric must clear it before the merchants are robbed blind.',
+   objective:'Defeat every enemy stack.', twist:null,
+   hint:'The bridge is a choke point. Let them come through the gap one stack at a time while your crossbowmen shoot.',
+   obstacles:[[6,0],[6,1],[6,2],[6,3],[6,6],[6,7],[6,8],[6,9],[5,1],[5,8],[7,2],[7,7]],
+   player:{faction:'sunward',cls:'knight',trait:'warlord',name:'Ser Aldric',level:3,atk:6,def:5,sp:2,kn:3,skills:{arms:1,ward:1},perks:['arm_edge'],spells:['mend','bless'],arts:['sunblade']},
+   army:[{type:'pikeman',n:30},{type:'crossbowman',n:14},{type:'swordsman',n:8}],
+   enemy:{faction:'ashen',army:[{type:'cinderling',n:55},{type:'ashhound',n:16},{type:'hornbrute',n:7},{type:'spitfire',n:12}]} },
+ { id:'orchard', k:1, name:'The Bone Orchard', diff:1, terrain:1, par:8,
+   story:'The Thornwild Circle marches on a barrow that the Grave Court tends. Lady Morwen holds the orchard with her skeletons and will not give ground.',
+   objective:'Defeat every enemy stack.', twist:null,
+   hint:'Skeletons are slow and undead cannot be morale-shaken. Wither and Slow make their big stacks far less dangerous.',
+   obstacles:[[4,2],[4,7],[5,4],[5,5],[7,1],[7,8],[8,4],[8,5],[9,3],[9,6]],
+   player:{faction:'gravecourt',cls:'bonecaller',trait:'arcanist',name:'Lady Morwen',level:4,atk:3,def:4,sp:6,kn:6,skills:{umbra:1,arcana:1},perks:['umb_curse'],spells:['slow','wither','bolt'],arts:['manaring']},
+   army:[{type:'bonewalker',n:40},{type:'bonearcher',n:24},{type:'gravewretch',n:14},{type:'shade',n:8},{type:'bloodcount',n:3}],
+   enemy:{faction:'thornwild',army:[{type:'thornling',n:60},{type:'dancer',n:18},{type:'grovearcher',n:14},{type:'glimmerhorn',n:6},{type:'antlerguard',n:2}]} },
+ { id:'frostpass', k:1.3, name:'Frostpass Stand', diff:2, terrain:6, par:9,
+   story:'The Deepforge Clans hold a mountain pass while their caravan escapes. A Grave Court host is closing in and wants the pass before nightfall.',
+   objective:'Survive 11 rounds with at least one stack standing, or destroy the enemy first.', twist:{type:'survive',rounds:11},
+   hint:'You only need to last. Make them come to you and keep your tough stacks on Defend.',
+   obstacles:[[5,0],[5,1],[5,2],[5,7],[5,8],[5,9],[6,3],[6,6],[8,1],[8,8],[9,4],[9,5]],
+   player:{faction:'deepforge',cls:'ironlord',trait:'tactician',name:'Thane Brogan',level:5,atk:6,def:8,sp:3,kn:4,skills:{ward:2,command:1},perks:['wrd_shield','cmd_drill'],spells:['stoneskin','bolt'],arts:['wardplate']},
+   army:[{type:'ironwall',n:36},{type:'skirmisher',n:26},{type:'ironpelt',n:12},{type:'ironfist',n:7},{type:'flamepriest',n:2}],
+   enemy:{faction:'gravecourt',army:[{type:'bonewalker',n:120},{type:'bonearcher',n:50},{type:'plaguewretch',n:34},{type:'banshee',n:16},{type:'crimsonduke',n:8},{type:'deathspeaker',n:3}]} },
+ { id:'glyphs', k:1.2, name:'Glyphs in the Sand', diff:2, terrain:7, par:9,
+   story:'A Spireborn Artificer is escorting a glyph-engine across the dunes when a Deepforge raiding party, led by a Runekeeper who uses spells, cuts across his path.',
+   objective:'Defeat every enemy stack. The enemy hero casts spells.', twist:{type:'enemyspells'},
+   hint:'Their Runekeeper will cast on your biggest stack. Kill the casters early or keep Stoneskin on whatever they target.',
+   obstacles:[[4,3],[4,6],[6,2],[6,7],[7,4],[7,5],[9,1],[9,8]],
+   player:{faction:'spireborn',cls:'artificer',trait:'tactician',name:'Ilvane the Tinker',level:5,atk:4,def:6,sp:5,kn:5,skills:{ward:1,arcana:1},perks:['arc_focus'],spells:['stoneskin','bolt','frost'],arts:['circlet']},
+   army:[{type:'tinkerling',n:40},{type:'gargoyle',n:22},{type:'ironward',n:16},{type:'magus',n:8},{type:'windbound',n:3}],
+   enemy:{faction:'deepforge',hero:{faction:'deepforge',cls:'runekeeper',trait:'arcanist',name:'Karga Runecaller',level:5,atk:3,def:4,sp:6,kn:5,skills:{arcana:1},perks:[],spells:['frost','stoneskin'],arts:[]},
+     army:[{type:'hammerbeard',n:46},{type:'axethrower',n:22},{type:'bearrider',n:14},{type:'brawler',n:8},{type:'runepriest',n:2}]} },
+ { id:'marsh', k:1.1, name:'Marsh of Whispers', diff:3, terrain:8, par:10,
+   story:'Deep in the marsh, an Ashen warband is led by three Pyrefiend champions. Break them and the rest will scatter. The Thornwild Ranger Sael has one chance at it.',
+   objective:'Slay all three Pyrefiend champions (marked ⚔ in the enemy list).', twist:{type:'commander'},
+   hint:'Flying stacks and Entangle let you reach the champion past his guards. Do not waste time on the small stuff.',
+   obstacles:[[4,1],[4,8],[5,3],[5,6],[6,4],[6,5],[7,2],[7,7],[9,0],[9,9],[10,4],[10,5]],
+   player:{faction:'thornwild',cls:'ranger',trait:'pathfinder',name:'Sael Duskwalker',level:7,atk:8,def:5,sp:4,kn:5,skills:{arms:2,wayfinding:1},perks:['arm_volley','way_ambush'],spells:['haste','entangle','stoneskin'],arts:['boots','sunblade']},
+   army:[{type:'briarling',n:70},{type:'whirlblade',n:30},{type:'longwarden',n:26},{type:'thornmane',n:11},{type:'stagcharger',n:4}],
+   enemy:{faction:'ashen',army:[{type:'cinderling',n:120},{type:'gorebrute',n:40},{type:'pyrewitch',n:26},{type:'dreadsteed',n:12},{type:'pyrefiend',n:3,commander:true}]} },
+ { id:'standard', k:0.9, name:'The Last Standard', diff:3, terrain:3, par:10,
+   story:'The Sunward banner-bearers have been cut off in a farmyard. Hold the Oathkeepers who carry the standard, or the whole army will rout on the next hill.',
+   objective:'Keep the Oathkeepers (marked 🚩) alive for 10 rounds, or destroy the enemy first.', twist:{type:'protect',rounds:10},
+   hint:'Put the Oathkeepers behind the Shieldguards and cast Sanctuary or Stoneskin on them. Losing any other stack is acceptable.',
+   obstacles:[[3,3],[3,6],[4,4],[4,5],[6,1],[6,8],[7,3],[7,6]],
+   player:{faction:'sunward',cls:'cleric',trait:'zealot',name:'Mother Elowen',level:6,atk:3,def:7,sp:6,kn:6,skills:{radiance:2,ward:1},perks:['rad_grace','wrd_shield'],spells:['bless','sanctuary','mend','smite'],arts:['manaring']},
+   army:[{type:'oathkeeper',n:14,protect:true},{type:'shieldguard',n:30},{type:'crossbowman',n:22},{type:'sunhawk',n:7},{type:'cleric',n:3}],
+   enemy:{faction:'thornwild',army:[{type:'whirlblade',n:34},{type:'twinshot',n:22},{type:'thornmane',n:12},{type:'wyrm',n:1},{type:'treant',n:3}]} },
+ { id:'cinder', k:0.95, name:'Cinder Gauntlet', diff:3, terrain:9, par:10,
+   story:'The Ashen Reaver Vharza must cross a lava field held by Sunward cavalry. Every turn spent in the open is a turn under arrows.',
+   objective:'Defeat every enemy stack.', twist:null,
+   hint:'The lava rocks split the field into lanes. Fight in one lane at a time and let your fast riders flank the archers.',
+   obstacles:[[3,1],[3,8],[4,4],[4,5],[5,2],[5,7],[6,4],[6,5],[7,1],[7,8],[8,3],[8,6],[9,4],[9,5]],
+   player:{faction:'ashen',cls:'reaver',trait:'warlord',name:'Vharza the Kindled',level:7,atk:10,def:6,sp:3,kn:4,skills:{arms:2,command:1},perks:['arm_cleave','cmd_drill'],spells:['bolt'],arts:['sunblade','warhorn']},
+   army:[{type:'cinderling',n:90},{type:'threehead',n:28},{type:'gorebrute',n:20},{type:'emberwitch',n:14},{type:'hellsteed',n:6},{type:'pyrefiend',n:2}],
+   enemy:{faction:'sunward',army:[{type:'pikeman',n:170},{type:'arbalest',n:70},{type:'zealot',n:44},{type:'stormhawk',n:20},{type:'lightbringer',n:8},{type:'cavalier',n:8}]} },
+ { id:'drought', k:1.2, name:'The Mana Drought', diff:4, terrain:2, par:11,
+   story:'A Gravecourt curse has dried up the ley-lines. Magister Orrel has barely enough power for three spells, and a Deepforge phalanx is at the gate.',
+   objective:'Defeat every enemy stack. Your hero has very little mana: spend it where it counts.', twist:{type:'mana'},
+   hint:'Do not waste a single cast. Slow or Frost on their biggest stack is worth more than three Bolts on small ones.',
+   obstacles:[[3,2],[3,7],[5,0],[5,9],[6,4],[6,5],[8,2],[8,7],[10,4],[10,5]],
+   player:{faction:'spireborn',cls:'magister',trait:'arcanist',name:'Magister Orrel',level:8,atk:3,def:5,sp:9,kn:3,skills:{arcana:2,pyre:2},perks:['arc_focus','pyr_ignite'],spells:['bolt','frost','chain'],arts:['circlet'],mana:20},
+   army:[{type:'sparkwright',n:60},{type:'stormgargoyle',n:30},{type:'siegegolem',n:18},{type:'battlemagus',n:12},{type:'tempestbound',n:4},{type:'jadematron',n:1}],
+   enemy:{faction:'deepforge',army:[{type:'hammerbeard',n:100},{type:'chainthrower',n:38},{type:'mauler',n:22},{type:'berserker',n:14},{type:'flamepriest',n:5},{type:'thane',n:3}]} },
+ { id:'ridge', k:0.8, name:'Hold the Ridge', diff:4, terrain:0, par:11,
+   story:'A Deepforge garrison on a ridge road must delay a Thornwild host for just a few rounds so the beacon can be lit and reinforcements can arrive.',
+   objective:'Survive 11 rounds with at least one stack standing, or destroy the enemy first.', twist:{type:'survive',rounds:11},
+   hint:'Their fast flying units reach you first. Trade space for time, and keep your thanes near the beacon end of the field.',
+   obstacles:[[4,0],[4,1],[4,8],[4,9],[5,3],[5,6],[7,2],[7,7],[8,4],[8,5]],
+   player:{faction:'deepforge',cls:'runekeeper',trait:'tactician',name:'Hilda Runeward',level:8,atk:6,def:9,sp:6,kn:6,skills:{ward:2,command:2},perks:['wrd_turtle','cmd_tactics','wrd_brace'],spells:['frost','stoneskin','bolt'],arts:['wardplate','bannerpole']},
+   army:[{type:'ironwall',n:50},{type:'skirmisher',n:36},{type:'ironpelt',n:20},{type:'ironfist',n:12},{type:'runekeeper',n:5},{type:'ironthane',n:3}],
+   enemy:{faction:'thornwild',army:[{type:'briarling',n:130},{type:'whirlblade',n:60},{type:'longwarden',n:44},{type:'moonhorn',n:26},{type:'stagcharger',n:10},{type:'ragebark',n:6},{type:'emeraldwyrm',n:2}]} },
+ { id:'palecourt', k:0.46, name:'The Pale Court', diff:4, terrain:6, par:12,
+   story:'Sunward Archons lead a crusade across the winter wastes. The Grave Court Bonecaller who guards the frozen crypt knows exactly one trick: take the heads and the host falls.',
+   objective:'Slay the Archons (marked ⚔). The enemy hero casts spells.', twist:{type:'commander',spells:true},
+   hint:'Archons fly and strike hard. Slow or Wither the Archons, then focus them with every stack at once.',
+   obstacles:[[4,2],[4,7],[5,4],[5,5],[7,0],[7,9],[8,3],[8,6]],
+   player:{faction:'gravecourt',cls:'graveknight',trait:'warlord',name:'Lord Valdric',level:9,atk:10,def:9,sp:4,kn:5,skills:{arms:2,umbra:2},perks:['arm_edge','umb_curse'],spells:['wither','slow','dread'],arts:['conqhelm','sunblade']},
+   army:[{type:'bonewalker',n:90},{type:'bonearcher',n:50},{type:'plaguewretch',n:26},{type:'banshee',n:16},{type:'eldercount',n:10},{type:'archlich',n:4},{type:'doomrider',n:3}],
+   enemy:{faction:'sunward',hero:{faction:'sunward',cls:'cleric',trait:'zealot',name:'Archon Seraphine',level:8,atk:4,def:6,sp:6,kn:6,skills:{radiance:2},perks:['rad_grace'],spells:['bless','smite','mend'],arts:[]},
+     army:[{type:'halberdier',n:160},{type:'arbalest',n:70},{type:'oathkeeper',n:40},{type:'crownhawk',n:20},{type:'lightbringer',n:8},{type:'sunlance',n:6},{type:'archon',n:2,commander:true}]} },
+ { id:'wyrmfall', k:0.7, name:'Wyrmfall', diff:5, terrain:7, par:12,
+   story:'Two emerald wyrms and a Spireborn war-column have trapped the Thornwild Druid Ysolde in a dry riverbed. Her only hope is the oldest trick: stone, root and storm.',
+   objective:'Defeat every enemy stack.', twist:null,
+   hint:'Entangle cannot hold a flyer, but Stoneskin on your treants and Haste on your archers will. Kill the big stacks before they act twice.',
+   obstacles:[[3,4],[3,5],[5,1],[5,8],[6,3],[6,6],[8,2],[8,7],[9,4],[9,5]],
+   player:{faction:'thornwild',cls:'druid',trait:'scholar',name:'Ysolde Fernwhisper',level:10,atk:5,def:8,sp:9,kn:7,skills:{verdance:3,arcana:2,ward:1},perks:['ver_bark','arc_focus'],spells:['stoneskin','entangle','haste','summon','thornhide'],arts:['manaring','circlet','wardplate']},
+   army:[{type:'dancer',n:50},{type:'twinshot',n:34},{type:'thornmane',n:20},{type:'grovewarden',n:10},{type:'treant',n:7},{type:'wyrm',n:2}],
+   enemy:{faction:'spireborn',army:[{type:'gearwarden',n:240},{type:'stormgargoyle',n:100},{type:'siegegolem',n:60},{type:'battlemagus',n:40},{type:'tempestbound',n:16},{type:'coilempress',n:9},{type:'thundercolossus',n:6}]} },
+ { id:'sundering', k:0.7, name:'The Sundering Field', diff:5, terrain:0, par:14,
+   story:'The final test. Sunward champion Aldric the Unbroken faces a Gravecourt Lich-Regent and a host three times his size. If the banner does not fall in the first ten rounds, the Regent will break it.',
+   objective:'Slay the Bone Drakes (marked ⚔). The enemy hero casts spells.', twist:{type:'commander',spells:true},
+   hint:'Everything you have learned applies: hold the line, shield the archers, spend your mana early, and strike the Bone Drakes when their guards are gone.',
+   obstacles:[[4,2],[4,7],[5,4],[5,5],[6,0],[6,9],[7,3],[7,6],[8,4],[8,5],[10,1],[10,8]],
+   player:{faction:'sunward',cls:'knight',trait:'tactician',name:'Aldric the Unbroken',level:12,atk:11,def:11,sp:5,kn:6,skills:{command:2,ward:2,arms:2,radiance:1},perks:['cmd_drill','cmd_tactics','wrd_shield','arm_edge','rad_grace'],spells:['mend','bless','sanctuary','haste'],arts:['sunblade','wardplate','warhorn','conqhelm']},
+   army:[{type:'halberdier',n:60},{type:'shieldguard',n:44},{type:'arbalest',n:36},{type:'zealot',n:22},{type:'crownhawk',n:12},{type:'lightbringer',n:7},{type:'archon',n:3}],
+   enemy:{faction:'gravecourt',hero:{faction:'gravecourt',cls:'bonecaller',trait:'arcanist',name:'The Lich-Regent',level:11,atk:4,def:6,sp:8,kn:7,skills:{umbra:3,arcana:1},perks:['umb_curse'],spells:['plague','dread','wither','leech','slow'],arts:[]},
+     army:[{type:'bonewalker',n:380},{type:'bonearcher',n:170},{type:'stitchedhulk',n:90},{type:'phantom',n:60},{type:'eldercount',n:36},{type:'plaguecaller',n:16},{type:'palewarden',n:12},{type:'plaguedrake',n:5},{type:'bonedrake',n:4,commander:true}]} }
+];
+function chById(id){ return CHALLENGES.find(c=>c.id===id); }
+
+// ---- building the fighters ----
+function chHero(d, owner){
+  const h=makeHero(owner,d.faction,d.cls,d.trait,d.name,0,0); h.level=d.level||1; for(const k of ['atk','def','sp','kn']) if(d[k]!=null) h[k]=d[k];
+  h.skills=Object.assign({},h.skills,d.skills||{}); h.perks=[...new Set([...(h.perks||[]),...(d.perks||[])])];
+  h.spells=(d.spells||h.spells).filter(s=>SPELLS[s]); h.arts=(d.arts||[]).filter(a=>ARTIFACTS[a]); h.pack=[]; h.xp=0; h.id='chh_'+d.name.replace(/\W/g,'');
+  h.mana = d.mana!=null? d.mana : heroStats(h).maxMana; return h; }
+function chArmy(a){ return a.map(s=>Object.assign({},s)); }
+function chPower(a){ return a.reduce((t,s)=>t+unitValue(s.type)*s.n,0); }
+function chEnemyArmy(sc){ const k=(sc.k||1)*((window.CH_TUNE&&window.CH_TUNE[sc.id])||1); return sc.enemy.army.map(s=>Object.assign({},s,{n:s.commander?s.n:Math.max(1,Math.round(s.n*k))})); }
+function chOrder(sc){ const o=chLoad().order&&chLoad().order[sc.id]; return o; }
+
+// ---- sandbox so combat/UI have a game to draw on; real game restored afterwards ----
+function chSandbox(sc){ if(!CH.saved){ CH.saved={G}; }
+  CH.active=true; document.body.classList.add('ch-active');
+  newGame({faction:sc.player.faction,cls:sc.player.cls,trait:sc.player.trait,name:sc.player.name,size:'small',ais:[sc.enemy.faction],difficulty:'normal',seed:5});
+  enterGame(true); $('#menu').classList.add('hidden'); }
+function chRestore(){ document.body.classList.remove('ch-active'); CH.active=false; CH.run=null;
+  document.querySelectorAll('#modal-root .modal-wrap').forEach(w=>closeModal(w));
+  const c=document.getElementById('combat'); if(c) c.classList.add('hidden');
+  if(CH.saved){ G=CH.saved.G; CH.saved=null; if(G){ try{ enterGame(true); }catch(e){} } }
+  try{ if(typeof renderAll==='function'&&G) renderAll(); }catch(e){} }
+
+// ---- the battle itself ----
+function chStart(sc, army, visual){
+  const ph=chHero(sc.player,'human'); const eh=sc.enemy.hero?chHero(sc.enemy.hero,'ai1'):null;
+  const pa=army||chArmy(sc.army); const ea=chEnemyArmy(sc);
+  setupBattle([{owner:'human',hero:ph,army:pa,faction:ph.faction},{owner:'ai1',hero:eh,army:ea,faction:sc.enemy.faction}],{visual:!!visual,terrain:sc.terrain});
+  B.obstacles=new Set(); for(const [c,r] of sc.obstacles||[]) if(!unitAt(c,r)) B.obstacles.add(hkey(c,r));
+  const startMana=ph.mana; const mk=l=>B.units.filter(u=>u.side===l&&!u.flags.machine);
+  CH.run={sc, turns:0, casts:0, startMana, hero:ph, ehero:eh, ended:null,
+    start:[mk(0).map(u=>({type:u.type,n:u.startN,mhp:u.maxHp,u})),mk(1).map(u=>({type:u.type,n:u.startN,mhp:u.maxHp,u}))]};
+  return {ph,eh}; }
+// A "round" = one real (non-Wait) turn of your hero, so pressing Wait can never speed up a survive objective.
+{ const _et=endTurn; endTurn=function(a,mode,bonus){ if(CH.run&&B&&a&&a.isHero&&a.side===0&&mode==='act'&&!CH.run.ended&&B.heroes.includes(a)) CH.run.turns++; return _et.apply(this,arguments); }; }
+{ const _he=heroTurn; heroTurn=async function(a){ if(CH.sim&&CH.sim.noHero&&a&&a.side===0){ B.round++; endTurn(a,'act',0); return; } return _he.apply(this,arguments); }; }
+{ const _ce=checkEnd; checkEnd=function(){ const r=_ce.apply(this,arguments); const R=CH.run; if(!R||!B||B.over&&r) return r; const sc=R.sc, t=sc.twist||{};
+    const mine=B.units.some(u=>u.alive&&u.side===0&&!u.flags.machine);
+    if(t.type==='survive'&&R.turns>=t.rounds&&mine){ B.over=true; B.winner=0; R.ended='survived'; return true; }
+    if(t.type==='protect'){ const pu=B.units.find(u=>u.src&&u.src.protect&&u.side===0); if(pu&&!pu.alive){ B.over=true; B.winner=1; R.ended='lostprotect'; return true; } if(R.turns>=t.rounds&&mine){ B.over=true; B.winner=0; R.ended='survived'; return true; } }
+    if(t.type==='commander'){ const cus=B.units.filter(u=>u.src&&u.src.commander&&u.side===1); if(cus.length&&cus.every(u=>!u.alive)&&mine){ B.over=true; B.winner=0; R.ended='commander'; return true; } }
+    return r; }; }
+{ const _cs=castSpell; castSpell=async function(side){ if(CH.run&&side===0&&B&&!B.over) CH.run.casts++; return _cs.apply(this,arguments); }; }
+{ const _sb=showBattleResults; showBattleResults=function(res){ if(CH.run&&CH.active) return Promise.resolve(); return _sb.apply(this,arguments); }; }
+{ const _mb=typeof mapBackShouldShow==='function'?mapBackShouldShow:null; if(_mb) mapBackShouldShow=function(){ if(CH.active) return false; return _mb.apply(this,arguments); }; }
+
+// ---- scoring ----
+function chStats(){ const R=CH.run; const sc=R.sc; const res={};
+  const tot=(list,side)=>{ let hp0=0,hp1=0,v0=0,v1=0; for(const s of list){ const u=s.u; const hp=u.alive?totalHp(u):0; hp0+=s.n*s.mhp; hp1+=Math.max(0,hp); const v=unitValue(s.type); v0+=v*s.n; v1+=v*Math.max(0,hp)/s.mhp; } return {hp0,hp1,v0,v1}; };
+  const P=tot(R.start[0]), E=tot(R.start[1]);
+  const won=B.winner===0 && B.retreated!==0; const dealt=E.hp0-E.hp1, taken=P.hp0-P.hp1;
+  const lostRanged=[], lostAll=[]; for(const s of R.start[0]){ const alive=s.u.alive?s.u.n:0; const lostN=s.n-alive; const fl=s.u.alive?(1-totalHp(s.u)/(s.n*s.mhp)):1; if(fl>=0.99) lostAll.push(s.type); if(UNITS[s.type].flags&&UNITS[s.type].flags.ranged&&fl>0.6) lostRanged.push(s.type); }
+  const stacksAlive=R.start[0].filter(s=>s.u.alive).length/R.start[0].length;
+  const manaUsed=Math.max(0,R.startMana-(R.hero.mana||0));
+  return {won, retreated:B.retreated===0, P, E, dealt, taken, army:P.v0?P.v1/P.v0:0, dealtFrac:E.hp0?dealt/E.hp0:0, trade: (dealt+taken)?dealt/(dealt+taken):0, lostRanged, lostAll, stacksAlive, manaUsed, startMana:R.startMana, turns:R.turns, casts:R.casts, ended:R.ended,
+    hasSpells:R.hero.spells.length>0&&R.startMana>=3, protectHp:(()=>{ const pu=B.units.find(u=>u.src&&u.src.protect&&u.side===0); return pu&&pu.alive?totalHp(pu)/(pu.startN*pu.maxHp):0; })() }; }
+function chScore(){ const R=CH.run, sc=R.sc, s=chStats(); const t=sc.twist||{}; const clamp=x=>Math.max(0,Math.min(1,x));
+  const comp=[];
+  const add=(key,label,w,v,note)=>comp.push({key,label,w,v:v==null?null:clamp(v),note});
+  add('victory','Victory',35,s.won?1:0, s.won?'You won the battle.':(s.retreated?'You retreated.':'Your force was defeated.'));
+  add('army','Army preserved',25,s.won?s.army:0, Math.round(s.army*100)+'% of your army\'s value survived');
+  add('damage','Damage dealt vs taken',15,clamp((s.trade-0.5)/0.4), 'You dealt '+Math.round(s.dealtFrac*100)+'% of the enemy\'s total health');
+  const par=sc.par; add('speed','Efficiency',10,s.turns<=par?1:1-(s.turns-par)/(par*1.5), s.turns+' rounds (par '+par+')');
+  if(s.hasSpells) add('magic','Spell and mana use',10,s.casts===0?0:clamp(s.manaUsed/Math.max(1,s.startMana)/0.6), s.casts+' spell'+(s.casts===1?'':'s')+' cast, '+Math.round(s.manaUsed)+' of '+s.startMana+' mana spent');
+  let ob,obn; if(t.type==='protect'){ ob=s.protectHp; obn='The standard-bearers kept '+Math.round(s.protectHp*100)+'% of their health'; }
+   else if(t.type==='commander'){ ob=s.ended==='commander'?(s.turns<=par*0.8?1:0.6):0; obn=s.ended==='commander'?'The marked stack fell in round '+s.turns:'The marked stack survived'; }
+   else if(t.type==='survive'){ ob=s.stacksAlive; obn=Math.round(s.stacksAlive*100)+'% of your stacks still standing'; }
+   else { ob=s.stacksAlive; obn=Math.round(s.stacksAlive*100)+'% of your stacks still standing'; }
+  add('objective','Objective bonus',5,s.won?ob:0,obn);
+  let total;
+  if(s.won){ const W=comp.reduce((a,c)=>a+c.w,0); total=Math.round(comp.reduce((a,c)=>a+c.w*(c.v||0),0)/W*100); total=Math.max(36,Math.min(100,total)); }
+  else total=Math.round(Math.min(30,25*s.dealtFrac+5*clamp(s.trade)));
+  const grade=s.won?(total>=92?'S':total>=80?'A':total>=68?'B':total>=55?'C':'D'):'F';
+  const stars=!s.won?0:total>=85?3:total>=65?2:1;
+  for(const c of comp) c.pts=Math.round(c.w*(c.v||0)*10)/10;
+  return {total,grade,stars,comp,stats:s,tips:chTips(sc,s,total)}; }
+function chTips(sc,s,total){ const tips=[]; const nm=a=>[...new Set(a)].map(t=>UNITS[t].name).join(', ');
+  if(s.retreated) tips.push('Retreating forfeits the whole army and counts as a loss. Even a costly stand scores better than running.');
+  if(s.lostRanged.length) tips.push('You lost most of your '+nm(s.lostRanged)+'. Shield shooters behind sturdy infantry, or put them on a flank the enemy cannot reach quickly.');
+  if(!s.won&&s.dealtFrac<0.5) tips.push('The enemy kept most of its strength. Focus fire on one stack at a time instead of spreading damage, and use choke points so fewer of them can attack at once.');
+  if(!s.won&&s.dealtFrac>=0.5) tips.push('It was close: the enemy still had '+Math.round((1-s.dealtFrac)*100)+'% of its health. Look at the order your stacks moved in and try a different formation on the briefing screen.');
+  if(s.won&&s.army<0.5) tips.push('You won, but at a high cost (only '+Math.round(s.army*100)+'% of your army survived). Use Defend with tough stacks and let the enemy come to you.');
+  if(s.hasSpells&&s.casts===0) tips.push('Your hero never cast a spell. Buffs and curses in round one often decide the battle.');
+  else if(s.hasSpells&&s.manaUsed<s.startMana*0.3&&s.casts>0) tips.push('Most of your mana went unused. Spend it early: an extra spell now beats a full mana bar at the end.');
+  if(s.won&&s.turns>sc.par*1.3) tips.push('This took '+s.turns+' rounds (par is '+sc.par+'). Advance sooner with your fast stacks and strike the enemy shooters first.');
+  if(s.won&&(sc.twist||{}).type==='commander'&&s.turns>sc.par*0.8) tips.push('Kill the marked stack faster: surround it with several stacks at once and curse or slow it first.');
+  if(s.lostAll.length&&s.won) tips.push('You lost every '+nm(s.lostAll)+'. Pull wounded stacks back and let fresh ones take the front.');
+  if(total>=92) tips.push('A masterful battle. Nothing important to fix here.');
+  if(!tips.length) tips.push('A solid fight. To score higher, lose fewer units and finish in fewer rounds.');
+  return tips.slice(0,4); }
+
+// ---- UI ----
+const CHF=f=>FACTIONS[f].name;
+function chStars(n,max=5){ return '★'.repeat(n)+'<span class="dim">'+'★'.repeat(max-n)+'</span>'; }
+function chBestLine(id){ const b=chLoad().best[id]; return b?`Best <b>${b.score}</b> · grade <b>${b.grade}</b> · ${'★'.repeat(b.stars)||'—'}`:'Not tried yet'; }
+function chUnitLine(s){ const u=UNITS[s.type]; const fl=flagText(u.flags||{}).map(x=>x.split(':')[0]).join(', '); return `❤${u.hp} ⚔${u.atk} 🛡${u.def} 💥${u.min}-${u.max} 👟${u.spd}${u.shots?' 🏹'+u.shots:''}${fl?' · '+fl:''}`; }
+function chStackRow(s,i,opts={}){ const flag=s.commander?' <b class="bad">⚔ commander</b>':s.protect?' <b class="good">🚩 protect</b>':'';
+  return `<div class="ch-stack" ${opts.tip===false?'':`data-tip="${q(stackTip({type:s.type,n:s.n}))}"`}><img src="${portraitURL(s.type,opts.side||'ally')}"><div class="ch-sinfo"><b>${s.n} × ${UNITS[s.type].name}</b>${flag}<div class="dim small">${chUnitLine(s)}</div></div>${opts.move?`<div class="ch-mv"><button class="btn small" data-up="${i}" ${i===0?'disabled':''} aria-label="Move up">▲</button><button class="btn small" data-dn="${i}" ${i===opts.n-1?'disabled':''} aria-label="Move down">▼</button></div>`:''}</div>`; }
+function chHeroCard(h,label,id){ const st=heroStats(h); return `<div class="ch-hero"><img src="${heroURL(h,64,64)}"><div class="ch-hinfo"><b>${h.name}</b><div class="dim small">Level ${h.level} ${CLASSES[h.cls].name} · ${FACTIONS[h.faction].name}</div><div class="small">⚔${st.atk} 🛡${st.def} ✨${st.sp} 📘${st.kn} · mana ${Math.round(h.mana)}/${st.maxMana}</div></div><button class="btn" data-insp="${id}">🔍 Inspect</button></div>`; }
+function chInspect(h, note){ const st=heroStats(h); const tr=TRAITS[h.trait]; const rk=SKILLDATA.ranks;
+  const skillName=id=>{ const s=SKILLDATA.skills.find(x=>x.id===id)||SKILLDATA.racialSkills.find(x=>x.id===id); return s?s.name:id; };
+  const perkInfo=id=>{ for(const s of [...SKILLDATA.skills,...SKILLDATA.racialSkills]) for(const p of s.perks) if(p.id===id) return p; return {name:id,desc:''}; };
+  const sk=Object.entries(h.skills).filter(([k,v])=>v>0).map(([k,v])=>`<span class="ch-chip">${skillName(k)} <b>${rk[v]||v}</b></span>`).join('')||'<i class="dim">none</i>';
+  const pk=h.perks.map(p=>{ const i=perkInfo(p); return `<div class="small"><b>${i.name}</b> <span class="dim">${i.desc||''}</span></div>`; }).join('')||'<i class="dim">none</i>';
+  const sp=h.spells.map(s=>`<div class="small"><b>${SPELLS[s].name}</b> <span class="dim">${SPELLS[s].school} · level ${SPELLS[s].level} · ${Math.round(spellCost(h,s))} mana</span></div>`).join('')||'<i class="dim">none</i>';
+  const ar=h.arts.map(a=>`<div class="small"><b>${ARTIFACTS[a].name}</b> <span class="dim">${ARTIFACTS[a].desc}</span></div>`).join('')||'<i class="dim">none</i>';
+  const m=modal(`<h2>${h.name}</h2><div class="ch-hero big"><img src="${heroURL(h,96,96)}"><div class="ch-hinfo"><div>Level ${h.level} ${CLASSES[h.cls].name}</div><div class="dim small">${FACTIONS[h.faction].name} · ${tr.name}</div><div class="dim small">${tr.desc}</div></div></div>
+    <div class="ch-grid"><div>⚔ Attack <b>${st.atk}</b></div><div>🛡 Defense <b>${st.def}</b></div><div>✨ Spell power <b>${st.sp}</b></div><div>📘 Knowledge <b>${st.kn}</b></div><div>Morale <b>${st.morale>=0?'+':''}${st.morale}</b></div><div>Luck <b>${st.luck>=0?'+':''}${st.luck}</b></div><div>Mana <b>${Math.round(h.mana)}/${st.maxMana}</b></div><div>Initiative <b>${st.heroInit}</b></div></div>
+    <h3>Skills</h3><div>${sk}</div><h3>Perks</h3>${pk}<h3>Spells</h3>${sp}<h3>Artifacts</h3>${ar}
+    <p class="dim small">${note||'Read-only. This hero is fixed for the challenge.'}</p><div class="row"><button class="btn primary" id="ci-x">Close</button></div>`,'wide ch-modal');
+  m.querySelector('#ci-x').onclick=()=>closeModal(m); return m; }
+function chClose(){ document.querySelectorAll('#modal-root .modal-wrap').forEach(w=>closeModal(w)); }
+function chList(){ chClose(); const st=chLoad(); const done=CHALLENGES.filter(c=>st.best[c.id]&&st.best[c.id].stars>0).length; const stars=Object.values(st.best).reduce((a,b)=>a+(b.stars||0),0);
+  const m=modal(`<h2>⚔ Battle Challenges</h2><p class="dim">Fixed hero, fixed army, a much bigger enemy. Win with good tactics, then get rated 0-100 on how well you did it. Pick any challenge, in any order.</p>
+    <p class="small">Won <b>${done}/${CHALLENGES.length}</b> · Stars <b>${stars}/${CHALLENGES.length*3}</b></p>
+    <div class="ch-list">${CHALLENGES.map((c,i)=>`<div class="ch-card"><div class="ch-num">${i+1}</div><div class="ch-body"><b>${c.name}</b> <span class="ch-diff">${chStars(c.diff)} <span class="dim small">${CHD[c.diff]}</span></span><div class="dim small">${CHF(c.player.faction)} vs ${CHF(c.enemy.faction)} · ${CH_TERRAIN[c.terrain]||'Battlefield'}</div><div class="small">${c.objective.split('.')[0]}.</div><div class="small ch-best">${chBestLine(c.id)}</div></div><button class="btn primary" data-ch="${c.id}">Open</button></div>`).join('')}</div>
+    <div class="row"><button class="btn" id="chl-back">Back to menu</button></div>`,'wide ch-modal');
+  m.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>chBrief(chById(b.dataset.ch)));
+  m.querySelector('#chl-back').onclick=()=>{ chExitToMenu(); }; return m; }
+function chExitToMenu(){ chRestore(); try{ showMenu(); }catch(e){} }
+function chBrief(sc, order){ chClose(); const ph=chHero(sc.player,'human'); const eh=sc.enemy.hero?chHero(sc.enemy.hero,'ai1'):null;
+  const mine=order?order.map(i=>sc.army[i]):sc.army.slice(); const idx=order||sc.army.map((_,i)=>i); const ea=chEnemyArmy(sc); const pp=chPower(mine), ep=chPower(ea);
+  const t=sc.twist||{}; const chips=[]; if(t.type==='survive') chips.push('⏱ Survive '+t.rounds+' rounds'); if(t.type==='protect') chips.push('🚩 Protect the standard-bearers for '+t.rounds+' rounds'); if(t.type==='commander') chips.push('⚔ Slay the marked stack'); if(t.type==='mana') chips.push('🔮 Very limited mana'); if(sc.enemy.hero) chips.push('✨ Enemy hero casts spells'); if(!chips.length) chips.push('Annihilate the enemy');
+  const m=modal(`<h2>${sc.name}</h2><div class="ch-diff">${chStars(sc.diff)} <span class="dim small">${CHD[sc.diff]} · ${CHF(sc.player.faction)} vs ${CHF(sc.enemy.faction)} · ${CH_TERRAIN[sc.terrain]||'Battlefield'}</span></div>
+    <p>${sc.story}</p><div class="ch-obj"><b>Objective:</b> ${sc.objective}<div class="ch-chips">${chips.map(c=>`<span class="ch-chip">${c}</span>`).join('')}</div></div>
+    <p class="dim small">💡 ${sc.hint}</p><p class="small ch-best">${chBestLine(sc.id)}</p>
+    <h3>Your force</h3>${chHeroCard(ph,'',  'p')}
+    <p class="dim small">Battle order: stacks are placed top to bottom on the field in this order. Use ▲ ▼ to rearrange.</p>
+    <div id="ch-mine">${mine.map((s,i)=>chStackRow(s,i,{move:true,n:mine.length})).join('')}</div>
+    <h3>Enemy force <span class="dim small">(${(ep/pp).toFixed(1)}× the value of yours)</span></h3>${eh?chHeroCard(eh,'','e'):'<p class="dim small">No enemy hero: the enemy casts no spells.</p>'}
+    <div>${ea.map((s,i)=>chStackRow(s,i,{side:'enemy'})).join('')}</div>
+    <div class="row"><button class="btn primary big" id="cb-go">▶ Start battle</button><button class="btn" id="cb-back">Back to list</button></div>`,'wide ch-modal');
+  m.querySelectorAll('[data-insp]').forEach(b=>b.onclick=()=>chInspect(b.dataset.insp==='p'?ph:eh, b.dataset.insp==='p'?null:'The enemy hero is fixed too.'));
+  const swap=(a,b)=>{ const o=idx.slice(); [o[a],o[b]]=[o[b],o[a]]; chBrief(sc,o); };
+  m.querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>swap(+b.dataset.up,+b.dataset.up-1)); m.querySelectorAll('[data-dn]').forEach(b=>b.onclick=()=>swap(+b.dataset.dn,+b.dataset.dn+1));
+  m.querySelector('#cb-back').onclick=()=>chList(); m.querySelector('#cb-go').onclick=()=>chPlay(sc,idx); return m; }
+let CH_BUSY=false;
+async function chPlay(sc, idx, keepSandbox){ if(CH_BUSY) return; CH_BUSY=true; try{ chClose(); if(!keepSandbox||!CH.active) chSandbox(sc);
+    const army=idx.map(i=>Object.assign({},sc.army[i])); chStart(sc,army,true); CH.run.idx=idx;
+    await runBattle(); const R=CH.run; if(!R) return; const sco=chScore(); R.score=sco; const st=chLoad(); const old=st.best[sc.id]; let isBest=false;
+    if(!old||sco.total>old.score){ st.best[sc.id]={score:sco.total,grade:sco.grade,stars:sco.stars,rounds:R.turns,date:Date.now()}; isBest=true; } else if(sco.stars>(old.stars||0)){ old.stars=sco.stars; }
+    st.tries=st.tries||{}; st.tries[sc.id]=(st.tries[sc.id]||0)+1; chStore(st); chResults(sc,sco,idx,isBest,old); }
+  finally{ CH_BUSY=false; } }
+function chResults(sc,sco,idx,isBest,old){ chClose(); const s=sco.stats; const head=s.won?'Victory!':(s.retreated?'Retreat':'Defeat');
+  const next=CHALLENGES[CHALLENGES.indexOf(sc)+1];
+  const m=modal(`<h2 class="${s.won?'win':'lose'}">${head}</h2><div class="ch-score"><div class="ch-big">${sco.total}<span>/100</span></div><div class="ch-grade g${sco.grade}">${sco.grade}</div><div class="ch-st">${s.won?'★'.repeat(sco.stars)+'<span class="dim">'+'★'.repeat(3-sco.stars)+'</span>':'<span class="dim">☆☆☆</span>'}</div></div>
+    ${isBest?`<p class="good ch-newbest">🏆 New personal best${old?' (was '+old.score+')':''}!</p>`:`<p class="dim small ch-best">Personal best: ${chBestLine(sc.id).replace(/<[^>]+>/g,'')}</p>`}
+    <div class="ch-comps">${sco.comp.map(c=>`<div class="ch-comp"><div class="ch-cl"><span>${c.label}</span><b>${c.pts}/${c.w}</b></div><div class="ch-bar"><i style="width:${Math.round((c.v||0)*100)}%"></i></div><div class="dim small">${c.note}</div></div>`).join('')}</div>
+    <h3>Advice</h3><ul class="ch-tips">${sco.tips.map(t=>`<li>${t}</li>`).join('')}</ul>
+    <div class="row ch-rbtns"><button class="btn primary" id="cr-retry">↻ Retry</button>${s.won&&next?'<button class="btn" id="cr-next">Next challenge ▶</button>':''}<button class="btn" id="cr-list">Challenge list</button><button class="btn" id="cr-menu">Main menu</button></div>`,'wide ch-modal');
+  m.querySelector('#cr-retry').onclick=()=>{ chPlay(sc,idx,true); };
+  const nx=m.querySelector('#cr-next'); if(nx) nx.onclick=()=>{ chRestore(); chBrief(next); };
+  m.querySelector('#cr-list').onclick=()=>{ chRestore(); chList(); }; m.querySelector('#cr-menu').onclick=()=>chExitToMenu(); }
+function openChallenges(){ chList(); }
+
+// menu button
+(function(){ const _sm=showMenu; showMenu=function(){ const r=_sm.apply(this,arguments); try{ const row=document.querySelector('#menu .menu-row'); if(row && !row.querySelector('#mn-chal')){ const b=document.createElement('button'); b.className='btn big'; b.id='mn-chal'; b.textContent='⚔ Battle Challenges'; b.onclick=openChallenges; const camp=row.querySelector('#mn-camp'); row.insertBefore(b,camp?camp.nextSibling:(row.children[1]||null)); }
+    const sub=document.querySelector('#menu .subtitle'); if(sub) sub.textContent='v6.12.0 · Six factions · heroes, armies and hard choices'; }catch(e){} return r; }; })();
+
+// saves: personal bests travel with Export saves; import keeps the better score per challenge
+{ const _c=collectSaveBundle; collectSaveBundle=function(){ const b=_c.apply(this,arguments); try{ const c=localStorage.getItem(CH_KEY); if(c) b.challenges=c; }catch(e){} return b; };
+  const merge=raw=>{ try{ const inc=JSON.parse(raw); const cur=chLoad(); for(const [k,v] of Object.entries(inc.best||{})){ if(!cur.best[k]||v.score>cur.best[k].score) cur.best[k]=v; } chStore(cur); return true; }catch(e){ return false; } };
+  const _i=importSaveBundle; importSaveBundle=function(obj){
+    if(obj&&obj.format==='aldmere-saves'&&obj.version&&obj.challenges&&!obj.manual&&!obj.campaign&&!(obj.autosaves&&obj.autosaves.length)){ merge(obj.challenges); try{ toast('Battle Challenge scores imported.'); }catch(e){} return Promise.resolve(true); }
+    const p=_i.apply(this,arguments); if(obj&&obj.challenges&&p&&p.then) return p.then(r=>{ merge(obj.challenges); return r; }); if(obj&&obj.challenges) merge(obj.challenges); return p; };
+  const _d=downloadSaveBundle; downloadSaveBundle=function(){ try{ const b=collectSaveBundle(); if(!b.manual&&!(b.autosaves||[]).length&&!b.campaign&&b.challenges){ const blob=new Blob([JSON.stringify(b)],{type:'application/json'}); const name='aldmere-saves-'+new Date().toISOString().slice(0,10)+'.json'; const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },1500); toast('Backup ready: '+name); return; } }catch(e){} return _d.apply(this,arguments); }; }
+
+// ---- headless helpers for tests/sims (not used by the game) ----
+window.chSimBattle=function(id, policy){ const sc=chById(id); CH.sim=policy||null; try{ chStart(sc,null,false); let guard=0; return runBattle().then(()=>{ const sco=chScore(); CH.sim=null; const R=CH.run; CH.run=null; return {won:sco.stats.won,score:sco.total,grade:sco.grade,turns:R.turns,army:sco.stats.army}; }); }catch(e){ CH.sim=null; throw e; } };
 
 </script></body></html>
