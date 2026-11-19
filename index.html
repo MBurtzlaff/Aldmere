@@ -610,6 +610,40 @@ html.mob .scr-head #hs-close, html.mob .scr-head #tw-close,
 html.touch .scr-head #hs-close, html.touch .scr-head #tw-close{
   position:sticky; top:0; z-index:6; min-height:44px;
 }
+
+/* ===================== v6.11 Golden Hour UI polish (visual only) ===================== */
+.panel, .modal, .menu-inner{ box-shadow: 0 10px 36px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,214,140,0.16), inset 0 1px 0 rgba(255,236,190,0.22);
+  background-image: radial-gradient(ellipse at 15% 0%, rgba(255,214,140,0.16), transparent 55%), radial-gradient(ellipse at 100% 100%, rgba(120,100,220,0.12), transparent 60%), linear-gradient(160deg,#33243f,#1a1124 72%); }
+.btn{ background: linear-gradient(180deg,#7a5528 0%,#4a2f12 52%,#2e1b0a 100%); box-shadow: inset 0 1px 0 rgba(255,236,180,0.55), inset 0 -2px 0 rgba(0,0,0,0.35), 0 3px 6px rgba(0,0,0,0.55); }
+.btn.primary{ background: linear-gradient(180deg,#e0a93a 0%,#b0771a 48%,#6e4608 100%); color:#fff4d0; text-shadow:0 1px 0 rgba(60,30,0,0.8); box-shadow: inset 0 1px 0 rgba(255,246,200,0.7), inset 0 -2px 0 rgba(60,30,0,0.45), 0 0 14px rgba(255,200,90,0.35), 0 3px 7px rgba(0,0,0,0.6); }
+.btn:active{ transform:translateY(1px); filter:brightness(1.08); }
+.fac{ background: linear-gradient(170deg, rgba(255,255,255,0.05), rgba(0,0,0,0.38)); border-radius:10px; position:relative; overflow:hidden; }
+.fac::before{ content:''; position:absolute; left:0; top:0; right:0; height:4px; background:linear-gradient(90deg,transparent,var(--fc),transparent); opacity:.85; }
+.fac.sel{ background: linear-gradient(170deg, rgba(255,255,255,0.10), rgba(0,0,0,0.30)); }
+.fac-units img, .trt, .camp-pack, .camp-ch{ box-shadow: 0 2px 6px rgba(0,0,0,0.45); }
+.trt.sel{ background: linear-gradient(170deg, rgba(255,214,120,0.16), rgba(0,0,0,0.3)); }
+h3{ position:relative; }
+#menu h3{ border-bottom:1px solid transparent; border-image:linear-gradient(90deg,rgba(233,185,73,0.7),rgba(233,185,73,0)) 1; padding-bottom:4px; }
+.title{ letter-spacing:0.06em; }
+#topbar{ background-image: linear-gradient(180deg, rgba(255,214,140,0.10), transparent 60%); box-shadow:0 2px 10px rgba(0,0,0,0.5), inset 0 -1px 0 rgba(233,185,73,0.45); }
+html.mob #mobbar{ box-shadow:0 -2px 10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(233,185,73,0.45); }
+.camp-pack, .camp-ch{ background: linear-gradient(170deg, rgba(255,255,255,0.05), rgba(0,0,0,0.28)); border-radius:8px; }
+/* phone: the Sound button must not sit on top of the title */
+html.mob #menu .menu-inner{ padding-top:58px; }
+html.mob #menu .title{ font-size:40px; line-height:1.05; }
+@media (prefers-reduced-motion: reduce){ .btn, .fac, .trt{ transition:none; } }
+/* v6.11: campaign hero setup + Grand Campaign screens */
+.camp-hero .traits{ grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); }
+.camp-hero .trt{ min-height:44px; }
+.grand-grid, .grand-pick{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; margin:10px 0; }
+.grand-card{ padding:10px; border:2px solid #5a4028; border-top:4px solid var(--fc,#e9b949); border-radius:8px; background:linear-gradient(170deg,rgba(255,255,255,0.05),rgba(0,0,0,0.3)); display:flex; flex-direction:column; gap:6px; }
+.grand-card.sel{ box-shadow:0 0 12px var(--fc,#e9b949); }
+.grand-btns{ display:flex; flex-direction:column; gap:6px; } .grand-btns .btn, .grand-card .btn{ width:100%; min-height:44px; white-space:normal; }
+.grand-final{ margin:10px 0; padding:10px; border:2px solid var(--gold); border-radius:8px; background:rgba(233,185,73,0.08); } .grand-final .btn{ width:100%; min-height:48px; }
+
+/* v6.11.1: the floating zoom bar must never cover a field or button: keep room under every modal's content */
+html.mob .modal{ padding-bottom:calc(84px + env(safe-area-inset-bottom,0px)); }
+.mz-bar{ opacity:.9; }
 </style><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"><script>window.BOA_SW='sw.js';</script></head>
 <body>
 <div id="topbar"><div class="logo">⚜ Aldmere</div><div id="res"></div><div id="daylbl"></div>
@@ -2357,7 +2391,7 @@ const MINES = {
   crystal:{name:'Crystal Cavern', res:'crystal', amt:1}, gemmine:{name:'Gem Grotto', res:'gems', amt:1}, sulfur:{name:'Sulfur Vent', res:'sulfur', amt:1},
   goldmine:{name:'Gold Mine', res:'gold', amt:1000},
 };
-const PLAYER_COLORS = { human:'#2f8ae8', ai1:'#d8343a', ai2:'#8a4ad8', ai3:'#e8a020', neutral:'#ddd8cc' };
+const PLAYER_COLORS = { human:'#2f8ae8', ai1:'#d8343a', ai2:'#8a4ad8', ai3:'#e8a020', ai4:'#22c1b8', ai5:'#ee6fb0', neutral:'#ddd8cc' };
 
 // ---- 01b_balance.js ----
 // ===================== v5 BALANCE PASS =====================
@@ -4379,12 +4413,12 @@ function genMap(seed, sizeKey, factions, style){ style=MAP_STYLES[style]?style:'
   const r=mulberry32(seed); const N=MW*MH;
   const map={w:MW,h:MH,seed,size:sizeKey,style,t:new Array(N).fill(0),g:new Array(N).fill(0),road:new Array(N).fill(0),block:new Array(N).fill(0),towns:[]};
   // town anchors: players in corners, neutrals in the middle band
-  const m=6; const corners=[[m,MH-m-1],[MW-m-1,m+1],[m,m+1],[MW-m-1,MH-m-1]];
-  const owners=['human','ai1','ai2','ai3'];
-  const order = factions.length===2 ? [0,1] : factions.length===3 ? [0,1,2] : [0,1,2,3];
+  const m=6; const corners=[[m,MH-m-1],[MW-m-1,m+1],[m,m+1],[MW-m-1,MH-m-1],[Math.floor(MW/2),m+1],[Math.floor(MW/2),MH-m-1]];
+  const owners=['human','ai1','ai2','ai3','ai4','ai5'];
+  const order = factions.length<=2 ? [0,1] : factions.length===3 ? [0,1,2] : factions.length===4 ? [0,1,2,3] : [0,1,2,3,4,5];
   factions.forEach((f,i)=>{ const [cx,cy]=corners[order[i]]; map.towns.push({x:cx+Math.floor((r()-0.5)*4), y:cy+Math.floor((r()-0.5)*3), faction:f, owner:owners[i]}); });
   const mids=[[Math.floor(MW/2),Math.floor(MH/2)+1],[Math.floor(MW/2),m+2],[Math.floor(MW/2),MH-m-2],[m+2,Math.floor(MH/2)],[MW-m-3,Math.floor(MH/2)]];
-  const nNeutral=SZ.neutralTowns; for(let i=0;i<nNeutral;i++){ const [cx,cy]=mids[i]; const f=FACTION_IDS[Math.floor(r()*FACTION_IDS.length)]; map.towns.push({x:cx+Math.floor((r()-0.5)*4), y:cy+Math.floor((r()-0.5)*2), faction:f, owner:'neutral'}); }
+  const nNeutral=factions.length>4?Math.min(SZ.neutralTowns,3):SZ.neutralTowns; const midsU=factions.length>4?[mids[0],mids[3],mids[4]]:mids; for(let i=0;i<nNeutral;i++){ const [cx,cy]=midsU[i]; const f=FACTION_IDS[Math.floor(r()*FACTION_IDS.length)]; map.towns.push({x:cx+Math.floor((r()-0.5)*4), y:cy+Math.floor((r()-0.5)*2), faction:f, owner:'neutral'}); }
   // zones: each town's native ground + extra random zones => mixed terrain per faction
   const zs=map.towns.map(t=>({x:t.x,y:t.y,g:FACTIONS[t.faction].native===T.FOREST?T.GRASS:FACTIONS[t.faction].native, forest:FACTIONS[t.faction].native===T.FOREST, w:1}));
   const grounds=[T.GRASS,T.DIRT,T.SNOW,T.SAND,T.SWAMP,T.ASH,T.GRASS,T.DIRT];
@@ -4629,7 +4663,7 @@ function renderMinimap(){ const cv=document.getElementById('minimap'); if(!cv||!
 let G=null;
 const SAVE_KEY='banners_of_aldmere_save_v2', OLD_SAVE_KEY='banners_of_aldmere_save_v1', SAVE_VERSION=7; // 7 = v6.1 (map spells, market)
 const MAX_HEROES=4, HIRE_COST=2500, MAX_SKILLS=7;
-const OWNERS=['human','ai1','ai2','ai3'];
+const OWNERS=['human','ai1','ai2','ai3','ai4','ai5'];
 // Hotseat: G.humans lists every human-controlled seat; G.seat is the seat at the keyboard right now (ME).
 Object.defineProperty(globalThis,'ME',{get(){ return (G&&G.seat)||'human'; },configurable:true});
 function isHumanP(o){ return o==='human' || !!(G&&G.humans&&G.humans.includes(o)); }
@@ -8860,10 +8894,11 @@ startCampaignChapter=function(idx, packId){ const pack=campPackOf(packId||(G&&G.
   const chapters=pack.chapters; const C=chapters[idx]; if(!C) return;
   const st=campPackState(pack.id); const carry= idx>0 ? st.hero : null;
   const fac=pack.faction||'sunward';
-  const cls=carry?carry.cls:(MENU&&MENU.cls&&CLASSES[MENU.cls]&&CLASSES[MENU.cls].faction===fac?MENU.cls:classesOf(fac)[0]);
-  const trait=carry?carry.trait:'warlord';
+  const su=(!carry&&st.setup)||null; // v6.11: hero chosen on the campaign hero-setup screen
+  const cls=carry?carry.cls:(su&&su.cls&&CLASSES[su.cls]&&CLASSES[su.cls].faction===fac?su.cls:(MENU&&MENU.cls&&CLASSES[MENU.cls]&&CLASSES[MENU.cls].faction===fac?MENU.cls:classesOf(fac)[0]));
+  const trait=carry?carry.trait:(su&&TRAITS[su.trait]?su.trait:'warlord');
   const diffKey=(C.diff&&DIFFS[C.diff]&&DIFFS[C.diff].hidden)?C.diff:(st.diff||C.diff||'normal');
-  const name=carry?carry.name:(pack.heroName||FACTIONS[fac].heroNames[0]);
+  const name=carry?carry.name:((su&&su.name&&su.name.trim())||pack.heroName||FACTIONS[fac].heroNames[0]);
   newGame({faction:fac,cls,trait,name,size:C.size,ais:C.ais,difficulty:diffKey,mapStyle:C.style||'balanced',seed:C.seed!=null?C.seed+Math.floor(Math.random()*500):undefined});
   G.campaign={idx, pack:pack.id, diff:diffKey}; const h=selHero();
   if(carry && h){ for(const k of ['seed','level','xp','atk','def','sp','kn']) h[k]=carry[k]; h.skills=carry.skills; h.perks=carry.perks; h.spells=[...new Set([...(h.spells||[]),...carry.spells])]; try{ h.mana=heroStats(h).maxMana; h.mp=heroStats(h).moveMax; }catch(e){} }
@@ -8958,7 +8993,7 @@ campHud=function(){ let el=document.getElementById('camp-hud'); if(!G||!G.campai
 openCampaignMenu=function(){ const all=campLoadAll();
   const packHTML=CAMP_PACKS.map(p=>{ const st=all.packs[p.id]||{done:0,best:{},diff:'normal'}; const best=st.best||{};
     const bestTxt=CAMP_DIFFS.filter(d=>best[d]).map(d=>`${campDiffLabel(d)}:${best[d]}/${p.chapters.length}`).join(' · ')||'not finished yet';
-    return `<div class="camp-pack" data-pack="${p.id}"><div class="camp-pack-h"><b>${p.title}</b> <span class="dim">${FACTIONS[p.faction].name}</span></div>
+    return `<div class="camp-pack" data-pack="${p.id}"><div class="camp-pack-h"><b>${p.title}</b> <span class="dim">${p.tag||FACTIONS[p.faction].name}</span></div>
       <p class="dim">${p.blurb}</p><p class="dim small">Progress: ${st.done||0}/${p.chapters.length} · Best: ${bestTxt}</p>
       <button class="btn primary" data-open="${p.id}">Open</button></div>`; }).join('');
   const m=modal(`<h2>⚜ Campaigns</h2><p class="dim">Choose a story. Difficulty is set per campaign and can be lowered between chapters. Your hero carries over inside a campaign.</p>
@@ -10056,12 +10091,333 @@ function setupMapBack(){
 
 (function(){ const _sm=typeof showMenu==='function'?showMenu:null; if(!_sm) return;
   showMenu=function(){ const r=_sm.apply(this,arguments);
-    try{ const sub=document.querySelector('#menu .subtitle'); if(sub) sub.textContent='v6.10.3 · Six factions · heroes, armies and hard choices'; }catch(e){}
+    try{ const sub=document.querySelector('#menu .subtitle'); if(sub) sub.textContent='v6.11.1 · Six factions · heroes, armies and hard choices'; }catch(e){}
     return r; };
 })();
 
 window.addEventListener('load',()=>{ try{ setupMapBack(); }catch(e){ console.warn('mapback',e); } });
 // If this file loads after window.load (tests that goto then evaluate), still wire up.
 if(document.readyState==='complete'){ try{ setupMapBack(); }catch(e){} }
+
+// ---- 28_v611gfx.js ----
+// ===================== v6.11: "Golden Hour" graphics pass =====================
+// Everything here is drawing only (no save data, no settings). It follows the existing
+// Graphics quality switch: Low turns the extras off, Reset to phone defaults still works.
+// Map stays BRIGHT: the light wash only lifts colour, it never darkens.
+const V611={ motes:null, lastT:0 };
+function v611On(){ try{ return gfxHigh(); }catch(e){ return true; } }
+function v611Soft(c,x,y,rx,ry,a){ const g=c.createRadialGradient(x,y,0,x,y,rx); g.addColorStop(0,`rgba(20,12,6,${a})`); g.addColorStop(1,'rgba(20,12,6,0)'); c.save(); c.translate(x,y); c.scale(1,ry/rx); c.translate(-x,-y); c.fillStyle=g; c.beginPath(); c.arc(x,y,rx,0,7); c.fill(); c.restore(); }
+function v611Star(c,x,y,r,a,col){ c.save(); c.globalCompositeOperation='lighter'; c.globalAlpha=a; c.fillStyle=col||'#fff6c8'; c.beginPath(); c.moveTo(x,y-r); c.quadraticCurveTo(x,y,x+r,y); c.quadraticCurveTo(x,y,x,y+r); c.quadraticCurveTo(x,y,x-r,y); c.quadraticCurveTo(x,y,x,y-r); c.fill(); c.restore(); }
+
+// ---- adventure map ----
+(function(){
+  const _dmo=drawMapObject; drawMapObject=function(c,o,TS,t){
+    if(v611On()){ const k=o.kind; if(k==='mine'||k==='site'||k==='well'||k==='shrine') v611Soft(c,0,TS*0.18,TS*0.46,TS*0.14,0.30);
+      else v611Soft(c,0,TS*0.2,TS*0.3,TS*0.1,0.26); }
+    const r=_dmo.apply(this,arguments);
+    if(v611On()){ const k=o.kind;
+      if(k==='res'||k==='chest'||k==='artifact'||k==='mine'){ const id=(o.id||0)+o.x*7+o.y*13; for(let i=0;i<2;i++){ const ph=(t*0.9+id*0.37+i*0.5)%1; const a=Math.sin(ph*Math.PI); if(a<0.15) continue; v611Star(c,(Math.sin(id+i*2.1)*0.28)*TS,(-0.15-0.3*((id*0.13+i*0.4)%1))*TS,TS*0.1*a+1.5,0.85*a); } } }
+    return r; };
+  const _dts=drawTownSprite; drawTownSprite=function(c,faction,TS,col,t){
+    if(v611On()){ v611Soft(c,0,TS*0.38,TS*1.25,TS*0.34,0.34); }
+    const r=_dts.apply(this,arguments);
+    if(v611On()){ // warm window glints + torch flicker at the gate; drifting hearth smoke
+      const wins=[[-0.55,-0.95],[0.5,-1.0],[0.02,-1.45],[-0.25,-0.6],[0.3,-0.55]]; wins.forEach((w,i)=>{ const f=0.6+0.4*Math.sin(t*(1.3+i*0.31)+i*2); c.save(); c.globalCompositeOperation='lighter'; const g=c.createRadialGradient(w[0]*TS,w[1]*TS,0,w[0]*TS,w[1]*TS,TS*0.12); g.addColorStop(0,`rgba(255,214,120,${0.55*f})`); g.addColorStop(1,'rgba(255,170,60,0)'); c.fillStyle=g; c.beginPath(); c.arc(w[0]*TS,w[1]*TS,TS*0.12,0,7); c.fill(); c.restore(); });
+      for(const sx of [-0.78,0.78]){ const f=0.7+0.3*Math.sin(t*9+sx*5)*Math.sin(t*5.3); c.save(); c.globalCompositeOperation='lighter'; const g=c.createRadialGradient(sx*TS,-0.18*TS,0,sx*TS,-0.18*TS,TS*0.22); g.addColorStop(0,`rgba(255,190,90,${0.7*f})`); g.addColorStop(1,'rgba(255,120,30,0)'); c.fillStyle=g; c.beginPath(); c.arc(sx*TS,-0.18*TS,TS*0.22,0,7); c.fill(); c.restore(); }
+      for(let i=0;i<4;i++){ const ph=(t*0.12+i*0.25)%1; c.fillStyle=`rgba(235,230,225,${0.28*(1-ph)})`; c.beginPath(); c.arc(0.12*TS+Math.sin(t*0.8+i)*TS*0.05+ph*TS*0.22,-1.55*TS-ph*TS*0.7,TS*(0.05+ph*0.12),0,7); c.fill(); } }
+    return r; };
+  const _dhs=drawHeroSprite; drawHeroSprite=function(c,hero,TS,t){ if(v611On()) v611Soft(c,0,TS*0.04,TS*0.36,TS*0.1,0.34); return _dhs.apply(this,arguments); };
+
+  const _rm=renderMap; renderMap=function(time){ _rm.apply(this,arguments);
+    try{ if(!v611On()||!MAPV||!MAPV.ctx||!MAPV.cv||!G) return; const ctx=MAPV.ctx, cv=MAPV.cv, t=time/1000; const W=cv.width, H=cv.height;
+      ctx.save(); ctx.setTransform(1,0,0,1,0,0);
+      // warm "golden hour" lift (soft-light never darkens; keeps the map bright)
+      ctx.globalCompositeOperation='overlay'; const g=ctx.createLinearGradient(0,0,W*0.8,H); g.addColorStop(0,'rgba(255,226,140,0.42)'); g.addColorStop(0.5,'rgba(255,245,215,0.16)'); g.addColorStop(1,'rgba(150,175,255,0.22)'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+      ctx.globalCompositeOperation='screen'; ctx.fillStyle='rgba(255,224,150,0.06)'; ctx.fillRect(0,0,W,H);
+      // soft light shafts from the upper left, slowly breathing
+      ctx.globalCompositeOperation='lighter'; for(let i=0;i<3;i++){ const a=0.035+0.02*Math.sin(t*0.4+i*1.7); const x0=W*(0.05+i*0.2)+Math.sin(t*0.1+i)*W*0.03; const gr=ctx.createLinearGradient(x0,0,x0+W*0.35,H*0.8); gr.addColorStop(0,`rgba(255,240,190,${a})`); gr.addColorStop(1,'rgba(255,240,190,0)'); ctx.fillStyle=gr; ctx.beginPath(); ctx.moveTo(x0,0); ctx.lineTo(x0+W*0.09,0); ctx.lineTo(x0+W*0.5,H*0.85); ctx.lineTo(x0+W*0.28,H*0.85); ctx.closePath(); ctx.fill(); }
+      // floating pollen / fireflies
+      if(!V611.motes||V611.motes.w!==W){ V611.motes={w:W,p:Array.from({length:22},(_,i)=>({x:Math.random(),y:Math.random(),s:0.4+Math.random(),ph:Math.random()*6}))}; }
+      for(const m of V611.motes.p){ const x=((m.x+t*0.006*m.s+Math.sin(t*0.5+m.ph)*0.01)%1)*W, y=((m.y-t*0.004*m.s+1)%1)*H; const a=0.25+0.25*Math.sin(t*1.6+m.ph); const r=1.2+m.s*1.2; const gg=ctx.createRadialGradient(x,y,0,x,y,r*4); gg.addColorStop(0,`rgba(255,244,190,${a})`); gg.addColorStop(1,'rgba(255,244,190,0)'); ctx.fillStyle=gg; ctx.beginPath(); ctx.arc(x,y,r*4,0,7); ctx.fill(); }
+      ctx.restore(); }catch(e){ if(!V611.warned){ V611.warned=1; console.warn('v611 map gfx',e); } } };
+})();
+
+// ---- battle ----
+(function(){
+  const _bb=battleBackdrop; battleBackdrop=function(W,H,terrain,siege,fac){ const cv=_bb.apply(this,arguments);
+    try{ if(!v611On()) return cv; const c=cv.getContext('2d'); const r=mulberry32(404+terrain); const hz=H*0.26;
+      // brighter, richer ground: warm lift, grass tufts and flower flecks
+      c.save(); c.globalCompositeOperation='overlay'; let g=c.createLinearGradient(0,hz,0,H); g.addColorStop(0,'rgba(255,240,170,0.55)'); g.addColorStop(1,'rgba(255,255,220,0.30)'); c.fillStyle=g; c.fillRect(0,hz,W,H-hz); c.globalCompositeOperation='screen'; c.fillStyle='rgba(255,236,170,0.09)'; c.fillRect(0,0,W,H); c.restore();
+      if(terrain!==9&&terrain!==6){ const n=Math.round(W*H/2600); for(let i=0;i<n;i++){ const x=r()*W, y=hz+8+r()*(H-hz-8); const s=3+(y-hz)/(H-hz)*7; const hue=r(); c.strokeStyle= hue<0.6?`rgba(${70+r()*40|0},${130+r()*60|0},${50+r()*30|0},0.45)`:`rgba(${150+r()*40|0},${160+r()*40|0},${60|0},0.4)`; c.lineWidth=1.2; c.beginPath(); c.moveTo(x,y); c.quadraticCurveTo(x+(r()-0.5)*s,y-s*0.6,x+(r()-0.5)*s*1.4,y-s); c.stroke(); }
+        for(let i=0;i<Math.round(n/14);i++){ const x=r()*W, y=hz+14+r()*(H-hz-14); c.fillStyle=['#fff3c0','#ffd0e0','#c8e0ff','#ffe070'][Math.floor(r()*4)]; c.globalAlpha=0.8; c.beginPath(); c.arc(x,y,1.3+r()*1.4,0,7); c.fill(); c.globalAlpha=1; } }
+      // soft horizon haze and gentle edge vignette (light, so the field stays readable)
+      let hg=c.createLinearGradient(0,hz-18,0,hz+36); hg.addColorStop(0,'rgba(255,240,210,0)'); hg.addColorStop(0.5,'rgba(255,240,210,0.16)'); hg.addColorStop(1,'rgba(255,240,210,0)'); c.fillStyle=hg; c.fillRect(0,hz-18,W,54);
+      const vg=c.createRadialGradient(W/2,H*0.55,H*0.3,W/2,H*0.55,Math.max(W,H)*0.75); vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(10,6,20,0.12)'); c.fillStyle=vg; c.fillRect(0,0,W,H);
+    }catch(e){ console.warn('v611 bg',e); } return cv; };
+
+  const _dbu=drawBattleUnit; drawBattleUnit=function(c,u,p,now,t){ if(v611On()&&u.alive&&!u.isGate&&!u.onWall&&!(u.flags&&u.flags.machine&&false)){ v611Soft(c,p.x,p.y+CV.R*0.32,CV.R*(u.big?1.2:0.62),CV.R*(u.big?0.34:0.2),0.36); }
+    return _dbu.apply(this,arguments); };
+
+  const _hf=hitFx; hitFx=function(u){ const r=_hf.apply(this,arguments); try{ if(!v611On()||!B||!B.visual) return r; const p=unitPos(u); const now=performance.now(); B.slashes=B.slashes||[]; B.slashes.push({x:p.x,y:p.y-CV.R*0.7,t0:now,dur:280,a:-0.6+Math.random()*1.2});
+    for(let i=0;i<7;i++){ const a=Math.random()*Math.PI*2, s=80+Math.random()*150; B.parts.push({x:p.x,y:p.y-CV.R*0.7,vx:Math.cos(a)*s,vy:Math.sin(a)*s-30,g:260,life:380,t0:now,color:'#fff0b0',size:1.6+Math.random()*1.6,add:true}); }
+    B.rings.push({x:p.x,y:p.y-CV.R*0.1,color:'#ffe9b0',t0:now,dur:260}); }catch(e){} return r; };
+  const _df=deathFx; deathFx=function(u){ const r=_df.apply(this,arguments); try{ if(!v611On()||!B||!B.visual) return r; const p=unitPos(u); const now=performance.now(); for(let i=0;i<10;i++) B.parts.push({x:p.x+(Math.random()-0.5)*CV.R*1.1,y:p.y+CV.R*0.2,vx:(Math.random()-0.5)*50,vy:-10-Math.random()*30,g:-6,life:1100,t0:now,color:'#b8a890',size:5+Math.random()*5,smoke:true}); }catch(e){} return r; };
+
+  const _dfx=drawFx; drawFx=function(ctx,now){ _dfx.apply(this,arguments); try{ if(!v611On()||!B) return; const t=now/1000;
+    for(const s of (B.slashes||[])){ const k=(now-s.t0)/s.dur; if(k<0||k>1) continue; ctx.save(); ctx.translate(s.x,s.y); ctx.rotate(s.a); ctx.globalCompositeOperation='lighter'; ctx.strokeStyle=`rgba(255,246,210,${1-k})`; ctx.lineCap='round'; ctx.lineWidth=5*(1-k)+1; const L=CV.R*(0.7+k*0.6); ctx.beginPath(); ctx.moveTo(-L,L*0.35); ctx.quadraticCurveTo(0,-L*0.55,L,L*0.2); ctx.stroke(); ctx.restore(); }
+    B.slashes=(B.slashes||[]).filter(s=>now-s.t0<s.dur);
+    // drifting light dust over the field
+    const W=ctx.canvas.width, H=ctx.canvas.height; ctx.save(); ctx.globalCompositeOperation='lighter'; for(let i=0;i<14;i++){ const x=((i*0.137+t*0.01*(0.5+(i%3)*0.3))%1)*W, y=((i*0.371+Math.sin(t*0.3+i)*0.03+0.3)%1)*H; const a=0.18+0.14*Math.sin(t*1.3+i*2); ctx.fillStyle=`rgba(255,244,200,${a})`; ctx.beginPath(); ctx.arc(x,y,1.4+(i%3)*0.7,0,7); ctx.fill(); } ctx.restore();
+  }catch(e){} };
+})();
+
+// ---- town scene: gentle light drift (only if the town art canvas exists) ----
+// (town screens already animate; the larger visual gain there is the panel/UI polish in style.css)
+
+// ---- 29_grand.js ----
+// ===================== v6.11: campaign hero setup + the Grand Campaign =====================
+// SAVE_VERSION unchanged. Progress lives in the existing campaign storage (boa_campaign) under packs.grand
+// and rides along in the existing save export. Old saves/campaign data load as before.
+
+// ---------- hero setup screen (same choices as a single game: class, trait, name) ----------
+function campHeroSetup(fac, cur, onDone, opts){ opts=opts||{}; const F=FACTIONS[fac];
+  const S={cls:(cur&&cur.cls&&CLASSES[cur.cls]&&CLASSES[cur.cls].faction===fac)?cur.cls:classesOf(fac)[0], trait:(cur&&TRAITS[cur.trait])?cur.trait:'warlord', name:(cur&&cur.name)||F.heroNames[0]};
+  const m=modal('', 'wide camp-hero'); const box=m.querySelector('.modal');
+  const draw=()=>{ box.innerHTML=`<h2>${opts.title||'Create your hero'}</h2><p class="dim">${opts.blurb||`You lead the ${F.name}. These are the same choices as a single game: class, trait and name. This hero carries through the campaign.`}</p>
+    <h3>Hero class</h3><div class="traits">${classesOf(fac).map(k=>{ const C=CLASSES[k]; return `<div class="trt ${S.cls===k?'sel':''}" data-c="${k}"><b>${C.name}</b> <span class="dim">${C.might?'might':'magic'}</span><p>⚔${C.stats.atk} 🛡${C.stats.def} ✨${C.stats.sp} 📘${C.stats.kn+1} · starts with ${SPELLS[C.spell].name}</p><p class="dim">Favors ${Object.keys(C.weights).map(s=>skillDef(s)?skillDef(s).name:s).join(', ')}</p></div>`; }).join('')}</div>
+    <h3>Hero trait</h3><div class="traits">${Object.entries(TRAITS).map(([k,T0])=>`<div class="trt ${S.trait===k?'sel':''}" data-t="${k}"><b>${T0.name}</b><p class="good">${T0.desc}</p><p class="bad">${T0.down}</p></div>`).join('')}</div>
+    <div class="menu-row"><label>Hero name <input id="ch-name" value="${q(S.name)}" maxlength="22"></label></div>
+    <div class="row"><button class="btn" id="ch-cancel">Cancel</button><button class="btn primary" id="ch-ok">Begin ▶</button></div>`;
+    m.querySelectorAll('[data-c]').forEach(d=>d.onclick=()=>{ S.name=m.querySelector('#ch-name').value; S.cls=d.dataset.c; draw(); });
+    m.querySelectorAll('[data-t]').forEach(d=>d.onclick=()=>{ S.name=m.querySelector('#ch-name').value; S.trait=d.dataset.t; draw(); });
+    m.querySelector('#ch-cancel').onclick=()=>{ closeModal(m); if(opts.onCancel) opts.onCancel(); };
+    m.querySelector('#ch-ok').onclick=()=>{ S.name=(m.querySelector('#ch-name').value||'').trim()||F.heroNames[0]; closeModal(m); onDone({cls:S.cls,trait:S.trait,name:S.name}); }; };
+  draw(); return m; }
+
+// existing packs: ask for the hero before chapter I (keeps your choice for retries and replays)
+(function(){ const _scc=startCampaignChapter; startCampaignChapter=function(idx,packId){
+    const id=packId||(G&&G.campaign&&G.campaign.pack)||'sundering';
+    if(id==='grand') return grandStart(idx);
+    if(idx===0 && !window.FAST_AI && !window.CAMP_NOASK && typeof campHeroSetup==='function'){ const pack=campPackOf(id); const st=campPackState(id);
+      return void campHeroSetup(pack.faction||'sunward', st.setup, s=>{ const st2=campPackState(id); st2.setup=s; campWritePack(id,st2); _scc.call(this,idx,id); }, {title:`Your hero for ${pack.title}`}); }
+    return _scc.apply(this,arguments); }; })();
+
+// ---------- Grand Campaign data ----------
+const GRAND_STORY={
+  sunward:  [['The Border Banner','Hold the march and raise your first mines.'],['The Second Keep','Take a second stronghold so the Order has a front line.']],
+  thornwild:[['Roots Awaken','Wake the Circle: flag mines and grow your ranger.'],['The Hunter’s Moon','Track down and break a rival warlord.']],
+  ashen:    [['Embers and Oaths','Gather the Covenant: mines, soldiers and a first rift.'],['The Rift Race','Seize a second stronghold before the rift closes.']],
+  gravecourt:[['The Quiet Crypts','Rouse the first legions and claim the mines.'],['Grave Claim','Plant a second banner over the living lands.']],
+  spireborn:[['The First Spire','Open the first Spire and win the mines.'],['The Rival Archmage','Humble a rival archmage in open war.']],
+  deepforge:[['Anvil and Ore','Fire the forges: mines, crews and a veteran hero.'],['The Foundry Wars','Win a second foundry-town before the deadline.']] };
+const GRAND_STAGE2={sunward:'capture',thornwild:'boss',ashen:'timed',gravecourt:'capture',spireborn:'boss',deepforge:'timed'};
+const GRAND_RIVAL_NAMES={thornwild:'Hark the Timber-Lord',spireborn:'Archmage Veyra'};
+const GRAND_CH=[];
+(function(){ const ids=FACTION_IDS.slice(); ids.forEach((f,fi)=>{ const F=FACTIONS[f]; const n1=ids[(fi+1)%ids.length], n2=ids[(fi+2)%ids.length];
+    const [t1,b1]=GRAND_STORY[f][0], [t2,b2]=GRAND_STORY[f][1];
+    GRAND_CH.push({ fac:f, stage:0, title:`${F.name} I: ${t1}`, size:'small', style:'balanced', ais:[n1], setup:'plain',
+      obj:{type:'grow',mines:2,level:4}, objText:'Flag at least 2 mines and raise your hero to level 4 (or destroy your rival). '+b1,
+      intro:`<p>A new banner rises: the <b>${F.name}</b>. ${b1}</p><p>This hero is the one you will bring to the Glory of Aldmere. Their level, skills, spells, best artifacts and a core of their army go with them to stage II.</p>`,
+      outro:`<p>The ${F.name} have a champion worth the name. Stage II awaits.</p>` });
+    const k=GRAND_STAGE2[f]; const ch2={ fac:f, stage:1, title:`${F.name} II: ${t2}`, size:'small', style:'balanced', setup:'plain', intro:`<p>${b2}</p><p>Your hero returns at the level they earned, with the core of their army.</p>`, outro:`<p>${F.name}’s hero is ready for the final contest.</p>` };
+    if(k==='capture'){ ch2.ais=[n1,n2]; ch2.obj={type:'capture',towns:3}; ch2.objBy={easy:{towns:2},normal:{towns:3},hard:{towns:3},brutal:{towns:3}}; ch2.objText='Hold at least 3 towns at once (2 on Easy): take the neutral town and wrest one from a rival. '+b2; }
+    else if(k==='timed'){ ch2.ais=[n1,n2]; ch2.obj={type:'timed_capture',towns:3,deadline:38}; ch2.objBy={easy:{towns:2,deadline:40},normal:{towns:3,deadline:38},hard:{towns:3,deadline:34},brutal:{towns:3,deadline:32}}; ch2.objText='Hold 3 towns by day 38 (2 on Easy, day 34 on Hard): the neutral town and one taken from a rival. '+b2; }
+    else { ch2.ais=[n1]; ch2.setup='boss'; ch2.rival={name:GRAND_RIVAL_NAMES[f]||'Rival Warlord',faction:n1,owner:'ai1',level:7,trait:'warlord',levelBump:2}; ch2.obj={type:'boss'}; ch2.objText=`Defeat ${ch2.rival.name}, a rival hero. `+b2; }
+    GRAND_CH.push(ch2); });
+  GRAND_CH.push({ fac:null, stage:2, final:true, title:'The Glory of Aldmere', size:'large', style:'balanced', ais:[], setup:'plain', obj:{type:'conquer'}, objText:'Eliminate every rival hero and faction. Only one champion wins the glory.',
+    intro:`<p>Six heroes, six banners, one crown. Every champion you built now fights for the glory of Aldmere on one great map.</p><p><b>You play the champion you chose; the other five are AI rivals with the levels, skills and items they earned.</b></p>`,
+    outro:`<p>The last rival banner falls. <b>You are the Grand Champion of Aldmere.</b></p>` }); })();
+const GRAND_FINAL=GRAND_CH.length-1;
+CAMP_PACKS.push({ id:'grand', title:'The Grand Campaign: Glory of Aldmere', faction:'sunward', tag:'All six factions', heroName:'Champion',
+  blurb:'Build a hero in every faction over two short stages each, in any order. Then choose which champion to play in the final mission, where the other five fight you for the glory of Aldmere, with every level, skill and item they earned.',
+  chapters:GRAND_CH });
+
+// ---------- Grand Campaign storage helpers ----------
+function grandState(){ const st=campPackState('grand'); st.chain=st.chain||{}; st.snaps=st.snaps||{}; st.setup=st.setup||{}; return st; }
+function grandChainDone(st){ return FACTION_IDS.every(f=>(st.chain[f]||0)>=2); }
+function grandDoneCount(st){ return FACTION_IDS.reduce((a,f)=>a+Math.min(2,st.chain[f]||0),0); }
+function grandSnap(h,fac){ const s=campSnapshot(h); s.faction=fac; s.army=(h.army||[]).filter(x=>x&&x.n>0&&UNITS[x.type]).map(x=>({type:x.type,n:x.n,kit:x.kit||null})).sort((a,b)=>unitValue(b.type)*b.n-unitValue(a.type)*a.n).slice(0,4);
+  const own=[...new Set([...(h.arts||[]),...(h.pack||[])])].filter(a=>ARTIFACTS[a]); s.arts=own.sort((a,b)=>campArtScore(b)-campArtScore(a)).slice(0,6); return s; }
+function grandApplySnap(h,s,carryN){ for(const k of ['seed','level','xp','atk','def','sp','kn']) h[k]=s[k]; h.skills=JSON.parse(JSON.stringify(s.skills||{})); h.perks=[...(s.perks||[])]; h.spells=[...new Set([...(h.spells||[]),...(s.spells||[])])]; if(s.advSpells) h.advSpells=[...s.advSpells];
+  if(Array.isArray(s.arts)){ h.arts=[]; h.pack=[]; for(const a of s.arts.slice(0,carryN==null?CAMP_CARRY_ARTS:carryN)) if(ARTIFACTS[a]){ if(h.arts.length<artLimit(h)) h.arts.push(a); else h.pack.push(a); } }
+  try{ h.mana=heroStats(h).maxMana; h.mp=heroStats(h).moveMax; }catch(e){} }
+function grandCarryArmy(h,s,mult){ if(!s||!s.army) return; for(const st of s.army){ const n=Math.max(1,Math.round(st.n*(mult||1))); armyAdd(h.army,7,{type:st.type,n,kit:st.kit||null}); } }
+
+// ---------- start a Grand Campaign stage ----------
+function grandStart(idx,opts){ opts=opts||{}; const C=GRAND_CH[idx]; if(!C) return; const st=grandState();
+  if(C.final) return grandStartFinal(opts);
+  const fac=C.fac;
+  if(idx%2===0 && !opts.skipSetup && !window.FAST_AI && !window.CAMP_NOASK){ return void campHeroSetup(fac, st.setup[fac], s=>{ const s2=grandState(); s2.setup[fac]=s; campWritePack('grand',s2); grandStart(idx,{skipSetup:true}); }, {title:`Build your ${FACTIONS[fac].name} hero`, blurb:`Stage ${C.stage+1} of 2 for the ${FACTIONS[fac].name}. Choose class, trait and name, same as a single game.`}); }
+  const carry=C.stage>0?(st.snaps[fac]&&st.snaps[fac][C.stage-1]):null; const su=st.setup[fac]||{};
+  const cls=carry?carry.cls:(su.cls&&CLASSES[su.cls]&&CLASSES[su.cls].faction===fac?su.cls:classesOf(fac)[0]); const trait=carry?carry.trait:(TRAITS[su.trait]?su.trait:'warlord'); const name=carry?carry.name:((su.name&&su.name.trim())||FACTIONS[fac].heroNames[0]);
+  const diffKey=st.diff||'normal'; if(C.objBy&&C.objBy[diffKey]){ C.obj={...C.obj,...C.objBy[diffKey]}; }
+  newGame({faction:fac,cls,trait,name,size:C.size,ais:C.ais,difficulty:diffKey,mapStyle:C.style||'balanced'});
+  G.campaign={idx,pack:'grand',diff:diffKey,fac,stage:C.stage}; const h=selHero();
+  if(carry&&h){ grandApplySnap(h,carry); grandCarryArmy(h,carry,1); }
+  campApplyPlayerStart(diffKey);
+  let CC=C; if(C.rival){ const D={easy:{b:0,m:0.6},normal:{b:2,m:1},hard:{b:4,m:1.8},brutal:{b:5,m:2.2}}[diffKey]||{b:2,m:1}; CC={...C,rival:{...C.rival,levelBump:D.b,army:[18,10,6,3].map(n=>Math.max(1,Math.round(n*D.m)))}}; }
+  if(C.setup) campSetupNew(CC,carry,h,campPackOf('grand'));
+  for(const k in HERO_URL) delete HERO_URL[k];
+  enterGame(true); try{ localStorage.setItem('boa_tutorial_done','1'); }catch(e){}
+  if(!window.FAST_AI) infoBox(C.title, C.intro+`<p class="good"><b>Objective:</b> ${C.objText}</p><p class="dim">Difficulty: <b>${campDiffLabel(diffKey)}</b></p>`+(carry?`<p class="dim">${carry.name} returns at level ${carry.level}.</p>`:''));
+  campHud(); }
+
+function grandStartFinal(opts){ const st=grandState(); const C=GRAND_CH[GRAND_FINAL]; const fac=st.finalFac;
+  if(!fac||!st.snaps[fac]||!st.snaps[fac][1]) return openGrandFinalPick();
+  const mine=st.snaps[fac][1]; const rivals=FACTION_IDS.filter(f=>f!==fac); const diffKey=st.diff||'normal';
+  newGame({faction:fac,cls:mine.cls,trait:mine.trait,name:mine.name,size:C.size,ais:rivals,difficulty:diffKey,mapStyle:C.style||'balanced'});
+  G.campaign={idx:GRAND_FINAL,pack:'grand',diff:diffKey,fac,stage:2,final:true}; const h=selHero();
+  if(h){ grandApplySnap(h,mine); grandCarryArmy(h,mine,1); }
+  rivals.forEach((f,i)=>{ const o=OWNERS[i+1]; const r=G.heroes.find(x=>x.owner===o&&x.alive); const snap=st.snaps[f][1]; if(!r||!snap) return;
+    r.name=snap.name; r.cls=snap.cls; r.trait=snap.trait; grandApplySnap(r,snap); r.army=[]; grandCarryArmy(r,snap,1); const t=townOf(o);
+    for(const s of starterArmy(f,0.8)) armyAdd(r.army,7,s); G.campaign['rival_'+o]=snap.name; });
+  campApplyPlayerStart(diffKey);
+  for(const k in HERO_URL) delete HERO_URL[k];
+  enterGame(true); try{ localStorage.setItem('boa_tutorial_done','1'); }catch(e){}
+  if(!window.FAST_AI) infoBox(C.title, C.intro+`<p class="dim">You: <b>${mine.name}</b>, level ${mine.level} ${CLASSES[mine.cls].name} of the ${FACTIONS[fac].name}.</p><p class="dim">Rivals: ${rivals.map((f,i)=>`<b style="color:${PLAYER_COLORS[OWNERS[i+1]]}">${st.snaps[f][1].name}</b> (Lv ${st.snaps[f][1].level}, ${FACTIONS[f].name})`).join(', ')}.</p><p class="good"><b>Objective:</b> ${C.objText}</p><p class="dim">Difficulty: <b>${campDiffLabel(diffKey)}</b></p>`);
+  campHud(); }
+
+// ---------- stage / final victory ----------
+{ const _cw=campWin; campWin=function(){ if(!(G&&G.campaign&&G.campaign.pack==='grand')) return _cw.apply(this,arguments);
+  const idx=G.campaign.idx; const C=GRAND_CH[idx]; const st=grandState(); const h=campMainHero(); G.over=true; try{ sfx('victory'); }catch(e){}
+  const diffKey=G.campaign.diff||st.diff||'normal'; st.best=st.best||{};
+  let extra='';
+  if(C.final){ st.champion={fac:G.campaign.fac,diff:diffKey,name:h?h.name:''}; st.done=Math.max(st.done||0,13); st.best[diffKey]=Math.max(st.best[diffKey]||0,13); extra=`<p class="good"><b>${h?h.name:'Your champion'}</b> wins the glory on ${campDiffLabel(diffKey)}.</p>`; }
+  else { const fac=C.fac; if(h){ st.snaps[fac]=st.snaps[fac]||[]; st.snaps[fac][C.stage]=grandSnap(h,fac); }
+    st.chain[fac]=Math.max(st.chain[fac]||0,C.stage+1); st.done=grandDoneCount(st); st.best[diffKey]=Math.max(st.best[diffKey]||0,st.done);
+    extra=`<p class="dim">${h?`<b>${h.name}</b> is saved at level ${h.level}.`:''} ${FACTIONS[fac].name}: ${Math.min(2,st.chain[fac])}/2 stages done. Heroes built: ${FACTION_IDS.filter(f=>(st.chain[f]||0)>=2).length}/6.</p>`; if(grandChainDone(st)) extra+=`<p class="good"><b>All six heroes are ready. The final mission is unlocked.</b></p>`; }
+  campWritePack('grand',st);
+  const m=modal(`<h2 class="win">${C.title}: Victory</h2>${C.outro}${extra}<div class="row"><button class="btn primary" id="gc-back">Grand Campaign</button><button class="btn" id="cp-menu">Main menu</button></div>`,'wide camp-end');
+  m.querySelector('#gc-back').onclick=()=>{ closeModal(m); showMenu(); openGrandCampaign(); }; m.querySelector('#cp-menu').onclick=()=>{ closeModal(m); showMenu(); }; }; }
+
+// ---------- screens ----------
+function openGrandFinalPick(){ const st=grandState();
+  const m=modal(`<h2>The Glory of Aldmere</h2><p class="dim">Choose which champion you will play. The other five become AI rivals with the levels, skills and items they earned.</p>
+    <div class="grand-pick">${FACTION_IDS.map(f=>{ const s=st.snaps[f]&&st.snaps[f][1]; if(!s) return ''; const F=FACTIONS[f]; return `<div class="grand-card ${st.finalFac===f?'sel':''}" data-pf="${f}" style="--fc:${F.color}"><b>${s.name}</b><div class="dim">${F.name} · ${CLASSES[s.cls].name}</div><div>Level ${s.level} · ⚔${s.atk} 🛡${s.def} ✨${s.sp} 📘${s.kn}</div><div class="dim small">${(s.arts||[]).length} artifact(s) · ${(s.army||[]).reduce((a,x)=>a+x.n,0)} troops carried</div><button class="btn primary" data-go="${f}">Play ${s.name}</button></div>`; }).join('')}</div>
+    <div class="row"><button class="btn" id="gp-back">◀ Back</button></div>`,'wide camp-select');
+  m.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ const s2=grandState(); s2.finalFac=b.dataset.go; campWritePack('grand',s2); closeModal(m); grandStartFinal(); });
+  m.querySelector('#gp-back').onclick=()=>{ closeModal(m); openGrandCampaign(); }; }
+
+function openGrandCampaign(){ const st=grandState(); const diff=st.diff||'normal'; const all6=grandChainDone(st);
+  const cards=FACTION_IDS.map(f=>{ const F=FACTIONS[f]; const n=Math.min(2,st.chain[f]||0); const s=st.snaps[f]&&st.snaps[f][n-1]; const su=st.setup[f];
+    const next=n>=2?null:GRAND_CH[FACTION_IDS.indexOf(f)*2+n];
+    return `<div class="grand-card" style="--fc:${F.color}"><div class="grand-h"><b style="color:${F.color}">${F.name}</b> <span class="dim">${n}/2 ${n>=2?'<span class="good">✔</span>':''}</span></div>
+      <div class="dim small">${s?`${s.name} · level ${s.level} ${CLASSES[s.cls].name}`:(su?`${su.name} · ${CLASSES[su.cls].name} · ${TRAITS[su.trait].name}`:'No hero yet')}</div>
+      <div class="grand-btns">${next?`<button class="btn primary" data-gs="${GRAND_CH.indexOf(next)}">${n===0?'Build hero: ':'Play: '}${next.title.split(': ')[1]}</button>`:''}${n>0?`<button class="btn" data-gs="${FACTION_IDS.indexOf(f)*2}" data-redo="1">${n>=2?'Replay stage I':'Redo stage I'}</button>`:''}${n>=2?`<button class="btn" data-gs="${FACTION_IDS.indexOf(f)*2+1}">Replay stage II</button>`:''}</div></div>`; }).join('');
+  const m=modal(`<h2>${GRAND_CH.length?'The Grand Campaign':''}</h2><p class="dim">${CAMP_PACKS.find(p=>p.id==='grand').blurb}</p>
+    <div class="camp-diffpick"><b>Difficulty</b> ${CAMP_DIFFS.map(d=>`<label class="camp-difflab"><input type="radio" name="cdiff" value="${d}" ${d===diff?'checked':''}> ${campDiffLabel(d)}</label>`).join('')}<p class="dim small">You can lower this between stages. Heroes built on any difficulty are kept.</p></div>
+    <p><b>Heroes built: ${FACTION_IDS.filter(f=>(st.chain[f]||0)>=2).length}/6</b> · ${st.champion?`<span class="good">Champion: ${st.champion.name} (${campDiffLabel(st.champion.diff)})</span>`:'Finish all six to unlock the final mission.'}</p>
+    <div class="grand-grid">${cards}</div>
+    <div class="grand-final"><b>${GRAND_CH[GRAND_FINAL].title}</b><p class="dim small">${GRAND_CH[GRAND_FINAL].objText}</p><button class="btn ${all6?'primary':''}" id="gc-final" ${all6?'':'disabled'}>${all6?'⚔ Final mission: choose your champion':'🔒 Build all six heroes first'}</button></div>
+    <div class="row"><button class="btn" id="cp-back">◀ All campaigns</button><button class="btn" id="cp-reset">Reset Grand Campaign</button><button class="btn" id="cp-close">Close</button></div>`,'wide camp-select camp-grand');
+  const readDiff=()=>(m.querySelector('input[name=cdiff]:checked')||{}).value||'normal';
+  m.querySelectorAll('input[name=cdiff]').forEach(r=>r.onchange=()=>{ const s2=grandState(); s2.diff=readDiff(); campWritePack('grand',s2); });
+  m.querySelectorAll('[data-gs]').forEach(b=>b.onclick=()=>{ const s2=grandState(); s2.diff=readDiff(); const i=+b.dataset.gs; if(b.dataset.redo){ const f=GRAND_CH[i].fac; s2.chain[f]=0; s2.snaps[f]=[]; } campWritePack('grand',s2); closeModal(m); grandStart(i); });
+  const fb=m.querySelector('#gc-final'); if(fb) fb.onclick=()=>{ const s2=grandState(); s2.diff=readDiff(); campWritePack('grand',s2); closeModal(m); openGrandFinalPick(); };
+  m.querySelector('#cp-back').onclick=()=>{ closeModal(m); openCampaignMenu(); }; m.querySelector('#cp-close').onclick=()=>closeModal(m);
+  m.querySelector('#cp-reset').onclick=()=>{ const mm=modal(`<h2>Reset the Grand Campaign?</h2><p class="bad">This erases all six built heroes and your progress in this campaign. Other campaigns and saved games are not touched.</p><div class="row"><button class="btn" id="rs-no">Keep it</button><button class="btn primary" id="rs-yes">Reset</button></div>`); mm.querySelector('#rs-no').onclick=()=>closeModal(mm); mm.querySelector('#rs-yes').onclick=()=>{ campWritePack('grand',{done:0,hero:null,diff:readDiff(),best:st.best||{},chain:{},snaps:{},setup:{}}); closeModal(mm); closeModal(m); openGrandCampaign(); }; }; }
+{ const _ocp=openCampaignPack; openCampaignPack=function(id){ if(id==='grand') return openGrandCampaign(); return _ocp.apply(this,arguments); }; }
+
+// defeat retry in the final keeps the chosen champion; HUD title shows the stage
+// ---------- save export: campaign progress rides along ----------
+{ const _c=collectSaveBundle; collectSaveBundle=function(){ const b=_c.apply(this,arguments); try{ const c=localStorage.getItem(CAMP_KEY); if(c) b.campaign=c; }catch(e){} return b; };
+  const _i=importSaveBundle; importSaveBundle=function(obj){
+    if(obj&&obj.format==='aldmere-saves'&&obj.version&&obj.campaign&&!obj.manual&&!(obj.autosaves&&obj.autosaves.length)){
+      return new Promise((resolve,reject)=>{ const m=modal(`<h2>Import campaign progress?</h2><p>This backup has campaign progress (including the Grand Campaign).</p><p class="bad">It replaces the campaign progress on this device. Your saved games are not touched.</p><div class="row"><button class="btn" id="im-cancel">Cancel</button><button class="btn primary" id="im-ok">Import</button></div>`);
+        m.querySelector('#im-cancel').onclick=()=>{ closeModal(m); reject(new Error('cancelled')); };
+        m.querySelector('#im-ok').onclick=()=>{ try{ localStorage.setItem(CAMP_KEY,obj.campaign); closeModal(m); toast('Campaign progress imported.'); resolve(true); }catch(e){ closeModal(m); reject(e); } }; }); }
+    const p=_i.apply(this,arguments); if(obj&&obj.campaign) return p.then(r=>{ try{ localStorage.setItem(CAMP_KEY,obj.campaign); }catch(e){} return r; }); return p; };
+  const _d=downloadSaveBundle; downloadSaveBundle=function(){ try{ const b=collectSaveBundle(); if(!b.manual&&!(b.autosaves||[]).length&&b.campaign){ const blob=new Blob([JSON.stringify(b)],{type:'application/json'}); const name='aldmere-saves-'+new Date().toISOString().slice(0,10)+'.json'; const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },1500); toast('Campaign backup ready: '+name); return; } }catch(e){} return _d.apply(this,arguments); }; }
+
+// debug hook for tests: finish the current campaign stage as a win
+window.grandDebugWin=function(levels){ const h=campMainHero(); if(h&&levels){ const ups=grantXp(h,maxXp(h,h.level+levels-1)); try{ aiLevelUps(h,ups); }catch(e){} } campWin(); };
+
+// weekly "waves" belong to the old Sundering chapters only; Grand stages have none (and index past the legacy list)
+{ const _w=campWave; campWave=function(){ if(G&&G.campaign&&G.campaign.pack==='grand') return; return _w.apply(this,arguments); }; }
+
+// ---------- v6.11.1: veteran detachment for later campaign chapters (balance) ----------
+// Carried heroes used to arrive with only their skills (Sundering) against AIs whose first hero already matches a
+// starter army. A detachment scaled by difficulty keeps Easy comfortable and Hard hard.
+const CAMP_VET={easy:1.4,normal:1.0,hard:0.3,brutal:0.15};
+function campVeteranBoost(){ if(!G||!G.campaign||G.campaign.boosted) return; const h=selHero(); if(!h) return; const fac=h.faction; const k=CAMP_VET[G.campaign.diff||'normal']; if(k==null) return;
+  for(const s of starterArmy(fac,k)) armyAdd(h.army,7,s); armyAdd(h.army,7,{type:FACTION_LINE[fac][2],n:Math.max(1,Math.round(5*k))}); G.campaign.boosted=1;
+  try{ renderAll(); }catch(e){} }
+{ const _sc2=startCampaignChapter; startCampaignChapter=function(idx,packId){ const r=_sc2.apply(this,arguments); try{ const id=packId||(G&&G.campaign&&G.campaign.pack); if(idx>0&&G&&G.campaign&&id!=='grand'&&!window.CAMP_NOVET) campVeteranBoost(); }catch(e){} return r; }; }
+
+// ---- 30_v6111.js ----
+// ===================== v6.11.1: bolder map graphics ("Golden Hour" part 2) =====================
+// Visual only. Terrain extras are BAKED into the cached terrain chunks (free at runtime). Runtime extras are
+// a few cheap draws. Everything follows the Graphics quality switch (Low = off). Never darkens the map.
+(function(){
+  const hi=()=>{ try{ return gfxHigh(); }catch(e){ return true; } };
+  // ---- 1) baked terrain richness ----
+  const _pc=paintChunk; paintChunk=function(TC,cx,cy){ const res=_pc.apply(this,arguments);
+    try{ if(!TC.hi) return res; const P=TC.P, TS=P.TS, W=P.W, H=P.H, sc=TC.scale; const {cv,px0,py0,cw,ch}=res; const c=cv.getContext('2d');
+      c.save(); c.setTransform(sc,0,0,sc,-px0*sc,-py0*sc); const r=mulberry32(9100+cx*131+cy*977+(P.seed||0)%1000);
+      // dappled sunlight / shade patches break the repeating ground texture
+      c.globalCompositeOperation='soft-light'; const nb=Math.round(cw*ch/7000); for(let i=0;i<nb;i++){ const x=px0+r()*cw, y=py0+r()*ch, rad=TS*(0.8+r()*1.8); const light=r()<0.62; const g=c.createRadialGradient(x,y,0,x,y,rad); g.addColorStop(0,light?'rgba(255,238,150,0.2)':'rgba(40,90,120,0.22)'); g.addColorStop(1,'rgba(0,0,0,0)'); c.fillStyle=g; c.fillRect(x-rad,y-rad,rad*2,rad*2); }
+      // richer colour: warm gold lower-left to cool teal upper-right (world anchored => chunks join)
+      const WW=W*TS, HH=H*TS; const lg=c.createLinearGradient(0,HH,WW,0); lg.addColorStop(0,'rgba(255,200,90,0.2)'); lg.addColorStop(0.5,'rgba(120,255,160,0.10)'); lg.addColorStop(1,'rgba(80,190,255,0.14)'); c.globalCompositeOperation='overlay'; c.fillStyle=lg; c.fillRect(px0,py0,cw,ch);
+      // extra grass tufts with sunlit tips on open ground
+      c.globalCompositeOperation='source-over'; const tx0=cx*TCHUNK, ty0=cy*TCHUNK, tx1=Math.min(W,tx0+TCHUNK), ty1=Math.min(H,ty0+TCHUNK);
+      for(let y=ty0;y<ty1;y++) for(let x=tx0;x<tx1;x++){ const t=P.at(x,y); if(t!==T.GRASS&&t!==T.FOREST) continue; if(P.map&&P.map.road&&P.map.road[y*W+x]) continue; const g=P.gr(x,y); if(g!==T.GRASS) continue;
+        for(let k=0;k<4;k++){ const px=(x+r())*TS, py=(y+r())*TS, h=5+r()*6; c.strokeStyle='rgba(30,90,30,0.55)'; c.lineWidth=1.6; c.beginPath(); c.moveTo(px,py); c.quadraticCurveTo(px+(r()-0.5)*4,py-h*0.6,px+(r()-0.5)*6,py-h); c.stroke(); c.strokeStyle='rgba(210,255,120,0.7)'; c.lineWidth=0.9; c.beginPath(); c.moveTo(px+0.8,py-h*0.55); c.lineTo(px+(r()-0.5)*5,py-h-0.5); c.stroke(); }
+        if(r()<0.1){ const px=(x+r())*TS, py=(y+r())*TS, s=TS*(0.1+r()*0.08); c.fillStyle='rgba(30,50,20,0.28)'; c.beginPath(); c.ellipse(px+s*0.3,py+s*0.35,s*1.2,s*0.55,0,0,7); c.fill(); c.fillStyle='#9aa09a'; c.beginPath(); c.ellipse(px,py,s,s*0.7,0,0,7); c.fill(); c.fillStyle='rgba(255,255,255,0.45)'; c.beginPath(); c.ellipse(px-s*0.25,py-s*0.25,s*0.45,s*0.28,0,0,7); c.fill(); } }
+      // water: lighter teal sheen on open water and softer deep centres
+      c.globalCompositeOperation='screen'; for(let y=ty0;y<ty1;y++) for(let x=tx0;x<tx1;x++){ if(P.at(x,y)!==T.WATER) continue; const rr=trng(P.seed,x,y,121); const g=c.createRadialGradient((x+0.5)*TS,(y+0.5)*TS,0,(x+0.5)*TS,(y+0.5)*TS,TS*1.1); g.addColorStop(0,`rgba(70,200,230,${P.coast[y*W+x]?0.22:0.12+rr()*0.08})`); g.addColorStop(1,'rgba(70,200,230,0)'); c.fillStyle=g; c.fillRect((x-0.6)*TS,(y-0.6)*TS,TS*2.2,TS*2.2); }
+      c.restore();
+    }catch(e){ if(!window.__v6111w){ window.__v6111w=1; console.warn('v6111 terrain',e); } }
+    return res; };
+
+  // ---- 2) sunlit trees and mountains ----
+  const _dmt=drawMapTree; drawMapTree=function(c,f){ _dmt.apply(this,arguments);
+    if(!hi()||!f||PAINT_RICH===false) return; try{ const s=f.s||40; c.save(); c.globalCompositeOperation='soft-light'; const g=c.createRadialGradient(f.x-s*0.18,f.y-s*0.8,0,f.x-s*0.18,f.y-s*0.8,s*0.5); g.addColorStop(0,'rgba(255,245,160,0.55)'); g.addColorStop(1,'rgba(255,245,160,0)'); c.fillStyle=g; c.fillRect(f.x-s,f.y-s*1.4,s*1.6,s*1.2); c.restore(); }catch(e){} };
+  const _dmo=drawMountain; drawMountain=function(c,f){ _dmo.apply(this,arguments);
+    if(!hi()||!f) return; try{ const s=f.s||60; c.save(); c.globalCompositeOperation='soft-light'; const g=c.createLinearGradient(f.x-s*0.5,f.y-s*1.1,f.x+s*0.3,f.y-s*0.1); g.addColorStop(0,'rgba(255,236,170,0.55)'); g.addColorStop(1,'rgba(255,236,170,0)'); c.fillStyle=g; c.beginPath(); c.moveTo(f.x-s*0.6,f.y); c.lineTo(f.x-s*0.05,f.y-s*1.15); c.lineTo(f.x+s*0.25,f.y); c.closePath(); c.fill(); c.restore(); }catch(e){} };
+
+  // ---- 3) objects, mines, towns, hero banners ----
+  const MINE_GLOW=[[/crystal/,'#9fe8ff'],[/gem/,'#ff7ad8'],[/sulf/,'#ffd23a'],[/gold/,'#ffd36b'],[/ore/,'#d0d8e8'],[/saw|wood/,'#a8ff9a']];
+  const _dmx=drawMapObject; drawMapObject=function(c,o,TS,t){ const r=_dmx.apply(this,arguments);
+    if(hi()&&o){ try{ if(o.kind==='mine'){ const ty=String(o.type||''); const col=(MINE_GLOW.find(m=>m[0].test(ty))||[0,'#ffd36b'])[1]; const a=0.22+0.12*Math.sin(t*2+o.x);
+        c.save(); c.globalCompositeOperation='lighter'; const g=c.createRadialGradient(0,-TS*0.15,0,0,-TS*0.15,TS*0.55); g.addColorStop(0,rgbaHex(col,a)); g.addColorStop(1,rgbaHex(col,0)); c.fillStyle=g; c.beginPath(); c.arc(0,-TS*0.15,TS*0.55,0,7); c.fill(); c.restore();
+        if(o.owner&&o.owner!=='neutral'){ const oc=ownerColor(o.owner); c.fillStyle=rgba(oc,0.9); c.strokeStyle='#1a1020'; c.lineWidth=1.5; c.beginPath(); c.moveTo(TS*0.3,-TS*0.55); c.lineTo(TS*0.3,-TS*0.05); c.stroke(); const w=Math.sin(t*4+o.y)*3; c.beginPath(); c.moveTo(TS*0.3,-TS*0.55); c.quadraticCurveTo(TS*0.42,-TS*0.52+w,TS*0.55,-TS*0.5+w*0.5); c.lineTo(TS*0.3,-TS*0.36); c.closePath(); c.fill(); c.stroke(); } }
+      else if(o.kind==='monster'||o.kind==='site'){ /* keep monsters/sites calm */ } }catch(e){} }
+    return r; };
+  function rgbaHex(h,a){ const n=parseInt(h.slice(1),16); return `rgba(${n>>16},${n>>8&255},${n&255},${a})`; }
+
+  const _dts=drawTownSprite; drawTownSprite=function(c,faction,TS,col,t){ if(hi()){ // owner-colour aura on the ground so towns pop and ownership reads at a glance
+      c.save(); c.globalCompositeOperation='lighter'; const a=0.16+0.06*Math.sin(t*1.6); const g=c.createRadialGradient(0,TS*0.3,TS*0.2,0,TS*0.3,TS*1.5); g.addColorStop(0,rgba(col,a*1.6)); g.addColorStop(1,rgba(col,0)); c.fillStyle=g; c.save(); c.translate(0,TS*0.3); c.scale(1,0.45); c.translate(0,-TS*0.3); c.beginPath(); c.arc(0,TS*0.3,TS*1.5,0,7); c.fill(); c.restore(); c.restore(); }
+    const r=_dts.apply(this,arguments);
+    if(hi()){ // waving pennants on the towers
+      for(const [px,py] of [[-0.62,-1.55],[0.62,-1.6]]){ const w=Math.sin(t*4+px*7)*TS*0.04; c.save(); c.strokeStyle='#1a1020'; c.lineWidth=1.4; c.fillStyle=col; c.beginPath(); c.moveTo(px*TS,py*TS); c.lineTo(px*TS,(py-0.42)*TS); c.stroke(); c.beginPath(); c.moveTo(px*TS,(py-0.42)*TS); c.quadraticCurveTo((px+0.16)*TS,(py-0.44)*TS+w,(px+0.3)*TS,(py-0.38)*TS+w*0.6); c.lineTo(px*TS,(py-0.26)*TS); c.closePath(); c.fill(); c.stroke(); c.restore(); } }
+    return r; };
+
+  const _dhs=drawHeroSprite; drawHeroSprite=function(c,hero,TS,t){ const r=_dhs.apply(this,arguments);
+    if(hi()&&hero){ try{ const oc=ownerColor(hero.owner); const w=Math.sin(t*5+(hero.x||0))*TS*0.035; c.save(); c.strokeStyle='#1a1020'; c.lineWidth=2.2; c.beginPath(); c.moveTo(-TS*0.34,-TS*0.05); c.lineTo(-TS*0.34,-TS*0.95); c.stroke(); c.strokeStyle='#e9c46a'; c.lineWidth=1; c.stroke(); c.fillStyle=oc; c.lineWidth=1.4; c.strokeStyle='#1a1020'; c.beginPath(); c.moveTo(-TS*0.34,-TS*0.95); c.quadraticCurveTo(-TS*0.5,-TS*0.92+w,-TS*0.66,-TS*0.84+w*0.6); c.lineTo(-TS*0.34,-TS*0.7); c.closePath(); c.fill(); c.stroke(); c.restore(); }catch(e){} }
+    return r; };
+
+  // ---- 4) runtime: richer water, birds, butterflies, stronger light ----
+  const AMB={birds:null,flies:null};
+  const _rm=renderMap; renderMap=function(time){
+    // animated water glints + shoreline foam first (inside the camera transform) is handled by wrapping ctx draw: do it after, in world space
+    _rm.apply(this,arguments);
+    try{ if(!hi()||!MAPV||!MAPV.ctx||!G||!MAPV.terrain) return; const ctx=MAPV.ctx, cv=MAPV.cv, t=time/1000, Z=MAPV.z||1, cam=MAPV.cam; const W=cv.width, H=cv.height;
+      ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.scale(Z,Z); ctx.translate(-Math.round(cam.x*Z)/Z,-Math.round(cam.y*Z)/Z);
+      const x0=Math.floor(cam.x/TS)-2, y0=Math.floor(cam.y/TS)-2, x1=x0+Math.ceil(viewW()/TS)+5, y1=y0+Math.ceil(viewH()/TS)+5;
+      const Wt=G.map.water||[]; ctx.lineCap='round'; ctx.globalCompositeOperation='lighter';
+      for(let i=0;i<Wt.length;i+=2){ const x=Wt[i], y=Wt[i+1]; if(x<x0||x>x1||y<y0||y>y1) continue; const h=hash2(x,y,91); const ph=(t*0.22+h)%1; const a=Math.sin(ph*Math.PI); if(a<0.2) continue; const px=(x+0.5+Math.sin(t*0.5+h*20)*0.3)*TS, py=(y+0.35+h*0.4)*TS; ctx.strokeStyle=`rgba(210,250,255,${0.5*a})`; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(px-9,py); ctx.quadraticCurveTo(px-4,py-3,px,py); ctx.quadraticCurveTo(px+4,py+3,px+9,py); ctx.stroke(); if(h>0.7){ v611Star(ctx,px+10,py-6,TS*0.1*a+1,0.9*a,'#e8fbff'); } }
+      const CW=G.map.coastW||[]; for(let i=0;i<CW.length;i+=2){ const x=CW[i], y=CW[i+1]; if(x<x0||x>x1||y<y0||y>y1) continue; const h=hash2(x,y,93); const ph=(t*0.4+h)%1; const a=Math.sin(ph*Math.PI); ctx.strokeStyle=`rgba(255,255,255,${0.55*a})`; ctx.lineWidth=2.4; ctx.beginPath(); ctx.arc((x+0.5)*TS,(y+0.5)*TS,TS*(0.3+ph*0.4),h*6,h*6+1.9); ctx.stroke(); }
+      ctx.restore();
+      // sky life in screen space: soaring birds and butterflies
+      ctx.save(); ctx.setTransform(1,0,0,1,0,0);
+      if(!AMB.birds||AMB.w!==W){ AMB.w=W; AMB.birds=Array.from({length:3},(_,i)=>({x:Math.random(),y:0.12+Math.random()*0.5,s:0.012+Math.random()*0.01,ph:Math.random()*6})); AMB.flies=Array.from({length:4},(_,i)=>({x:Math.random(),y:0.3+Math.random()*0.5,ph:Math.random()*6,c:['#ffd34a','#ff9ad0','#ffffff','#9ad0ff'][i]})); }
+      const u=Math.max(1,W/430);
+      for(const b of AMB.birds){ const x=((b.x+t*b.s)%1.2-0.1)*W, y=(b.y+Math.sin(t*0.3+b.ph)*0.02)*H, f=Math.sin(t*7+b.ph)*3*u; ctx.strokeStyle='rgba(30,22,40,0.75)'; ctx.lineWidth=1.6*u; ctx.beginPath(); ctx.moveTo(x-7*u,y-f); ctx.quadraticCurveTo(x-3*u,y-3*u,x,y); ctx.quadraticCurveTo(x+3*u,y-3*u,x+7*u,y-f); ctx.stroke(); }
+      for(const b of AMB.flies){ const x=(b.x+Math.sin(t*0.35+b.ph)*0.18+0.5*Math.sin(t*0.11+b.ph))%1, y=b.y+Math.sin(t*0.5+b.ph*2)*0.08; const px=((x+1)%1)*W, py=y*H, fl=Math.abs(Math.sin(t*14+b.ph)); ctx.fillStyle=b.c; ctx.strokeStyle='rgba(30,20,30,0.6)'; ctx.lineWidth=0.8*u; for(const sg of [-1,1]){ ctx.beginPath(); ctx.ellipse(px+sg*2.2*u*fl,py,3*u*(0.3+fl*0.7),2.4*u,sg*0.4,0,7); ctx.fill(); ctx.stroke(); } }
+      // a touch more warmth, still only brightening
+      ctx.globalCompositeOperation='screen'; const g2=ctx.createRadialGradient(W*0.12,-H*0.05,0,W*0.12,-H*0.05,H*0.9); g2.addColorStop(0,'rgba(255,232,170,0.07)'); g2.addColorStop(1,'rgba(255,232,170,0)'); ctx.fillStyle=g2; ctx.fillRect(0,0,W,H);
+      ctx.restore();
+    }catch(e){ if(!window.__v6111r){ window.__v6111r=1; console.warn('v6111 map',e); } } };
+})();
 
 </script></body></html>
